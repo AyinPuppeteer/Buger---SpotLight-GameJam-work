@@ -27,7 +27,10 @@ public abstract class Lock : MonoBehaviour
         {
             foreach(var key in KeyList)
             {
-                if(key.Active) 
+                if(key.Active)
+                {
+
+                }
             }
         }
         else
