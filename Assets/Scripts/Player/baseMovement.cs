@@ -6,10 +6,12 @@ public class baseMovement : MonoBehaviour
 {//函数名驼峰命名，变量小写
     [Header("Movement Settings")]
     [SerializeField] private float originspeed = 5.0f;
-    [SerializeField] private float sneakspeed = 1.0f;
+    [SerializeField] private float sneakspeed = 2.5f;   //蹲速
+    [SerializeField] private float climbspeed = 2.0f;   //爬速
     [Header("Collision Settings")]
     [SerializeField] private float playerwidth = .35f;
     [SerializeField] private float playerheight = .5f;
+    [SerializeField] private float deadzone = 0.1f;   //设置死区
 
     Rigidbody2D rb;
 
@@ -37,24 +39,32 @@ public class baseMovement : MonoBehaviour
     {
         Vector2 inputvector = gameInput.Instance.GetMovementInput();
         Vector2 movedir = inputvector.normalized;
+        float horizontal = inputvector.x;
+        float vertical = inputvector.y;
         if (movedir != Vector2.zero)
         {
-            iswalking = true;
-            speed = originspeed;
-            if (movedir.x < 0) toright = false;
-            else if (movedir.x > 0) toright = true;
+            if (horizontal < -deadzone) toright = false;
+            else if (horizontal > deadzone) toright = true;
+            if (vertical > deadzone && canclimb) isclimbing = true;
+            else if (vertical < -0.5f) issneaking = true;
+            else if (vertical > -deadzone) issneaking = false;
+            speed = isclimbing ? climbspeed :
+                issneaking ? sneakspeed : originspeed;
         }
         else
         {
-            iswalking = false;
+            if (iswalking) iswalking = false;
+            if (isclimbing) isclimbing = false;
+            if (issneaking) issneaking = false;
             speed = 0;
         }
-        float horizontal = inputvector.x;
+        if (!isclimbing) movedir = new Vector2(horizontal, 0); 
         float movedistance = speed * Time.deltaTime;
-        checkCollision(new Vector2(horizontal, 0), movedistance);
+        checkCollision(movedir, movedistance);
         if (canmove)
         {
-            rb.MovePosition(rb.position + horizontal * movedistance);
+            Debug.Log(movedir);
+            rb.MovePosition(rb.position + movedir * movedistance);
         }
     }
 
@@ -77,7 +87,16 @@ public class baseMovement : MonoBehaviour
             0,
             movedir,
             movedistance);
+        if (hit.collider == null){ canmove = true; return; }
 
-        canmove = hit.collider.CompareTag("Obstacle");
+        canmove = !hit.collider.CompareTag("Obstacle");
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.CompareTag("Climber"))
+        {
+            canclimb = true;
+        }
     }
 }
