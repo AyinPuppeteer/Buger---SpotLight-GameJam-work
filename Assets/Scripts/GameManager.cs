@@ -1,17 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    [SerializeField]
+    private Animator AlertAnim;
 
-    // Update is called once per frame
-    void Update()
+    //触发BUG时播放警告动画
+    public void BugAlert()
     {
         
     }

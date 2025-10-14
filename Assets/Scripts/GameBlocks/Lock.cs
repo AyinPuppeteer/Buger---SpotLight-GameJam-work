@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 
 //所有“锁”的父类
-public abstract class Lock : MonoBehaviour
+public interface I_Lock
 {
     //相关的钥匙列表
     [SerializeField]
-    private List<Key> KeyList;
+    protected List<I_Key> KeyList { get; set; }
 
     [SerializeField]
-    private bool IsOr;//是否是或门（false表示所有钥匙均打开时触发，true表示只要有一个打开就触发）
+    protected bool IsOr { get; set; }//是否是或门（false表示所有钥匙均打开时触发，true表示只要有一个打开就触发）
 
     private void Awake()
     {
@@ -36,9 +36,9 @@ public abstract class Lock : MonoBehaviour
         }
         else
         {
-            foreach(var key in KeyList)
+            foreach (var key in KeyList)
             {
-                if(!key.Active)
+                if (key.Active)
                 {
                     SetActive(false);
                 }
@@ -47,7 +47,6 @@ public abstract class Lock : MonoBehaviour
         }
     }
 
-    //激活
     public virtual void SetActive(bool b)
     {
 
