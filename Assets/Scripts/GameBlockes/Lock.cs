@@ -29,17 +29,25 @@ public abstract class Lock : MonoBehaviour
             {
                 if(key.Active)
                 {
-
+                    SetActive(true);
                 }
             }
+            SetActive(false);
         }
         else
         {
-
+            foreach (var key in KeyList)
+            {
+                if (key.Active)
+                {
+                    SetActive(false);
+                }
+            }
+            SetActive(true);
         }
     }
 
-    protected virtual void SetActive(bool b)
+    public virtual void SetActive(bool b)
     {
 
     }
