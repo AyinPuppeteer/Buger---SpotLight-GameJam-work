@@ -16,6 +16,12 @@ public class gameInput : MonoBehaviour
         InputActions.Player.Enable();
     }
 
-    public Vector2 GetMovementInput() => InputActions.Player.move.ReadValue<Vector2>();
+    public Vector2 GetMovementInput() =>
+        InputActions.Player.move.ReadValue<Vector2>();
 
+    public bool GetJumpInputDown() =>
+        InputActions.Player.jump.triggered;
+
+    public bool InteractInputDown() =>
+        InputActions.Player.interact.triggered;
 }

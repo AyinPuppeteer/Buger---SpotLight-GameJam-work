@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Obstacle
   - Climber
+  - Ground
   layers:
   - Default
   - TransparentFX
