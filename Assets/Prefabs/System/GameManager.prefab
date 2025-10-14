@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 7197733917688223093}
   - component: {fileID: 7258379068669118640}
   - component: {fileID: 674097197418159735}
-  - component: {fileID: 1256074477836065626}
+  - component: {fileID: 3151459027902703985}
   m_Layer: 5
   m_Name: "BUG\u89E6\u53D1\u6548\u679C"
   m_TagString: Untagged
@@ -58,8 +58,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 2100000, guid: 9dfc825aed78fcd4ba02077103263b40, type: 2}
-  m_Color: {r: 0, g: 0.18691693, b: 0.754717, a: 1}
+  m_Material: {fileID: 2100000, guid: 209db947df47b08419beb441386c9200, type: 2}
+  m_Color: {r: 0.6226415, g: 0.0998575, b: 0.12786393, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -76,7 +76,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!95 &1256074477836065626
+--- !u!95 &3151459027902703985
 Animator:
   serializedVersion: 5
   m_ObjectHideFlags: 0
