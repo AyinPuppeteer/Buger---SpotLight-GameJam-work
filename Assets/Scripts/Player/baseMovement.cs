@@ -7,12 +7,12 @@ public class BaseMovement : MonoBehaviour
 {
     [Header("Movement Settings")]
     [SerializeField] private float originSpeed = 5.0f;
-    [SerializeField] private float sneakSpeed = 2.5f;   //¶×ËÙ
-    [SerializeField] private float climbSpeed = 2.0f;   //ÅÀËÙ
+    [SerializeField] private float sneakSpeed = 2.5f;   //è¹²é€Ÿ
+    [SerializeField] private float climbSpeed = 2.0f;   //çˆ¬é€Ÿ
     [Header("Collision Settings")]
     [SerializeField] private float playerWidth = .35f;
     [SerializeField] private float playerHeight = .5f;
-    [SerializeField] private float deadZone = 0.1f;   //ÉèÖÃËÀÇø
+    [SerializeField] private float deadZone = 0.1f;   //è®¾ç½®æ­»åŒº
     [Header("Force Settings")]
     [SerializeField] private float gravity = 9.8f;
     [SerializeField] private float jumpForce = 5.0f;
@@ -24,7 +24,7 @@ public class BaseMovement : MonoBehaviour
     private bool isClimbing = false;
     private bool isSneaking = false;
     private bool isGrounded = false;
-    private int isJumping = 0;   //¿ÉÒÔ¸ù¾İÇé¿ö±íÊ¾ÌøÔ¾×´Ì¬£¬±ÈÈç0ÎªÎ´Ìø£¬ÕıÊıÊÇÌøÔ¾ÁË¼¸´Î£¬-1ÏÂÂä
+    private int isJumping = 0;   //å¯ä»¥æ ¹æ®æƒ…å†µè¡¨ç¤ºè·³è·ƒçŠ¶æ€ï¼Œæ¯”å¦‚0ä¸ºæœªè·³ï¼Œæ­£æ•°æ˜¯è·³è·ƒäº†å‡ æ¬¡ï¼Œ-1ä¸‹è½
     private bool toRight = true;
     private bool canMove = false;
     private bool canClimb = false;
@@ -36,10 +36,10 @@ public class BaseMovement : MonoBehaviour
     private Vector2 inputVector = Vector2.zero;
     private Vector2 moveDir = Vector2.zero;
 
-    private float verticalVelocity = 0f; // ×Ô¶¨ÒåÊúÖ±ËÙ¶È
+    private float verticalVelocity = 0f; // è‡ªå®šä¹‰ç«–ç›´é€Ÿåº¦
     private bool jumpRequested = false;
 
-    // ±£»¤±äÁ¿±©Â¶ÊôĞÔ
+    // ä¿æŠ¤å˜é‡æš´éœ²å±æ€§
     public bool IsGrounded_ { get => isGrounded; }
     public bool IsClimbing_ { get => isClimbing; }
     public bool IsSneaking_ { get => isSneaking; }
@@ -49,7 +49,7 @@ public class BaseMovement : MonoBehaviour
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
-        rb.gravityScale = 0f; // È·±£½ûÓÃÎïÀíÒıÇæÖØÁ¦
+        rb.gravityScale = 0f; // ç¡®ä¿ç¦ç”¨ç‰©ç†å¼•æ“é‡åŠ›
     }
 
     private void Update()
@@ -66,15 +66,15 @@ public class BaseMovement : MonoBehaviour
 
     private void HandleTriggerButton()
     {
-        // ½ÓÊÕÌøÔ¾°´Å¥
+        // æ¥æ”¶è·³è·ƒæŒ‰é’®
         if (gameInput.Instance.GetJumpInputDown())
         {
             jumpRequested = true;
         }
-        // ´¦Àí½»»¥°´Å¥Âß¼­
+        // å¤„ç†äº¤äº’æŒ‰é’®é€»è¾‘
         if (gameInput.Instance.InteractInputDown())
         {
-            // ÔÚÕâÀïÌí¼Ó½»»¥Âß¼­
+            // åœ¨è¿™é‡Œæ·»åŠ äº¤äº’é€»è¾‘
             Debug.Log("Interact button pressed");
         }
     }
@@ -104,17 +104,17 @@ public class BaseMovement : MonoBehaviour
             speed = 0;
         }
 
-        // µØÃæ»ò¿ÕÖĞÒÆ¶¯
+        // åœ°é¢æˆ–ç©ºä¸­ç§»åŠ¨
         Vector2 move = new Vector2(horizontal, 0) * speed * Time.fixedDeltaTime;
 
-        // ÊúÖ±·½ÏòÓÉ×Ô¶¨ÒåËÙ¶È¿ØÖÆ
+        // ç«–ç›´æ–¹å‘ç”±è‡ªå®šä¹‰é€Ÿåº¦æ§åˆ¶
         move.y += verticalVelocity * Time.fixedDeltaTime;
 
-        // ÅÀÌİÊ±ÊúÖ±·½ÏòÓÉÊäÈë¿ØÖÆ
+        // çˆ¬æ¢¯æ—¶ç«–ç›´æ–¹å‘ç”±è¾“å…¥æ§åˆ¶
         if (isClimbing)
         {
             move.y = vertical * climbSpeed * Time.fixedDeltaTime;
-            verticalVelocity = 0f; // ÅÀÌİÊ±²»ÊÜÖØÁ¦Ó°Ïì
+            verticalVelocity = 0f; // çˆ¬æ¢¯æ—¶ä¸å—é‡åŠ›å½±å“
         }
 
         CheckCollision(move, move.magnitude);
@@ -126,22 +126,22 @@ public class BaseMovement : MonoBehaviour
 
     private void HandleForce()
     {
-        // ÌøÔ¾Âß¼­
+        // è·³è·ƒé€»è¾‘
         if (isGrounded && jumpRequested)
         {
             verticalVelocity += jumpForce;
-            isJumping = 1; //Ä¿Ç°ÊÇÒ»¶ÎÌø
+            isJumping = 1; //ç›®å‰æ˜¯ä¸€æ®µè·³
             isGrounded = false;
-            jumpRequested = false; // ÏûºÄÌøÔ¾ÇëÇó
+            jumpRequested = false; // æ¶ˆè€—è·³è·ƒè¯·æ±‚
         }
 
-        // ¿ÕÖĞÏÂÂä¼ÓËÙ
+        // ç©ºä¸­ä¸‹è½åŠ é€Ÿ
         if (!isGrounded && !isClimbing)
         {
             verticalVelocity -= gravity * Time.fixedDeltaTime;
         }
 
-        // ÂäµØÊ±ÖØÖÃÊúÖ±ËÙ¶È
+        // è½åœ°æ—¶é‡ç½®ç«–ç›´é€Ÿåº¦
         if (isGrounded && !isClimbing)
         {
             verticalVelocity = 0f;
@@ -150,8 +150,8 @@ public class BaseMovement : MonoBehaviour
 
     private void HandleVisualLayer()
     {
-        // ´¦ÀíÊÓ¾õ²ã¼¶
-        // ´¦Àí³¯Ïò
+        // å¤„ç†è§†è§‰å±‚çº§
+        // å¤„ç†æœå‘
         Vector3 localScale = transform.localScale;
         if (toRight)
             localScale.x = Mathf.Abs(localScale.x);
@@ -161,7 +161,7 @@ public class BaseMovement : MonoBehaviour
     }
 
     private void CheckCollision(Vector2 moveDir, float moveDistance)
-    {//Ö÷Òª½â¾ö¸÷·½Åö×²
+    {//ä¸»è¦è§£å†³å„æ–¹ç¢°æ’
         RaycastHit2D hit = Physics2D.BoxCast(transform.position,
             new Vector2(playerWidth, playerHeight),
             0,
