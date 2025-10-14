@@ -12,7 +12,7 @@ public class baseMovement : MonoBehaviour
     [SerializeField] private float playerwidth = .35f;
     [SerializeField] private float playerheight = .5f;
     [SerializeField] private float deadzone = 0.1f;   //…Ë÷√À¿«¯
-
+    
     Rigidbody2D rb;
 
     float speed;

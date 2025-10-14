@@ -3,15 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 
 //所有“钥匙”的父类
-public abstract class Key : MonoBehaviour
+public interface I_Key
 {
     //相关的锁列表，由对应的锁自行注册，主要用于刷新判定
-    private readonly List<Lock> LockList = new();
+    protected List<I_Lock> LockList { get; set; }
 
-    private bool IsActive;//是否处于激活状态
+    protected bool IsActive { get; set; }//是否处于激活状态
     public bool Active { get => IsActive; }
 
-    public void Connectwith(Lock l)
+    public void Connectwith(I_Lock l)
     {
         LockList.Add(l);
     }
