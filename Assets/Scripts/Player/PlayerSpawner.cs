@@ -2,54 +2,34 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class playerSpawner : MonoBehaviour
+public class PlayerSpawner : MonoBehaviour
 {
     [Header("Spawn Settings")]
-    public GameObject playerPrefab;
-    public bool spawnAtWorldCenter = true;
-    public Vector3 customSpawnPosition = Vector3.zero;
+    public GameObject PlayerPrefab;
 
-    private GameObject playerInstance;
+    private GameObject Player;
 
-    private void Awake()
+    private void Start()
     {
-        // 查找现有的玩家
-        playerInstance = GameObject.FindGameObjectWithTag("Player");
-
-        if (playerInstance == null && playerPrefab != null)
-        {
-            // 生成新玩家
-            SpawnPlayer();
-        }
-        else if (playerInstance != null)
-        {
-            // 重置现有玩家位置
-            ResetPlayerPosition();
-        }
+        //开始时召唤玩家物体
+        SpawnPlayer();
     }
 
     private void SpawnPlayer()
     {
-        Vector3 spawnPos = spawnAtWorldCenter ? Vector3.zero : customSpawnPosition;
-        playerInstance = Instantiate(playerPrefab, spawnPos, Quaternion.identity);
-        playerInstance.name = "Player";
-
-        DontDestroyOnLoad(playerInstance);
+        Player = Instantiate(PlayerPrefab);
     }
 
-    private void ResetPlayerPosition()
+    private void SetPlayerPosition(Vector2 pos)
     {
-        Vector3 spawnPos = spawnAtWorldCenter ? Vector3.zero : customSpawnPosition;
-        playerInstance.transform.position = spawnPos;
+        Player.transform.position = pos;
     }
 
     // 在编辑器中可视化生成点
     private void OnDrawGizmos()
     {
-        Vector3 spawnPos = spawnAtWorldCenter ? Vector3.zero : customSpawnPosition;
-
         Gizmos.color = Color.green;
-        Gizmos.DrawWireSphere(spawnPos, 0.5f);
-        Gizmos.DrawIcon(spawnPos, "PlayerSpawnPoint", true);
+        Gizmos.DrawWireSphere(Vector3.zero, 0.5f);
+        Gizmos.DrawIcon(Vector3.zero, "PlayerSpawnPoint", true);
     }
 }

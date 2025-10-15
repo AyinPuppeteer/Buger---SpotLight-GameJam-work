@@ -94,7 +94,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8613610705684216698}
   - component: {fileID: 1353043673675656070}
-  - component: {fileID: 6142686673250271693}
+  - component: {fileID: 6797893794215772978}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -145,7 +145,7 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
---- !u!114 &6142686673250271693
+--- !u!114 &6797893794215772978
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -157,9 +157,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c1d0adedbc49a534090c8a30a4660140, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  originspeed: 5
-  sneakspeed: 2.5
-  climbspeed: 2
-  playerwidth: 0.35
-  playerheight: 0.5
-  deadzone: 0.1
+  originSpeed: 5
+  sneakSpeed: 2.5
+  climbSpeed: 2
+  playerWidth: 0.35
+  playerHeight: 0.5
+  deadZone: 0.1
+  gravity: 9.8
+  jumpForce: 5

@@ -153,21 +153,20 @@ public class BaseMovement : MonoBehaviour
         // 处理视觉层级
         // 处理朝向
         Vector3 localScale = transform.localScale;
-        if (toRight)
-            localScale.x = Mathf.Abs(localScale.x);
-        else
-            localScale.x = -Mathf.Abs(localScale.x);
+        if (toRight) localScale.x = Mathf.Abs(localScale.x);
+        else localScale.x = -Mathf.Abs(localScale.x);
         transform.localScale = localScale;
     }
 
     private void CheckCollision(Vector2 moveDir, float moveDistance)
-    {//主要解决各方碰撞
-        RaycastHit2D hit = Physics2D.BoxCast(transform.position,
-            new Vector2(playerWidth, playerHeight),
-            0,
-            moveDir,
-            moveDistance);
-        if (hit.collider == null) { canMove = true; return; }
+    {
+        //主要解决各方碰撞
+        RaycastHit2D hit = Physics2D.BoxCast(transform.position, new(playerWidth, playerHeight), 0, moveDir, moveDistance);
+        if (hit.collider == null) 
+        { 
+            canMove = true; 
+            return; 
+        }
 
         canMove = !hit.collider.CompareTag("Obstacle");
     }
