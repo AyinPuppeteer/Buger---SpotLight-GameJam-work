@@ -67,12 +67,12 @@ public class BaseMovement : MonoBehaviour
     private void HandleTriggerButton()
     {
         // 接收跳跃按钮
-        if (gameInput.Instance.GetJumpInputDown())
+        if (GameInput.Instance.GetJumpInputDown())
         {
             jumpRequested = true;
         }
         // 处理交互按钮逻辑
-        if (gameInput.Instance.InteractInputDown())
+        if (GameInput.Instance.InteractInputDown())
         {
             // 在这里添加交互逻辑
             Debug.Log("Interact button pressed");
@@ -81,7 +81,7 @@ public class BaseMovement : MonoBehaviour
 
     private void HandleMovement()
     {
-        inputVector = gameInput.Instance.GetMovementInput();
+        inputVector = GameInput.Instance.GetMovementInput();
         horizontal = inputVector.x;
         vertical = inputVector.y;
 

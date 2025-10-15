@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class gameInput : MonoBehaviour
+public class GameInput : MonoBehaviour
 {
-    public static gameInput Instance { get; private set; }
+    public static GameInput Instance { get; private set; }
 
     private InputActions InputActions;
 
