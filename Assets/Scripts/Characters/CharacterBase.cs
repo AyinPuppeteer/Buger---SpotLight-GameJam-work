@@ -14,13 +14,17 @@ public class CharacterBase : MonoBehaviour
     [SerializeField] protected float groundCheckDistance = 0.1f;
 
     [Header("Force Settings")]
-    [SerializeField] protected float gravity = 9.8f;
-    [SerializeField] protected float jumpForce = 5.0f;
+    [SerializeField] protected float gravity = 20f;
+    [SerializeField] protected float jumpForce = 8f;
+    [SerializeField] protected float maxFallSpeed = 20f; // 最大下落速度
 
     [Header("Layer Settings")]
     [SerializeField] protected LayerMask obstacleLayerMask = 1 << 3; // Block图层
     [SerializeField] protected LayerMask groundLayerMask = 1 << 3;   // Block图层
-    [SerializeField] protected LayerMask enemyLayerMask = 1 << 7;    // Player图层（敌人也用这个图层）
+    [SerializeField] protected LayerMask enemyLayerMask = 1 << 7;    // Player图层
+
+    [Header("Detection Settings")]
+    [SerializeField] protected bool isDetectable = true; // 是否可被敌人和扫描线探测
 
     protected Rigidbody2D rb;
 
@@ -30,7 +34,7 @@ public class CharacterBase : MonoBehaviour
     protected bool isSneaking = false;
     protected bool isGrounded = false;
     protected bool toRight = true;
-    protected bool canMove = true; // 默认可以移动
+    protected bool canMove = true;
     protected bool canClimb = false;
     protected bool canJump = false;
 
@@ -42,7 +46,11 @@ public class CharacterBase : MonoBehaviour
 
     protected float verticalVelocity = 0f;
     protected bool jumpRequested = false;
-    protected bool wasGrounded = false; // 上一帧的地面状态
+    protected bool wasGrounded = false;
+
+    // 外部施加的加速度
+    protected Vector2 externalAcceleration = Vector2.zero;
+    protected Vector2 externalVelocity = Vector2.zero;
 
     // 暴露属性
     public bool IsGrounded_ { get => isGrounded; }
@@ -50,14 +58,13 @@ public class CharacterBase : MonoBehaviour
     public bool IsSneaking_ { get => isSneaking; }
     public bool CanClimb_ { get => canClimb; }
     public bool CanJump_ { get => canJump; }
+    public bool IsDetectable_ { get => isDetectable; }
 
     protected virtual void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
         rb.gravityScale = 0f;
-
-        // 设置碰撞图层
-        gameObject.layer = LayerMask.NameToLayer("Player"); // 玩家和敌人都用Player图层
+        gameObject.layer = LayerMask.NameToLayer("Player");
     }
 
     protected virtual void Update()
@@ -76,6 +83,7 @@ public class CharacterBase : MonoBehaviour
 
         // 处理移动和力
         HandleForce();
+        HandleExternalForces(); // 处理外部施加的力
         HandleMovement();
     }
 
@@ -111,7 +119,7 @@ public class CharacterBase : MonoBehaviour
 
         Vector2 move = new Vector2(horizontal, 0) * speed * Time.fixedDeltaTime;
 
-        // 只在非爬梯状态下应用垂直速度
+        // 只在非可爬梯状态下应用垂直速度
         if (!canClimb)
         {
             move.y += verticalVelocity * Time.fixedDeltaTime;
@@ -120,8 +128,11 @@ public class CharacterBase : MonoBehaviour
         {
             // 爬梯时使用输入控制垂直移动
             move.y = vertical * climbSpeed * Time.fixedDeltaTime;
-            verticalVelocity = 0f; // 爬梯时重置垂直速度
+            verticalVelocity = 0f;
         }
+
+        // 添加外部速度的影响
+        move += externalVelocity * Time.fixedDeltaTime;
 
         // 只检查水平方向的碰撞
         if (Mathf.Abs(horizontal) > deadZone)
@@ -140,18 +151,40 @@ public class CharacterBase : MonoBehaviour
         {
             verticalVelocity = jumpForce;
             isGrounded = false;
-            jumpRequested = false; // 确保跳跃请求被消耗
+            jumpRequested = false;
         }
 
+        // 只在非爬梯和非地面状态下应用重力
         if (!isGrounded && !canClimb)
         {
             verticalVelocity -= gravity * Time.fixedDeltaTime;
+
+            // 限制最大下落速度
+            if (verticalVelocity < -maxFallSpeed)
+            {
+                verticalVelocity = -maxFallSpeed;
+            }
         }
 
         // 在地面时确保垂直速度不会为负
         if (isGrounded && verticalVelocity < 0)
         {
             verticalVelocity = 0;
+        }
+    }
+
+    protected virtual void HandleExternalForces()
+    {
+        // 应用外部加速度到外部速度
+        externalVelocity += externalAcceleration * Time.fixedDeltaTime;
+
+        // 逐渐衰减外部速度（模拟阻力）
+        externalVelocity *= 0.95f;
+
+        // 如果外部速度很小，直接设为0
+        if (externalVelocity.magnitude < 0.1f)
+        {
+            externalVelocity = Vector2.zero;
         }
     }
 
@@ -166,7 +199,8 @@ public class CharacterBase : MonoBehaviour
             // 重置垂直速度
             verticalVelocity = 0;
 
-            Debug.Log("Landed on ground");
+            // 落地时重置外部Y轴速度（防止弹跳）
+            externalVelocity = new Vector2(externalVelocity.x, 0);
         }
     }
 
@@ -185,19 +219,16 @@ public class CharacterBase : MonoBehaviour
         transform.localScale = localScale;
     }
 
-    // 改进：只检查水平方向的碰撞
     protected virtual void CheckHorizontalCollision(ref Vector2 move)
     {
-        // 只检查水平方向的碰撞
         Vector2 horizontalMove = new Vector2(move.x, 0);
         if (horizontalMove.magnitude > 0)
         {
-            // 从角色中心偏上位置检测，避免检测到脚下的地面
             Vector2 boxCenter = (Vector2)transform.position + new Vector2(0, playerHeight / 4);
 
             RaycastHit2D hit = Physics2D.BoxCast(
                 boxCenter,
-                new Vector2(playerWidth, playerHeight / 2), // 更小的检测区域
+                new Vector2(playerWidth, playerHeight / 2),
                 0,
                 horizontalMove.normalized,
                 horizontalMove.magnitude,
@@ -205,22 +236,16 @@ public class CharacterBase : MonoBehaviour
 
             if (hit.collider != null)
             {
-                // 有碰撞，调整水平移动距离
                 move.x = horizontalMove.normalized.x * hit.distance;
-
-                // 调试信息
-                Debug.Log($"Horizontal collision with: {hit.collider.name}, distance: {hit.distance}");
             }
         }
     }
 
-    // 改进地面检测
     protected virtual void CheckGrounded()
     {
         Vector2 rayStart = (Vector2)transform.position;
         float rayLength = playerHeight / 2 + groundCheckDistance;
 
-        // 发射多条射线提高检测准确性
         RaycastHit2D hitCenter = Physics2D.Raycast(rayStart, Vector2.down, rayLength, groundLayerMask);
         RaycastHit2D hitLeft = Physics2D.Raycast(rayStart + Vector2.left * playerWidth / 3, Vector2.down, rayLength, groundLayerMask);
         RaycastHit2D hitRight = Physics2D.Raycast(rayStart + Vector2.right * playerWidth / 3, Vector2.down, rayLength, groundLayerMask);
@@ -230,7 +255,6 @@ public class CharacterBase : MonoBehaviour
 
     protected virtual void OnTriggerEnter2D(Collider2D other)
     {
-        // 通过检测Ladder组件来判断是否为梯子
         Ladder ladder = other.GetComponent<Ladder>();
         if (ladder != null)
         {
@@ -240,7 +264,6 @@ public class CharacterBase : MonoBehaviour
 
     protected virtual void OnTriggerExit2D(Collider2D other)
     {
-        // 通过检测Ladder组件来判断是否为梯子
         Ladder ladder = other.GetComponent<Ladder>();
         if (ladder != null)
         {
@@ -258,10 +281,43 @@ public class CharacterBase : MonoBehaviour
         }
     }
 
-    // 在编辑器中可视化检测区域
+    // ========== 新增功能 ==========
+
+    /// 设置角色是否可被敌人和扫描线探测，
+    public void SetDetectable(bool detectable)
+    {
+        isDetectable = detectable;
+    }
+
+    /// 施加一个持续的加速度
+    public void ApplyAcceleration(Vector2 acceleration)
+    {
+        externalAcceleration = acceleration;
+    }
+
+    /// 施加一个瞬间的力（直接改变速度）
+    public void ApplyImpulse(Vector2 force)
+    {
+        externalVelocity += force;
+    }
+
+    /// 清除所有外部施加的力
+    public void ClearExternalForces()
+    {
+        externalAcceleration = Vector2.zero;
+        externalVelocity = Vector2.zero;
+    }
+
+    /// 获取当前外部速度
+    public Vector2 GetExternalVelocity()
+    {
+        return externalVelocity;
+    }
+
+    // ==============================
+
     protected virtual void OnDrawGizmosSelected()
     {
-        // 绘制地面检测射线
         Gizmos.color = isGrounded ? Color.green : Color.red;
         Vector2 rayStart = transform.position;
         float rayLength = playerHeight / 2 + groundCheckDistance;
@@ -269,9 +325,15 @@ public class CharacterBase : MonoBehaviour
         Gizmos.DrawLine(rayStart + Vector2.left * playerWidth / 3, rayStart + Vector2.left * playerWidth / 3 + Vector2.down * rayLength);
         Gizmos.DrawLine(rayStart + Vector2.right * playerWidth / 3, rayStart + Vector2.right * playerWidth / 3 + Vector2.down * rayLength);
 
-        // 绘制水平碰撞检测区域
         Gizmos.color = Color.blue;
         Vector2 boxCenter = (Vector2)transform.position + new Vector2(0, playerHeight / 4);
         Gizmos.DrawWireCube(boxCenter, new Vector2(playerWidth, playerHeight / 2));
+
+        // 绘制外部速度向量
+        if (externalVelocity.magnitude > 0.1f)
+        {
+            Gizmos.color = Color.magenta;
+            Gizmos.DrawRay(transform.position, externalVelocity * 0.5f);
+        }
     }
 }

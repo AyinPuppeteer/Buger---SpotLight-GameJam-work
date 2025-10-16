@@ -275,7 +275,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1001 &204430150551957464
+--- !u!1001 &1402269692
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -285,8 +285,12 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 3253289467847722153, guid: 0e2015292916de64e946b14dcca15662, type: 3}
       propertyPath: m_Name
-      value: PlayerSpawner
+      value: CharacterSpawner
       objectReference: {fileID: 0}
+    - target: {fileID: 6146904897265506147, guid: 0e2015292916de64e946b14dcca15662, type: 3}
+      propertyPath: playerPrefab
+      value: 
+      objectReference: {fileID: 9080570510421153517, guid: 577df6f4ce7c4ef44ac194e719e2190b, type: 3}
     - target: {fileID: 8805270131593270201, guid: 0e2015292916de64e946b14dcca15662, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -463,7 +467,7 @@ SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 426264096}
-  - {fileID: 204430150551957464}
   - {fileID: 6563641874491398594}
   - {fileID: 9199972824329511367}
   - {fileID: 253446793}
+  - {fileID: 1402269692}
