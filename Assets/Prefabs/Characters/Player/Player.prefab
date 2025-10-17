@@ -193,15 +193,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c1d0adedbc49a534090c8a30a4660140, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  originSpeed: 5
-  sneakSpeed: 2.5
-  climbSpeed: 2
+  originSpeed: 2.5
+  sneakSpeed: 0.5
+  climbSpeed: 1
   playerWidth: 0.32
   playerHeight: 0.32
   deadZone: 0.1
   groundCheckDistance: 0.1
   gravity: 30
-  jumpForce: 1
+  jumpForce: 7
   maxFallSpeed: 25
   obstacleLayerMask:
     serializedVersion: 2

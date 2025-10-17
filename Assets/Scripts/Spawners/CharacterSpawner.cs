@@ -21,8 +21,11 @@ public class CharacterSpawner : MonoBehaviour
     public GameObject CharacterPrefab { get => characterPrefab; set => characterPrefab = value; }
 
     protected virtual void Awake()
-    {
-        
+    { // 合并完为什么这个没了？？
+        if (characterPrefab != null)
+        {
+            Spawn();
+        }
     }
 
     protected virtual void OnDestroy()

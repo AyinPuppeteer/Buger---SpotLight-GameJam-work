@@ -11,7 +11,7 @@ public class CharacterBase : MonoBehaviour
     [SerializeField] protected float playerWidth = .35f;
     [SerializeField] protected float playerHeight = .5f;
     [SerializeField] protected float deadZone = 0.1f;
-    [SerializeField] protected float groundCheckDistance = 0.1f;
+    [SerializeField] protected float groundCheckDistance = 0.001f;
 
     [Header("Force Settings")]
     [SerializeField] protected float gravity = 20f;
