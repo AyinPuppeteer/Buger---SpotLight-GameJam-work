@@ -6,11 +6,12 @@ using UnityEngine;
 public interface I_Lock
 {
     //相关的钥匙列表
-    [SerializeField]
-    protected List<I_Key> KeyList { get; set; }
+    protected List<I_Key> KeyList { get; }
 
-    [SerializeField]
-    protected bool IsOr { get; set; }//是否是或门（false表示所有钥匙均打开时触发，true表示只要有一个打开就触发）
+    public bool IsOr { get; }//是否是或门（false表示所有钥匙均打开时触发，true表示只要有一个打开就触发）
+
+    protected bool IsActive { get; set; }//是否处于激活状态
+    public bool Active { get => IsActive; }
 
     private void Awake()
     {
@@ -47,7 +48,7 @@ public interface I_Lock
         }
     }
 
-    public virtual void SetActive(bool b)
+    public void SetActive(bool b)
     {
 
     }

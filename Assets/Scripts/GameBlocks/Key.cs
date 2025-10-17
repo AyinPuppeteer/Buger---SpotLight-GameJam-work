@@ -6,7 +6,7 @@ using UnityEngine;
 public interface I_Key
 {
     //相关的锁列表，由对应的锁自行注册，主要用于刷新判定
-    protected List<I_Lock> LockList { get; set; }
+    protected List<I_Lock> LockList { get; }
 
     protected bool IsActive { get; set; }//是否处于激活状态
     public bool Active { get => IsActive; }
