@@ -200,9 +200,9 @@ MonoBehaviour:
   playerHeight: 1
   deadZone: 0.1
   groundCheckDistance: 0.1
-  gravity: 9.8
-  jumpForce: 5
-  maxFallSpeed: 20
+  gravity: 30
+  jumpForce: 12
+  maxFallSpeed: 25
   obstacleLayerMask:
     serializedVersion: 2
     m_Bits: 8
