@@ -9,7 +9,6 @@ public class CharacterSpawner : MonoBehaviour
     [SerializeField] protected Transform spawnPoint;
     [SerializeField] protected Vector3 spawnOffset = Vector3.zero;
     [SerializeField] protected bool useWorldCenterAsFallback = true;
-    [SerializeField] protected bool spawnAtStart = true;
     [SerializeField] protected bool markAsDontDestroyOnLoad = false;
 
     [Header("General Settings")]
@@ -23,11 +22,7 @@ public class CharacterSpawner : MonoBehaviour
 
     protected virtual void Awake()
     {
-        // 如果设置为游戏开始时生成，则生成角色
-        if (spawnAtStart && characterPrefab != null)
-        {
-            Spawn();
-        }
+        
     }
 
     protected virtual void OnDestroy()
@@ -73,8 +68,6 @@ public class CharacterSpawner : MonoBehaviour
         {
             DontDestroyOnLoad(characterInstance);
         }
-
-        Debug.Log($"{characterName} spawned at position: {spawnPos}");
     }
 
     // 在指定位置生成角色
@@ -92,8 +85,6 @@ public class CharacterSpawner : MonoBehaviour
         {
             DontDestroyOnLoad(characterInstance);
         }
-
-        Debug.Log($"{characterName} spawned at custom position: {position}");
     }
 
     // 重置角色位置

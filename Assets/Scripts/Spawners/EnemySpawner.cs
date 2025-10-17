@@ -17,23 +17,23 @@ public class EnemySpawner : CharacterSpawner
 
     protected override void Awake()
     {
+        base.Awake();
         // 单例模式实现
         if (Instance == null)
         {
             Instance = this;
-
-            // 如果设置为游戏开始时生成，则生成所有敌人
-            if (spawnAtStart)
-                SpawnAll();
-
-            // 调用父类的Awake
-            base.Awake();
         }
         else
         {
             Debug.LogWarning("Multiple EnemySpawner instances detected. Destroying duplicate.");
             Destroy(gameObject);
         }
+    }
+
+    protected void Start()
+    {
+        //生成所有敌人
+        SpawnAll();
     }
 
     protected override void OnDestroy()
