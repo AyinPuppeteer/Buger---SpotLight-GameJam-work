@@ -144,7 +144,7 @@ Rigidbody2D:
     m_Bits: 0
   m_Interpolate: 0
   m_SleepingMode: 1
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
   m_Constraints: 4
 --- !u!70 &-5503642859035969276
 CapsuleCollider2D:
@@ -179,7 +179,7 @@ CapsuleCollider2D:
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
-  m_Size: {x: 0.16, y: 0.32}
+  m_Size: {x: 0.15, y: 0.3}
   m_Direction: 0
 --- !u!114 &6797893794215772978
 MonoBehaviour:
@@ -193,16 +193,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c1d0adedbc49a534090c8a30a4660140, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  originSpeed: 2.5
+  originSpeed: 2
   sneakSpeed: 0.5
   climbSpeed: 1
-  playerWidth: 0.32
-  playerHeight: 0.32
+  playerWidth: 0.15
+  playerHeight: 0.3
   deadZone: 0.1
-  groundCheckDistance: 0.1
-  gravity: 30
-  jumpForce: 7
-  maxFallSpeed: 25
+  groundCheckDistance: 0.01
+  horizontalRays: 5
+  verticalRays: 5
+  gravity: 18
+  jumpForce: 5
+  maxFallSpeed: 5
   obstacleLayerMask:
     serializedVersion: 2
     m_Bits: 8
