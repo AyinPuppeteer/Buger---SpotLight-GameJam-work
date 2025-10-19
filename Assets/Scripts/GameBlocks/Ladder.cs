@@ -14,7 +14,7 @@ public class Ladder : MonoBehaviour
     private void OnValidate()
     {
         SpR.size = new(0.16f, Length * 0.16f);
-        Collider.offset = new(0, Length * 0.08f);
+        Collider.offset = new(0.08f, Length * 0.08f);
         Collider.size = new(0.16f, Length * 0.16f);
     }
 }
