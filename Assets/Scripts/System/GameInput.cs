@@ -24,4 +24,7 @@ public class GameInput : MonoBehaviour
 
     public bool InteractInputDown() =>
         InputActions.Player.interact.triggered;
+
+    public bool InteractInputUp() =>
+        InputActions.Player.interact.WasReleasedThisFrame();
 }

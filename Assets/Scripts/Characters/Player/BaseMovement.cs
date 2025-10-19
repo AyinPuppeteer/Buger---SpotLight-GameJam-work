@@ -11,6 +11,7 @@ public class BaseMovement : CharacterBase
     protected bool isClimbing = false;
     protected bool canClimb = false;
     protected bool canLeave = false;
+    protected bool isInteracting = false;
 
     // 暴露属性
     public bool IsClimbing_ { get => isClimbing; }
@@ -78,7 +79,12 @@ public class BaseMovement : CharacterBase
         // 处理交互按钮逻辑
         if (GameInput.Instance.InteractInputDown())
         {
-            Debug.Log("Interact button pressed");
+            isInteracting = true;
+        }
+
+        if (GameInput.Instance.InteractInputUp())
+        {
+            isInteracting = false;
         }
     }
 
@@ -101,8 +107,11 @@ public class BaseMovement : CharacterBase
             }
 
             // 攀爬逻辑
-            if (Mathf.Abs(vertical) > deadZone && canClimb)
+            if (Mathf.Abs(vertical) > deadZone && canClimb){
                 isClimbing = true;
+                if(canLeave)
+                    GameManager.Instance.BugAlert();
+            }
             else if (vertical < -0.5f && isGrounded)
                 isSneaking = true;
             else if (vertical > -deadZone || !isGrounded)
@@ -199,10 +208,16 @@ public class BaseMovement : CharacterBase
     protected virtual void OnTriggerEnter2D(Collider2D other)
     {
         Ladder ladder = other.GetComponent<Ladder>();
+        AttachKey attachKey = other.GetComponent<AttachKey>();
+
         if (ladder != null)
         {
             canLeave = false;
             canClimb = true;
+        }
+        if ((attachKey != null) && isInteracting)
+        {
+            attachKey.Pick();
         }
     }
 
@@ -214,7 +229,6 @@ public class BaseMovement : CharacterBase
         Ladder ladder = other.GetComponent<Ladder>();
         if (ladder != null)
         {
-            GameManager.Instance.BugAlert();
             canLeave = true;
         }
     }
