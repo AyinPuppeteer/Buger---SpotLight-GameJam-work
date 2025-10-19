@@ -1,114 +1,90 @@
-using System.Collections.Generic;
 using UnityEngine;
 
 public class EnemySpawner : CharacterSpawner
 {
     [Header("Enemy Spawn Settings")]
-    [SerializeField] private List<GameObject> enemyPrefabs = new List<GameObject>();
-    [SerializeField] private List<Transform> enemySpawnPoints = new List<Transform>();
+    [SerializeField] private GameObject enemyPrefab;
 
-    private List<GameObject> spawnedEnemies = new List<GameObject>();
-
-    // 单例实例
-    public static EnemySpawner Instance { get; private set; }
+    private GameObject spawnedEnemy;
 
     // 公共属性
-    public List<GameObject> SpawnedEnemies { get => new List<GameObject>(spawnedEnemies); }
+    public GameObject SpawnedEnemy { get => spawnedEnemy; }
+    public GameObject EnemyPrefab { get => enemyPrefab; set => enemyPrefab = value; }
 
     protected override void Awake()
     {
         base.Awake();
-        // 单例模式实现
-        if (Instance == null)
-        {
-            Instance = this;
-        }
-        else
-        {
-            Debug.LogWarning("Multiple EnemySpawner instances detected. Destroying duplicate.");
-            Destroy(gameObject);
-        }
     }
 
     protected void Start()
     {
-        //生成所有敌人
-        SpawnAll();
+        // 生成敌人
+        SpawnEnemy();
     }
 
     protected override void OnDestroy()
     {
-        // 清理单例引用
-        if (Instance == this)
+        // 清理生成的敌人
+        if (spawnedEnemy != null)
         {
-            Instance = null;
+            Destroy(spawnedEnemy);
         }
     }
 
-    // 生成所有敌人
-    public void SpawnAll()
-    { //在敌人列表中的敌人只能在生成点列表中生成，而父类中的角色预制体生成方式跟玩家类似，可以作为boss
-        // 清除现有敌人
-        ClearAll();
+    // 重写获取生成位置的方法，使用生成器自身位置
+    protected override Vector3 GetSpawnPosition()
+    {
+        return transform.position + spawnOffset;
+    }
 
-        if (enemyPrefabs.Count == 0 || enemySpawnPoints.Count == 0)
+    // 生成敌人
+    public void SpawnEnemy()
+    {
+        // 清除现有敌人
+        ClearEnemy();
+
+        if (enemyPrefab == null)
         {
-            Debug.LogWarning("No enemy prefabs or spawn points defined!");
+            Debug.LogWarning("No enemy prefab defined!");
             return;
         }
 
-        for (int i = 0; i < enemySpawnPoints.Count; i++)
+        Vector3 spawnPos = GetSpawnPosition();
+        spawnedEnemy = Instantiate(enemyPrefab, spawnPos, Quaternion.identity);
+        spawnedEnemy.name = $"Enemy_{enemyPrefab.name}";
+
+        Debug.Log($"Enemy {enemyPrefab.name} spawned at position: {spawnPos}");
+    }
+
+    // 清除敌人
+    public void ClearEnemy()
+    {
+        if (spawnedEnemy != null)
         {
-            Transform spawnPoint = enemySpawnPoints[i];
-            if (spawnPoint != null)
-            {
-                // 循环使用敌人预制体
-                GameObject enemyPrefab = enemyPrefabs[i % enemyPrefabs.Count];
-                Vector3 spawnPos = spawnPoint.position + spawnOffset;
-
-                GameObject enemy = Instantiate(enemyPrefab, spawnPos, Quaternion.identity);
-                enemy.name = $"Enemy_{i}";
-                spawnedEnemies.Add(enemy);
-
-                Debug.Log($"Enemy spawned at position: {spawnPos}");
-            }
+            Destroy(spawnedEnemy);
+            spawnedEnemy = null;
+            Debug.Log("Enemy cleared");
         }
     }
 
-    // 在指定位置生成敌人
-    public GameObject SpawnAtPosition(GameObject enemyPrefab, Vector3 position)
+    // 重新生成敌人
+    public void RespawnEnemy()
     {
-        if (enemyPrefab == null)
-        {
-            Debug.LogError("Enemy prefab is null!");
-            return null;
-        }
-
-        GameObject enemy = Instantiate(enemyPrefab, position, Quaternion.identity);
-        enemy.name = "Enemy";
-        spawnedEnemies.Add(enemy);
-
-        Debug.Log($"Enemy spawned at position: {position}");
-        return enemy;
+        ClearEnemy();
+        SpawnEnemy();
     }
 
-    // 清除所有敌人
-    public void ClearAll()
+    // 设置敌人预制体并重新生成
+    public void SetEnemyPrefab(GameObject newEnemyPrefab)
     {
-        // 清除父类中的角色实例
-        DestroyCharacter();
+        enemyPrefab = newEnemyPrefab;
+        RespawnEnemy();
+    }
 
-        // 清除额外生成的敌人实例
-        foreach (GameObject enemy in spawnedEnemies)
-        {
-            if (enemy != null)
-            {
-                Destroy(enemy);
-            }
-        }
-        spawnedEnemies.Clear();
-
-        Debug.Log("All enemies cleared");
+    // 检查是否有敌人生成
+    public bool HasEnemy()
+    {
+        return spawnedEnemy != null;
     }
 
     // 在编辑器中可视化生成点
@@ -118,14 +94,16 @@ public class EnemySpawner : CharacterSpawner
 
         // 绘制敌人生成点
         Gizmos.color = Color.red;
-        foreach (Transform spawnPoint in enemySpawnPoints)
-        {
-            if (spawnPoint != null)
-            {
-                Vector3 enemySpawnPos = spawnPoint.position + spawnOffset;
-                Gizmos.DrawWireSphere(enemySpawnPos, 0.3f);
-                Gizmos.DrawIcon(enemySpawnPos, "EnemySpawnPoint", true);
-            }
-        }
+        Vector3 spawnPos = GetSpawnPosition();
+
+        // 绘制一个矩形区域表示敌人生成区域
+        Gizmos.DrawWireCube(spawnPos, new Vector3(1f, 1f, 0f));
+        Gizmos.DrawIcon(spawnPos, "EnemySpawnPoint", true);
+
+        // 显示敌人名称的文本
+#if UNITY_EDITOR
+        string enemyName = enemyPrefab != null ? enemyPrefab.name : "None";
+        UnityEditor.Handles.Label(spawnPos + Vector3.up * 0.7f, $"Enemy: {enemyName}");
+#endif
     }
 }
