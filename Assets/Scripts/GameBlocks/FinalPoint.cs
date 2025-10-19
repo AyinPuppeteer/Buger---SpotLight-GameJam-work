@@ -10,6 +10,7 @@ public class FinalPoint : Lock, I_PickItem
         if (IsActive)
         {
             //关卡胜利
+            Debug.Log("关卡胜利");
         }
         else
         {
