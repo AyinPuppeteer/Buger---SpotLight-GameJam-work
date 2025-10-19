@@ -5,7 +5,7 @@ using System.Runtime.CompilerServices;
 using UnityEngine;
 
 //所有“锁”的父类
-public class Lock : MonoBehaviour
+public abstract class Lock : MonoBehaviour
 {
     //相关的钥匙列表
     [SerializeField]

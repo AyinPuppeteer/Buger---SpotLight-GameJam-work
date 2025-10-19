@@ -6,7 +6,7 @@ using UnityEngine;
 public class Key : MonoBehaviour
 {
     //相关的锁列表，由对应的锁自行注册，主要用于刷新判定
-    protected List<Lock> LockList { get; }
+    protected readonly List<Lock> LockList = new();
 
     protected bool IsActive { get; set; }//是否处于激活状态
     public bool Active { get => IsActive; }
