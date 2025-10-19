@@ -179,7 +179,7 @@ CapsuleCollider2D:
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
-  m_Size: {x: 0.15, y: 0.3}
+  m_Size: {x: 0.14, y: 0.28}
   m_Direction: 0
 --- !u!114 &6797893794215772978
 MonoBehaviour:
@@ -195,9 +195,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   originSpeed: 2
   sneakSpeed: 0.5
-  climbSpeed: 1
-  playerWidth: 0.15
-  playerHeight: 0.3
+  playerWidth: 0.14
+  playerHeight: 0.28
   deadZone: 0.1
   groundCheckDistance: 0.01
   horizontalRays: 5
@@ -215,3 +214,4 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 128
   isDetectable: 1
+  climbSpeed: 1

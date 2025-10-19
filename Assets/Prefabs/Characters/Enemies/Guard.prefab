@@ -78,7 +78,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 0.28, y: 0.28}
   m_EdgeRadius: 0
 --- !u!50 &3940901923439607755
 Rigidbody2D:
@@ -92,7 +92,7 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 1
+  m_Mass: 0.1
   m_LinearDrag: 0
   m_AngularDrag: 0
   m_GravityScale: 0
@@ -105,7 +105,7 @@ Rigidbody2D:
     m_Bits: 0
   m_Interpolate: 0
   m_SleepingMode: 1
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
   m_Constraints: 4
 --- !u!114 &7940443366689207541
 MonoBehaviour:
@@ -119,14 +119,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b21b0ed56617f044b90fd05025de3ab1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  originSpeed: 5
-  sneakSpeed: 2.5
-  climbSpeed: 2
-  playerWidth: 0.35
-  playerHeight: 0.5
+  originSpeed: 0
+  sneakSpeed: 0
+  playerWidth: 0.28
+  playerHeight: 0.28
   deadZone: 0.1
-  gravity: 9.8
+  groundCheckDistance: 0.05
+  horizontalRays: 3
+  verticalRays: 3
+  gravity: 18
   jumpForce: 5
+  maxFallSpeed: 5
   obstacleLayerMask:
     serializedVersion: 2
     m_Bits: 8
@@ -136,11 +139,24 @@ MonoBehaviour:
   enemyLayerMask:
     serializedVersion: 2
     m_Bits: 128
-  patrolSpeed: 3
-  chaseSpeed: 6
-  patrolRange: 5
-  sightRange: 8
-  jumpCooldown: 2
+  isDetectable: 1
+  patrolSpeed: 1
+  chaseSpeed: 3
+  patrolRange: 1.2
+  jumpCooldown: 1
+  returnToPatrolSpeed: 2
+  stoppingDistance: 0.05
+  horizontalDetectionRays: 5
+  obstacleDetectionDistance: 0.05
+  maxJumpHeight: 0.72
+  minJumpHeight: 0.1
+  edgeCheckDistance: 0.05
+  safeEdgeDistance: 0.03
+  enableEdgeStopping: 0
+  stuckCheckTime: 1
+  minMovementThreshold: 0.01
+  enableStuckDetectionInAllStates: 1
+  isActivated: 0
 --- !u!1 &5167824428684171498
 GameObject:
   m_ObjectHideFlags: 0
@@ -168,8 +184,8 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 0.32, y: 0.32, z: 0.32}
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 7594614131833452096}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -215,7 +231,7 @@ SpriteRenderer:
   m_SortingLayer: 3
   m_SortingOrder: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 0, b: 0, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
