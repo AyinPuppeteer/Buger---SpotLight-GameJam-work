@@ -26,7 +26,7 @@ Transform:
   m_GameObject: {fileID: 4623043840803786937}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.1, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -73,13 +73,8 @@ SpriteRenderer:
   m_SortingLayerID: -69007535
   m_SortingLayer: 3
   m_SortingOrder: 0
-<<<<<<< Updated upstream:Assets/Prefabs/Characters/Player/Player.prefab
   m_Sprite: {fileID: 21300000, guid: 5f0708da73997804288c86381312be96, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-=======
-  m_Sprite: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b, type: 3}
-  m_Color: {r: 1, g: 0.8581352, b: 0, a: 1}
->>>>>>> Stashed changes:Assets/Prefabs/player/Player.prefab
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -99,15 +94,9 @@ GameObject:
   m_Component:
   - component: {fileID: 8613610705684216698}
   - component: {fileID: 1353043673675656070}
-<<<<<<< Updated upstream:Assets/Prefabs/Characters/Player/Player.prefab
   - component: {fileID: -5503642859035969276}
   - component: {fileID: 6797893794215772978}
   m_Layer: 7
-=======
-  - component: {fileID: 6142686673250271693}
-  - component: {fileID: 2854189096421921823}
-  m_Layer: 0
->>>>>>> Stashed changes:Assets/Prefabs/player/Player.prefab
   m_Name: Player
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -142,11 +131,7 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-<<<<<<< Updated upstream:Assets/Prefabs/Characters/Player/Player.prefab
   m_Mass: 0.1
-=======
-  m_Mass: 10
->>>>>>> Stashed changes:Assets/Prefabs/player/Player.prefab
   m_LinearDrag: 0
   m_AngularDrag: 0
   m_GravityScale: 0
@@ -161,7 +146,6 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 1
   m_Constraints: 4
-<<<<<<< Updated upstream:Assets/Prefabs/Characters/Player/Player.prefab
 --- !u!70 &-5503642859035969276
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -198,9 +182,6 @@ CapsuleCollider2D:
   m_Size: {x: 0.15, y: 0.3}
   m_Direction: 0
 --- !u!114 &6797893794215772978
-=======
---- !u!114 &6142686673250271693
->>>>>>> Stashed changes:Assets/Prefabs/player/Player.prefab
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -212,7 +193,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c1d0adedbc49a534090c8a30a4660140, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-<<<<<<< Updated upstream:Assets/Prefabs/Characters/Player/Player.prefab
   originSpeed: 2
   sneakSpeed: 0.5
   climbSpeed: 1
@@ -235,48 +215,3 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 128
   isDetectable: 1
-=======
-  originSpeed: 5
-  sneakSpeed: 2.5
-  climbSpeed: 2
-  playerWidth: 0.35
-  playerHeight: 0.5
-  deadZone: 0.1
-  gravity: 10
-  jumpForce: 5
---- !u!70 &2854189096421921823
-CapsuleCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9080570510421153517}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_ForceSendLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ForceReceiveLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ContactCaptureLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_CallbackLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
-  m_Size: {x: 1, y: 1}
-  m_Direction: 0
->>>>>>> Stashed changes:Assets/Prefabs/player/Player.prefab
