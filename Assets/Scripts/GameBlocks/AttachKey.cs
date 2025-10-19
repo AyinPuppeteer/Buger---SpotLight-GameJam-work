@@ -2,18 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AttachKey : MonoBehaviour, I_PickItem, I_Key
+public class AttachKey : Key, I_PickItem
 {
-    #region I_Key
-    List<I_Lock> I_Key.LockList => LockList;
-
-    bool I_Key.IsActive { get => IsActive; set => IsActive = value; }
-
-    protected readonly List<I_Lock> LockList = new();
-
-    protected bool IsActive;
-    #endregion
-
     [SerializeField]
     private SpriteRenderer Image;
 
@@ -24,7 +14,8 @@ public class AttachKey : MonoBehaviour, I_PickItem, I_Key
         if (!IsPicked)//未拾取时才进行拾取操作
         {
             //切换图片为已捡取状态
-            (this as I_Key).SetActive(true);
+            Image.enabled = false;
+            SetActive(true);
         }
     }
 }
