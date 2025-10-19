@@ -3,20 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 //扫描器的脚本
-public class Scanner : MonoBehaviour, I_Lock
+public class Scanner : Lock
 {
-    #region I_Lock
-    List<I_Key> I_Lock.KeyList { get => KeyList; }
-    public List<I_Key> KeyList = new();
-
-    bool I_Lock.IsOr { get => IsOr; }
-    public bool IsOr;
-
-    bool I_Lock.IsActive { get => IsActive; set => IsActive = value; }
-
-    protected bool IsActive;
-    #endregion
-
     private const float ActTime = 10f;
     private float ActTimer;//行动时间，行动计时器
 
