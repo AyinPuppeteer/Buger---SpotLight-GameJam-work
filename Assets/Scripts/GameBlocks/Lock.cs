@@ -1,12 +1,15 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 //所有“锁”的父类
-public interface I_Lock
+public abstract class Lock : MonoBehaviour
 {
     //相关的钥匙列表
-    protected List<I_Key> KeyList { get; }
+    [SerializeField]
+    protected List<Key> KeyList;
 
     public bool IsOr { get; }//是否是或门（false表示所有钥匙均打开时触发，true表示只要有一个打开就触发）
 
