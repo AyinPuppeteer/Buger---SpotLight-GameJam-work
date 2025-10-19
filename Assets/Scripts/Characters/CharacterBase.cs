@@ -5,7 +5,6 @@ public class CharacterBase : MonoBehaviour
     [Header("Movement Settings")]
     [SerializeField] protected float originSpeed = 2.5f;
     [SerializeField] protected float sneakSpeed = 0.5f;
-    [SerializeField] protected float climbSpeed = 1.0f;
 
     [Header("Collision Settings")]
     [SerializeField] protected float playerWidth = .16f;
@@ -34,12 +33,10 @@ public class CharacterBase : MonoBehaviour
 
     protected float speed;
     protected bool isWalking = false;
-    protected bool isClimbing = false;
     protected bool isSneaking = false;
     protected bool isGrounded = false;
     protected bool toRight = true;
     protected bool canMove = true;
-    protected bool canClimb = false;
     protected bool canJump = false;
 
     protected float horizontal = 0f;
@@ -58,9 +55,7 @@ public class CharacterBase : MonoBehaviour
 
     // 暴露属性
     public bool IsGrounded_ { get => isGrounded; }
-    public bool IsClimbing_ { get => isClimbing; }
     public bool IsSneaking_ { get => isSneaking; }
-    public bool CanClimb_ { get => canClimb; }
     public bool CanJump_ { get => canJump; }
     public bool IsDetectable_ { get => isDetectable; }
 
@@ -112,40 +107,24 @@ public class CharacterBase : MonoBehaviour
             if (horizontal < -deadZone) toRight = false;
             else if (horizontal > deadZone) toRight = true;
 
-            if (Mathf.Abs(vertical) > deadZone && canClimb)
-                isClimbing = true;
-            else if (vertical < -0.5f && isGrounded)
+            if (vertical < -0.5f && isGrounded)
                 isSneaking = true;
             else if (vertical > -deadZone || !isGrounded)
                 isSneaking = false;
 
-            if (!canClimb || Mathf.Abs(vertical) < deadZone)
-                isClimbing = false;
-
-            speed = isClimbing ? climbSpeed :
-                   isSneaking ? sneakSpeed : originSpeed;
+            speed = isSneaking ? sneakSpeed : originSpeed;
         }
         else
         {
             if (isWalking) isWalking = false;
-            if (isClimbing) isClimbing = false;
             if (isSneaking) isSneaking = false;
             speed = 0;
         }
 
         Vector2 move = new Vector2(horizontal, 0) * speed * Time.fixedDeltaTime;
 
-        // 只在非可爬梯状态下应用垂直速度
-        if (!canClimb)
-        {
-            move.y += verticalVelocity * Time.fixedDeltaTime;
-        }
-        else
-        {
-            // 爬梯时使用输入控制垂直移动
-            move.y = vertical * climbSpeed * Time.fixedDeltaTime;
-            verticalVelocity = 0f;
-        }
+        // 应用垂直速度（重力影响）
+        move.y += verticalVelocity * Time.fixedDeltaTime;
 
         // 添加外部速度的影响
         move += externalVelocity * Time.fixedDeltaTime;
@@ -179,8 +158,8 @@ public class CharacterBase : MonoBehaviour
             jumpRequested = false;
         }
 
-        // 只在非爬梯和非地面状态下应用重力
-        if (!isGrounded && !canClimb)
+        // 只在非地面状态下应用重力
+        if (!isGrounded)
         {
             verticalVelocity -= gravity * Time.fixedDeltaTime;
 
@@ -358,31 +337,6 @@ public class CharacterBase : MonoBehaviour
     }
 
     /// <summary>
-    /// 触发器进入事件处理
-    /// </summary>
-    protected virtual void OnTriggerEnter2D(Collider2D other)
-    {
-        Ladder ladder = other.GetComponent<Ladder>();
-        if (ladder != null)
-        {
-            canClimb = true;
-        }
-    }
-
-    /// <summary>
-    /// 触发器退出事件处理
-    /// </summary>
-    protected virtual void OnTriggerExit2D(Collider2D other)
-    {
-        Ladder ladder = other.GetComponent<Ladder>();
-        if (ladder != null)
-        {
-            canClimb = false;
-            isClimbing = false;
-        }
-    }
-
-    /// <summary>
     /// 请求跳跃
     /// </summary>
     public void RequestJump()
@@ -447,8 +401,8 @@ public class CharacterBase : MonoBehaviour
         Vector2 rayStart = transform.position;
         float rayLength = playerHeight / 2 + groundCheckDistance;
         Gizmos.DrawLine(rayStart, rayStart + Vector2.down * rayLength);
-        Gizmos.DrawLine(rayStart + Vector2.left * playerWidth / 3, rayStart + Vector2.left * playerWidth / 3 + Vector2.down * rayLength);
-        Gizmos.DrawLine(rayStart + Vector2.right * playerWidth / 3, rayStart + Vector2.right * playerWidth / 3 + Vector2.down * rayLength);
+        Gizmos.DrawLine(rayStart + Vector2.left * playerWidth / 2, rayStart + Vector2.left * playerWidth / 2 + Vector2.down * rayLength);
+        Gizmos.DrawLine(rayStart + Vector2.right * playerWidth / 2, rayStart + Vector2.right * playerWidth / 2 + Vector2.down * rayLength);
 
         Gizmos.color = Color.blue;
         Vector2 boxCenter = (Vector2)transform.position + new Vector2(0, playerHeight / 4);
