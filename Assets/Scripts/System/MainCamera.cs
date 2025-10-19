@@ -8,14 +8,16 @@ public class MainCamera : MonoBehaviour
     [SerializeField]
     private Camera Camera;
 
-    [SerializeField]
     private GameObject Player;//角色物体
 
     private void Update()
     {
         if(Player == null)//没有角色物体则利用单例化查找
         {
-            
+            if(BaseMovement.Instance != null)
+            {
+                Player = BaseMovement.Instance.gameObject;
+            }
         }
         else
         {

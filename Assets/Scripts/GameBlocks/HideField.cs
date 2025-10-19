@@ -10,7 +10,7 @@ public class HideField : MonoBehaviour
         CharacterBase cb = other.GetComponent<CharacterBase>();
         if (cb != null)
         {
-            //使目标进入“隐匿状态”
+            cb.SetDetectable(false);//使目标进入“隐匿状态”
         }
     }
 
@@ -19,7 +19,7 @@ public class HideField : MonoBehaviour
         CharacterBase cb = other.GetComponent<CharacterBase>();
         if (cb != null)
         {
-            //使目标解除“隐匿状态”
+            cb.SetDetectable(true);//使目标解除“隐匿状态”
         }
     }
 }

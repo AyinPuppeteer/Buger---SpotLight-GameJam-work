@@ -44,11 +44,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c58db4e9ab896f7409d83d7010030837, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  characterPrefab: {fileID: 0}
+  characterPrefab: {fileID: 1105908914230006644, guid: 64a5b6bb0fff74a48a66a5e6f37089ee, type: 3}
   spawnPoint: {fileID: 0}
   spawnOffset: {x: 0, y: 0, z: 0}
   useWorldCenterAsFallback: 1
-  spawnAtStart: 1
   markAsDontDestroyOnLoad: 1
   characterName: Character
   enemyPrefabs: []
