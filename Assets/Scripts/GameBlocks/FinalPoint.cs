@@ -10,11 +10,12 @@ public class FinalPoint : Lock, I_PickItem
         if (IsActive)
         {
             //关卡胜利
-            Debug.Log("关卡胜利");
+            GameManager.Instance.GameWin();
         }
         else
         {
             //给出未拿取钥匙的提示
+            Debug.Log("At least one key you haven't got exists!");
         }
     }
 }
