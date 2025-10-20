@@ -139,7 +139,6 @@ public class Guard : CharacterBase
             currentPatrolCenter = transform.position; // 将当前位置设为新的巡逻中心
             patrolDirection = 1f; // 重置巡逻方向
             lastXPosition = currentPatrolCenter.x;
-            Debug.Log($"Guard chase ended, new patrol center set at: {currentPatrolCenter}");
         }
     }
 
@@ -152,7 +151,6 @@ public class Guard : CharacterBase
         if (Mathf.Abs(currentOffset) >= patrolRange)
         {
             patrolDirection *= -1;
-            Debug.Log($"Guard reached patrol boundary, reversing direction: {patrolDirection}");
         }
 
         // 如果处于临时反向状态，使用反向方向
@@ -182,7 +180,6 @@ public class Guard : CharacterBase
             if (heightDifference > minJumpHeight && heightDifference < maxJumpHeight)
             {
                 shouldJump = true;
-                Debug.Log("Guard chasing player at higher position, should jump");
                 return; // 优先处理追逐跳跃
             }
         }
@@ -210,7 +207,6 @@ public class Guard : CharacterBase
                 {
                     // 只要有一条射线探测到障碍物就跳起
                     shouldJump = true;
-                    Debug.Log($"Guard detected jumpable obstacle at height {obstacleHeight}");
                     return; // 找到一条就跳出循环
                 }
             }
@@ -257,7 +253,6 @@ public class Guard : CharacterBase
         {
             // 前方是边缘，直接跳起并前进
             shouldJump = true;
-            Debug.Log("Guard detected edge, jumping forward");
         }
     }
 
@@ -299,7 +294,6 @@ public class Guard : CharacterBase
         if (isTemporarilyReversed && Time.time >= tempReverseEndTime)
         {
             isTemporarilyReversed = false;
-            Debug.Log("Temporary reverse ended");
         }
     }
 
@@ -313,7 +307,6 @@ public class Guard : CharacterBase
         {
             // 追逐状态下，暂时反向一小段时间
             StartTemporaryReverse(.5f);
-            Debug.Log($"Guard temporarily reversed direction while chasing due to being stuck");
         }
         else
         {
@@ -321,7 +314,6 @@ public class Guard : CharacterBase
             patrolDirection *= -1;
             stuckTimer = 0f;
             consecutiveJumps = 0;
-            Debug.Log($"Guard reversed patrol direction due to being stuck: {patrolDirection}");
         }
     }
 
@@ -351,7 +343,6 @@ public class Guard : CharacterBase
             currentPatrolCenter = transform.position; // 将当前位置设为新的巡逻中心
             patrolDirection = 1f; // 重置巡逻方向
             lastXPosition = currentPatrolCenter.x;
-            Debug.Log($"Guard deactivated, new patrol center set at: {currentPatrolCenter}");
         }
     }
 

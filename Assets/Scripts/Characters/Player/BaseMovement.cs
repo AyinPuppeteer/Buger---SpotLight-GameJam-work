@@ -8,6 +8,17 @@ public class BaseMovement : CharacterBase
     [Header("Climb Settings")]
     [SerializeField] protected float climbSpeed = 1.0f;
 
+    [Header("Enemy Collision")]
+    [SerializeField] protected bool enableEnemyCollision = true;
+
+    // 简单的碰撞事件委托
+    public delegate void PlayerEnemyCollisionEventHandler(GameObject enemy);
+    public static event PlayerEnemyCollisionEventHandler OnPlayerHitEnemy;
+
+    // 公共属性，外部可以直接检查是否碰撞到敌人
+    public bool IsCollidingWithEnemy { get; private set; }
+    public GameObject LastCollidedEnemy { get; private set; }
+
     protected bool isClimbing = false;
     protected bool canClimb = false;
     protected bool canLeave = false;
@@ -107,9 +118,10 @@ public class BaseMovement : CharacterBase
             }
 
             // 攀爬逻辑
-            if (Mathf.Abs(vertical) > deadZone && canClimb){
+            if (Mathf.Abs(vertical) > deadZone && canClimb)
+            {
                 isClimbing = true;
-                if(canLeave)
+                if (canLeave)
                     GameManager.Instance.BugAlert();
             }
             else if (vertical < -0.5f && isGrounded)
@@ -219,6 +231,9 @@ public class BaseMovement : CharacterBase
         {
             attachKey.Pick();
         }
+
+        // 敌人碰撞检测
+        HandleEnemyCollision(other.gameObject);
     }
 
     /// <summary>
@@ -231,5 +246,78 @@ public class BaseMovement : CharacterBase
         {
             canLeave = true;
         }
+
+        // 敌人碰撞退出检测
+        HandleEnemyCollisionExit(other.gameObject);
+    }
+
+    /// <summary>
+    /// 碰撞进入事件处理
+    /// </summary>
+    protected virtual void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (!enableEnemyCollision) return;
+
+        HandleEnemyCollision(collision.gameObject);
+    }
+
+    /// <summary>
+    /// 碰撞退出事件处理
+    /// </summary>
+    protected virtual void OnCollisionExit2D(Collision2D collision)
+    {
+        if (!enableEnemyCollision) return;
+
+        HandleEnemyCollisionExit(collision.gameObject);
+    }
+
+    /// <summary>
+    /// 处理敌人碰撞逻辑
+    /// </summary>
+    private void HandleEnemyCollision(GameObject other)
+    {
+        if (!enableEnemyCollision) return;
+
+        // 检查是否是敌人
+        if (other.CompareTag("Enemy") || other.layer == LayerMask.NameToLayer("Enemy"))
+        {
+            IsCollidingWithEnemy = true;
+            LastCollidedEnemy = other;
+
+            // 触发事件
+            OnPlayerHitEnemy?.Invoke(other);
+
+            Debug.Log($"Player collided with enemy: {other.name}");
+        }
+    }
+
+    /// <summary>
+    /// 处理敌人碰撞退出逻辑
+    /// </summary>
+    private void HandleEnemyCollisionExit(GameObject other)
+    {
+        if (other == LastCollidedEnemy)
+        {
+            IsCollidingWithEnemy = false;
+            LastCollidedEnemy = null;
+        }
+    }
+
+    // ========== 静态方法供外部调用 ==========
+
+    /// <summary>
+    /// 静态方法：检查玩家是否正在与敌人碰撞
+    /// </summary>
+    public static bool IsPlayerCollidingWithEnemy()
+    {
+        return Instance != null && Instance.IsCollidingWithEnemy;
+    }
+
+    /// <summary>
+    /// 静态方法：获取玩家最后碰撞的敌人
+    /// </summary>
+    public static GameObject GetLastCollidedEnemy()
+    {
+        return Instance?.LastCollidedEnemy;
     }
 }
