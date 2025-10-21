@@ -112,7 +112,6 @@ public class CharacterSpawner : MonoBehaviour
         {
             Destroy(characterInstance);
             characterInstance = null;
-            Debug.Log($"{characterName} destroyed");
         }
     }
 

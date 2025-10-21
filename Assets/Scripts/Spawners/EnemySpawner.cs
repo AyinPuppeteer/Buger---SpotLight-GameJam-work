@@ -8,11 +8,7 @@ public class EnemySpawner : CharacterSpawner
     protected override void Awake()
     {
         base.Awake();
-    }
-
-    protected override void OnDestroy()
-    {
-        base.OnDestroy();
+        GameManager.Instance.AddSpawner(this);
     }
 
     // 重写获取生成位置的方法，使用生成器自身位置
@@ -24,37 +20,17 @@ public class EnemySpawner : CharacterSpawner
     // 生成敌人
     public void SpawnEnemy()
     {
+        //先清除敌人
+        DestroyCharacter();
+
         // 保存原始名称并设置敌人名称
         string originalName = characterName;
         characterName = $"{enemyNamePrefix}_{characterPrefab?.name ?? "Unknown"}";
-
+        
         Spawn();
 
         // 恢复原始名称
         characterName = originalName;
-
-        Debug.Log($"Enemy {characterPrefab?.name} spawned at position: {characterInstance?.transform.position}");
-    }
-
-    // 清除敌人
-    public void ClearEnemy()
-    {
-        DestroyCharacter();
-        Debug.Log("Enemy cleared");
-    }
-
-    // 重新生成敌人
-    public void RespawnEnemy()
-    {
-        ClearEnemy();
-        SpawnEnemy();
-    }
-
-    // 设置敌人预制体并重新生成
-    public void SetEnemyPrefab(GameObject newEnemyPrefab)
-    {
-        characterPrefab = newEnemyPrefab;
-        RespawnEnemy();
     }
 
     // 检查是否有敌人生成

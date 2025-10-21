@@ -11,7 +11,7 @@ public class GameManager : MonoBehaviour
 
     public SavePoint SavePoint;//记录的存档点（临时）
 
-    private readonly List<CharacterSpawner> Spawners;//角色生成器列表
+    private readonly List<EnemySpawner> Spawners = new();//角色生成器列表
 
     public static GameManager Instance;
 
@@ -28,7 +28,7 @@ public class GameManager : MonoBehaviour
     }
 
     #region 角色生成
-    public void AddSpawner(CharacterSpawner spawner)
+    public void AddSpawner(EnemySpawner spawner)
     {
         Spawners.Add(spawner);
     }
@@ -43,6 +43,7 @@ public class GameManager : MonoBehaviour
         foreach(var spawner in Spawners)
         {
             //将所有的敌人生成器重置
+            spawner.SpawnEnemy();
         }
     }
     #endregion

@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3755623494565530956}
   - component: {fileID: 960720321234897921}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: visualLayer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -214,4 +214,8 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 128
   isDetectable: 1
+  detectableAlpha: 1
+  undetectableAlpha: 0.5
+  alphaLerpSpeed: 5
   climbSpeed: 1
+  enableEnemyCollision: 1

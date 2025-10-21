@@ -278,6 +278,7 @@ public class BaseMovement : CharacterBase
     {
         if (!enableEnemyCollision) return;
 
+        /*
         // 检查是否是敌人
         if (other.CompareTag("Enemy") || other.layer == LayerMask.NameToLayer("Enemy"))
         {
@@ -289,6 +290,7 @@ public class BaseMovement : CharacterBase
 
             Debug.Log($"Player collided with enemy: {other.name}");
         }
+        */
     }
 
     /// <summary>

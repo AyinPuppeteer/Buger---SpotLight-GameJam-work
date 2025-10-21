@@ -6,12 +6,17 @@ public class AlertPrinter : MonoBehaviour
 {
     private GameObject LogOb;//日志文本物体
 
-    private readonly List<AlertText> Alerts = new();
+    private readonly List<AlertText> Logs = new();
+
+    [SerializeField]
+    private GameObject LogWindow;//Log窗口
 
     public void PrintLog(string log, LogType type)
     {
         AlertText at = Instantiate(LogOb).GetComponent<AlertText>();
         at.SetText(log, type);
-        Alerts.Add(at);
+        Logs.Add(at);
     }
+
+
 }
