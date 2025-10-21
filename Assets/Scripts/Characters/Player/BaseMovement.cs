@@ -220,16 +220,15 @@ public class BaseMovement : CharacterBase
     protected virtual void OnTriggerEnter2D(Collider2D other)
     {
         Ladder ladder = other.GetComponent<Ladder>();
-        AttachKey attachKey = other.GetComponent<AttachKey>();
+        I_PickItem pickItem = other.GetComponent<I_PickItem>();
 
         if (ladder != null)
         {
             canLeave = false;
             canClimb = true;
         }
-        if (attachKey != null)
+        if (pickItem != null)
         {
-            I_PickItem pickItem = attachKey as I_PickItem;
             pickItem.Pick();
         }
 
@@ -287,8 +286,6 @@ public class BaseMovement : CharacterBase
 
             // 触发事件
             OnPlayerHitEnemy?.Invoke(other);
-
-            Debug.Log($"Player collided with enemy: {other.name}");
         }
 
     }

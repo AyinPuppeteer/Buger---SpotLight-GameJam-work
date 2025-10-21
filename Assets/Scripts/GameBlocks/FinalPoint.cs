@@ -14,6 +14,7 @@ public class FinalPoint : Lock, I_PickItem
 
     public override void SetActive(bool b)
     {
+        base.SetActive(b);
         if (b)
         {
             Image.sprite = OpenImg;
