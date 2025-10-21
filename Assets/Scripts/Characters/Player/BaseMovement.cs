@@ -30,33 +30,10 @@ public class BaseMovement : CharacterBase
 
     protected override void Awake()
     {
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-        // 单例模式实现
-        if (Instance == null)
-        {
-            Instance = this;
-            base.Awake();
-            canJump = true; // 玩家可以跳跃
-
-            // 可选：标记为跨场景不销毁
-            // DontDestroyOnLoad(gameObject);
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
-=======
-=======
->>>>>>> Stashed changes
         base.Awake();
 
         Instance = this;
         canJump = true; // 玩家可以跳跃
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
     }
 
     protected override void Update()
