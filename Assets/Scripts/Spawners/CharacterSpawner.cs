@@ -85,7 +85,6 @@ public class CharacterSpawner : MonoBehaviour
         {
             Vector3 spawnPos = GetSpawnPosition();
             characterInstance.transform.position = spawnPos;
-            Debug.Log($"{characterName} position reset to: {spawnPos}");
         }
     }
 
