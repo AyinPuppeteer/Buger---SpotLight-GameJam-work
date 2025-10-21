@@ -53,6 +53,6 @@ public abstract class Lock : MonoBehaviour
 
     public virtual void SetActive(bool b)
     {
-
+        IsActive = b;
     }
 }
