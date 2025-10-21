@@ -30,6 +30,7 @@ public class BaseMovement : CharacterBase
 
     protected override void Awake()
     {
+<<<<<<< Updated upstream
         // 单例模式实现
         if (Instance == null)
         {
@@ -44,6 +45,12 @@ public class BaseMovement : CharacterBase
         {
             Destroy(gameObject);
         }
+=======
+        base.Awake();
+
+        Instance = this;
+        canJump = true; // 玩家可以跳跃
+>>>>>>> Stashed changes
     }
 
     protected override void Update()
