@@ -48,7 +48,6 @@ MonoBehaviour:
   spawnPoint: {fileID: 0}
   spawnOffset: {x: 0, y: 0, z: 0}
   useWorldCenterAsFallback: 1
-  markAsDontDestroyOnLoad: 1
+  markAsDontDestroyOnLoad: 0
   characterName: Character
-  enemyPrefabs: []
-  enemySpawnPoints: []
+  enemyNamePrefix: Enemy

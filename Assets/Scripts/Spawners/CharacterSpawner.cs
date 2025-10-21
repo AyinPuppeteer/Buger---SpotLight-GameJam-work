@@ -9,7 +9,6 @@ public class CharacterSpawner : MonoBehaviour
     [SerializeField] protected Transform spawnPoint;
     [SerializeField] protected Vector3 spawnOffset = Vector3.zero;
     [SerializeField] protected bool useWorldCenterAsFallback = true;
-    [SerializeField] protected bool markAsDontDestroyOnLoad = false;
 
     [Header("General Settings")]
     [SerializeField] protected string characterName = "Character";
@@ -64,10 +63,6 @@ public class CharacterSpawner : MonoBehaviour
         characterInstance = Instantiate(characterPrefab, spawnPos, Quaternion.identity);
         characterInstance.name = characterName;
 
-        if (markAsDontDestroyOnLoad)
-        {
-            DontDestroyOnLoad(characterInstance);
-        }
     }
 
     // 在指定位置生成角色
@@ -81,10 +76,6 @@ public class CharacterSpawner : MonoBehaviour
         characterInstance = Instantiate(characterPrefab, position, Quaternion.identity);
         characterInstance.name = characterName;
 
-        if (markAsDontDestroyOnLoad)
-        {
-            DontDestroyOnLoad(characterInstance);
-        }
     }
 
     // 重置角色位置
