@@ -10,7 +10,7 @@ public class Key : MonoBehaviour
 
     [SerializeField]
     protected bool IsActive;//是否处于激活状态
-    public bool Active { get => IsActive; }
+    public bool Active { get => IsActive; } 
 
     protected void Start()
     {
