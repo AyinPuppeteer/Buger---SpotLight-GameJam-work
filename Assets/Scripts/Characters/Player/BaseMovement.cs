@@ -227,9 +227,10 @@ public class BaseMovement : CharacterBase
             canLeave = false;
             canClimb = true;
         }
-        if ((attachKey != null) && isInteracting)
+        if (attachKey != null)
         {
-            attachKey.Pick();
+            I_PickItem pickItem = attachKey as I_PickItem;
+            pickItem.Pick();
         }
 
         // 敌人碰撞检测
@@ -278,9 +279,8 @@ public class BaseMovement : CharacterBase
     {
         if (!enableEnemyCollision) return;
 
-        /*
-        // 检查是否是敌人
-        if (other.CompareTag("Enemy") || other.layer == LayerMask.NameToLayer("Enemy"))
+        Guard guard = other.GetComponent<Guard>();
+        if (guard != null)
         {
             IsCollidingWithEnemy = true;
             LastCollidedEnemy = other;
@@ -290,7 +290,7 @@ public class BaseMovement : CharacterBase
 
             Debug.Log($"Player collided with enemy: {other.name}");
         }
-        */
+
     }
 
     /// <summary>
