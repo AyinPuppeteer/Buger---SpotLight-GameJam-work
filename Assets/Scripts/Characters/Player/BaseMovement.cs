@@ -252,7 +252,6 @@ public class BaseMovement : CharacterBase
         {
             // 直接调用 GameManager 的 GameOver 方法
             GameManager.Instance.GameOver();
-
         }
     }
 }
