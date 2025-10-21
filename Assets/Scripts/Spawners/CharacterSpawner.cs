@@ -53,29 +53,15 @@ public class CharacterSpawner : MonoBehaviour
     // 生成角色
     public virtual void Spawn()
     {
-        // 如果角色实例已存在，先销毁
-        if (characterInstance != null)
-        {
-            Destroy(characterInstance);
-        }
-
-        Vector3 spawnPos = GetSpawnPosition();
-        characterInstance = Instantiate(characterPrefab, spawnPos, Quaternion.identity);
-        characterInstance.name = characterName;
-
+        SpawnAtPosition(GetSpawnPosition());
     }
-
     // 在指定位置生成角色
     public virtual void SpawnAtPosition(Vector3 position)
     {
-        if (characterInstance != null)
-        {
-            Destroy(characterInstance);
-        }
+        if (characterInstance != null) Destroy(characterInstance);
 
         characterInstance = Instantiate(characterPrefab, position, Quaternion.identity);
         characterInstance.name = characterName;
-
     }
 
     // 重置角色位置
