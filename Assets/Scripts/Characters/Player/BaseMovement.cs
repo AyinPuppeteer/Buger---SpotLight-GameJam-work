@@ -20,8 +20,16 @@ public class BaseMovement : CharacterBase
     protected override void Awake()
     {
         base.Awake();
+<<<<<<< Updated upstream
         Instance = this;
+<<<<<<< Updated upstream
 
+=======
+
+        Instance = this;
+>>>>>>> Stashed changes
+=======
+>>>>>>> Stashed changes
         canJump = true; // 玩家可以跳跃
     }
 
