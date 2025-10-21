@@ -1061,19 +1061,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 787772324999629725, guid: 982d1bd00cb45c24bbae51aed744b63d, type: 3}
       propertyPath: m_LocalPosition.x
-<<<<<<< Updated upstream
-      value: 7.1999993
-      objectReference: {fileID: 0}
-    - target: {fileID: 787772324999629725, guid: 982d1bd00cb45c24bbae51aed744b63d, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 2.8799999
-=======
       value: 4.64
       objectReference: {fileID: 0}
     - target: {fileID: 787772324999629725, guid: 982d1bd00cb45c24bbae51aed744b63d, type: 3}
       propertyPath: m_LocalPosition.y
       value: 0.96
->>>>>>> Stashed changes
       objectReference: {fileID: 0}
     - target: {fileID: 787772324999629725, guid: 982d1bd00cb45c24bbae51aed744b63d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -54892,17 +54884,10 @@ PrefabInstance:
       addedObject: {fileID: 723111837}
     - targetCorrespondingSourceObject: {fileID: 8153782699793591366, guid: 3b121ddb9ab9af94380dcaa28f857fdb, type: 3}
       insertIndex: -1
-<<<<<<< Updated upstream
-      addedObject: {fileID: 739266821}
-    - targetCorrespondingSourceObject: {fileID: 8153782699793591366, guid: 3b121ddb9ab9af94380dcaa28f857fdb, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 896341811}
-=======
       addedObject: {fileID: 36578936}
     - targetCorrespondingSourceObject: {fileID: 8153782699793591366, guid: 3b121ddb9ab9af94380dcaa28f857fdb, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1271979153}
->>>>>>> Stashed changes
     - targetCorrespondingSourceObject: {fileID: 2546603342845989201, guid: 3b121ddb9ab9af94380dcaa28f857fdb, type: 3}
       insertIndex: -1
       addedObject: {fileID: 748341042}

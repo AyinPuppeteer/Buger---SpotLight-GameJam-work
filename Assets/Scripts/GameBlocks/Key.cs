@@ -8,8 +8,14 @@ public class Key : MonoBehaviour
     //相关的锁列表，由对应的锁自行注册，主要用于刷新判定
     protected readonly List<Lock> LockList = new();
 
-    protected bool IsActive { get; set; }//是否处于激活状态
+    [SerializeField]
+    protected bool IsActive;//是否处于激活状态
     public bool Active { get => IsActive; }
+
+    protected void Start()
+    {
+        SetActive(IsActive);
+    }
 
     public void Connectwith(Lock l)
     {
@@ -18,7 +24,6 @@ public class Key : MonoBehaviour
 
     public virtual void SetActive(bool b)
     {
-        if (IsActive == b) return;//值没变就不做操作
         IsActive = b;
 
         foreach(var l in LockList)
