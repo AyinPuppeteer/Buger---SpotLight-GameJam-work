@@ -19,17 +19,10 @@ public class BaseMovement : CharacterBase
 
     protected override void Awake()
     {
-        // 单例模式实现
-        if (Instance == null)
-        {
-            Instance = this;
-            base.Awake();
-            canJump = true; // 玩家可以跳跃
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
+        base.Awake();
+        Instance = this;
+
+        canJump = true; // 玩家可以跳跃
     }
 
     protected override void Update()

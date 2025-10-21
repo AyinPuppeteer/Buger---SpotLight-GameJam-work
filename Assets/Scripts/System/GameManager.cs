@@ -62,6 +62,7 @@ public class GameManager : MonoBehaviour
     public void GameOver()
     {
         Destroy(BaseMovement.Instance.gameObject);
+        GameRestart();
     }
     //重新开始
     public void GameRestart()
