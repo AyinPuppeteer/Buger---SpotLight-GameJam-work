@@ -8,17 +8,6 @@ public class BaseMovement : CharacterBase
     [Header("Climb Settings")]
     [SerializeField] protected float climbSpeed = 1.0f;
 
-    [Header("Enemy Collision")]
-    [SerializeField] protected bool enableEnemyCollision = true;
-
-    // 简单的碰撞事件委托
-    public delegate void PlayerEnemyCollisionEventHandler(GameObject enemy);
-    public static event PlayerEnemyCollisionEventHandler OnPlayerHitEnemy;
-
-    // 公共属性，外部可以直接检查是否碰撞到敌人
-    public bool IsCollidingWithEnemy { get; private set; }
-    public GameObject LastCollidedEnemy { get; private set; }
-
     protected bool isClimbing = false;
     protected bool canClimb = false;
     protected bool canLeave = false;
@@ -36,9 +25,6 @@ public class BaseMovement : CharacterBase
             Instance = this;
             base.Awake();
             canJump = true; // 玩家可以跳跃
-
-            // 可选：标记为跨场景不销毁
-            // DontDestroyOnLoad(gameObject);
         }
         else
         {
@@ -246,9 +232,6 @@ public class BaseMovement : CharacterBase
         {
             canLeave = true;
         }
-
-        // 敌人碰撞退出检测
-        HandleEnemyCollisionExit(other.gameObject);
     }
 
     /// <summary>
@@ -256,19 +239,7 @@ public class BaseMovement : CharacterBase
     /// </summary>
     protected virtual void OnCollisionEnter2D(Collision2D collision)
     {
-        if (!enableEnemyCollision) return;
-
         HandleEnemyCollision(collision.gameObject);
-    }
-
-    /// <summary>
-    /// 碰撞退出事件处理
-    /// </summary>
-    protected virtual void OnCollisionExit2D(Collision2D collision)
-    {
-        if (!enableEnemyCollision) return;
-
-        HandleEnemyCollisionExit(collision.gameObject);
     }
 
     /// <summary>
@@ -276,47 +247,12 @@ public class BaseMovement : CharacterBase
     /// </summary>
     private void HandleEnemyCollision(GameObject other)
     {
-        if (!enableEnemyCollision) return;
-
         Guard guard = other.GetComponent<Guard>();
         if (guard != null)
         {
-            IsCollidingWithEnemy = true;
-            LastCollidedEnemy = other;
+            // 直接调用 GameManager 的 GameOver 方法
+            GameManager.Instance.GameOver();
 
-            // 触发事件
-            OnPlayerHitEnemy?.Invoke(other);
         }
-
-    }
-
-    /// <summary>
-    /// 处理敌人碰撞退出逻辑
-    /// </summary>
-    private void HandleEnemyCollisionExit(GameObject other)
-    {
-        if (other == LastCollidedEnemy)
-        {
-            IsCollidingWithEnemy = false;
-            LastCollidedEnemy = null;
-        }
-    }
-
-    // ========== 静态方法供外部调用 ==========
-
-    /// <summary>
-    /// 静态方法：检查玩家是否正在与敌人碰撞
-    /// </summary>
-    public static bool IsPlayerCollidingWithEnemy()
-    {
-        return Instance != null && Instance.IsCollidingWithEnemy;
-    }
-
-    /// <summary>
-    /// 静态方法：获取玩家最后碰撞的敌人
-    /// </summary>
-    public static GameObject GetLastCollidedEnemy()
-    {
-        return Instance?.LastCollidedEnemy;
     }
 }
