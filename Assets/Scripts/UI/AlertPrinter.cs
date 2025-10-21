@@ -15,15 +15,26 @@ public class AlertPrinter : MonoBehaviour
     [SerializeField]
     private GameObject LogWindow;//Log窗口
 
+    public static AlertPrinter Instance { get; private set; }
+
+    private void Awake()
+    {
+        Instance = this;
+    }
+
     public void PrintLog(string log, LogType type)
     {
         AlertText at = Instantiate(LogOb, LogWindow.transform).GetComponent<AlertText>();
         at.GetComponent<RectTransform>().localPosition += Offset * Vector3.down;//新的文本向下移动
         at.SetText(log, type);
         Logs.Add(at);
-        float delta = at.ReturnHeight();
-        LogWindow.transform.DOLocalMoveY(delta, 0.5f);//缓慢向上移动
-        Offset += delta;
+        Offset += at.ReturnHeight() + 20;
+        DOTween.To(() => LogWindow.transform.localPosition.y, x => 
+        {
+            Vector3 pos = LogWindow.transform.localPosition;
+            pos.y = x;
+            LogWindow.transform.localPosition = pos; 
+        }, Offset, 0.5f);//缓慢向上移动
     }
 
 

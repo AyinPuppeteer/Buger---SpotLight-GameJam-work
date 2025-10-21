@@ -99,8 +99,7 @@ public class BaseMovement : CharacterBase
             if (Mathf.Abs(vertical) > deadZone && canClimb)
             {
                 isClimbing = true;
-                if (canLeave)
-                    GameManager.Instance.BugAlert();
+                if (canLeave) AlertPrinter.Instance.PrintLog("错误：未检测到物体：梯子。", LogType.错误);
             }
             else if (vertical < -0.5f && isGrounded)
                 isSneaking = true;

@@ -1,3 +1,4 @@
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -8,6 +9,22 @@ public class AlertText : MonoBehaviour
 {
     [SerializeField]
     private TextMeshProUGUI Text;
+
+    private float ExistTimer, ExistTime = 2f;
+
+    private void Update()
+    {
+        ExistTimer += Time.deltaTime;
+        if(ExistTimer > ExistTime)
+        {
+            DOTween.To(() => Text.color.a, x =>
+            {
+                Color c = Text.color;
+                c.a = x;
+                Text.color = c;
+            }, 0, 0.5f).OnComplete(() => Destroy(gameObject));
+        }
+    }
 
     public void SetText(string text, LogType type)
     {

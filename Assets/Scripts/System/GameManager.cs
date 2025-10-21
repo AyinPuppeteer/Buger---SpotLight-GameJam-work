@@ -9,6 +9,7 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     private Animator AlertAnim;
 
+    [HideInInspector]
     public SavePoint SavePoint;//记录的存档点（临时）
 
     private readonly List<EnemySpawner> Spawners = new();//角色生成器列表
@@ -63,17 +64,12 @@ public class GameManager : MonoBehaviour
     {
         Destroy(BaseMovement.Instance.gameObject);
         GameRestart();
+        AlertPrinter.Instance.PrintLog("未知实体已死亡，清理完成。", LogType.调试);
     }
     //重新开始
     public void GameRestart()
     {
         CreatePlayer();
         CreateAllEnemies();
-    }
-
-    //触发BUG时显示警告信息
-    public void BugAlert()
-    {
-        
     }
 }
