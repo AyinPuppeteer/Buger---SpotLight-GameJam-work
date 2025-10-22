@@ -11,7 +11,10 @@ public class BaseMovement : CharacterBase
     protected bool isClimbing = false;
     protected bool canClimb = false;
     protected bool canLeave = false;
-    protected bool isInteracting = false;
+
+    private I_Interacts i_interacts;
+
+    private bool firstBug = false;
 
     // 暴露属性
     public bool IsClimbing_ { get => isClimbing; }
@@ -68,12 +71,10 @@ public class BaseMovement : CharacterBase
         // 处理交互按钮逻辑
         if (GameInput.Instance.InteractInputDown())
         {
-            isInteracting = true;
-        }
-
-        if (GameInput.Instance.InteractInputUp())
-        {
-            isInteracting = false;
+            if(i_interacts != null)
+            {
+                i_interacts.TakeInteract();
+            }
         }
     }
 
@@ -99,8 +100,12 @@ public class BaseMovement : CharacterBase
             if (Mathf.Abs(vertical) > deadZone && canClimb)
             {
                 isClimbing = true;
-                if (canLeave) AlertPrinter.Instance.PrintLog("错误：未检测到物体：梯子。", LogType.错误);
-            }
+                if (canLeave && firstBug)
+                {
+                    AlertPrinter.Instance.PrintLog("错误：未检测到物体：梯子。", LogType.错误);
+                    firstBug = false;
+                }
+                }
             else if (vertical < -0.5f && isGrounded)
                 isSneaking = true;
             else if (vertical > -deadZone || !isGrounded)
@@ -148,11 +153,6 @@ public class BaseMovement : CharacterBase
         {
             CheckVerticalCollision(ref move);
 
-            if (move.y == 0 && canLeave)
-            {
-                canClimb = false;
-                isClimbing = false;
-            }
         }
 
         // 应用移动
@@ -198,6 +198,7 @@ public class BaseMovement : CharacterBase
     {
         Ladder ladder = other.GetComponent<Ladder>();
         I_PickItem pickItem = other.GetComponent<I_PickItem>();
+        i_interacts = other.GetComponent<I_Interacts>();
 
         if (ladder != null)
         {
@@ -219,9 +220,11 @@ public class BaseMovement : CharacterBase
     protected virtual void OnTriggerExit2D(Collider2D other)
     {
         Ladder ladder = other.GetComponent<Ladder>();
+        i_interacts = null;
         if (ladder != null)
         {
             canLeave = true;
+            firstBug = true;
         }
     }
 
