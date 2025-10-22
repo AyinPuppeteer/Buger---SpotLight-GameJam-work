@@ -203,8 +203,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f2d31d615dd0e694a92d279add7b3a8a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  detectionRange: 1.5
-  detectionAngle: 15
+  detectionRange: 1
+  detectionAngle: 50
   detectionFrequency: 0.05
   obstacleLayerMask:
     serializedVersion: 2
