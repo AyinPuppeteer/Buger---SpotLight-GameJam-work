@@ -12,9 +12,12 @@ public class BaseMovement : CharacterBase
     protected bool canClimb = false;
     protected bool canLeave = false;
 
+
     private I_Interacts i_interacts;
 
     private bool firstBug = false;
+
+    private Collider2D collider2d;
 
     // 暴露属性
     public bool IsClimbing_ { get => isClimbing; }
@@ -25,6 +28,9 @@ public class BaseMovement : CharacterBase
         base.Awake();
         Instance = this;
         canJump = true; // 玩家可以跳跃
+
+        //获取碰撞体组件
+        collider2d = GetComponent<Collider2D>();
     }
 
     protected override void Update()
@@ -34,6 +40,16 @@ public class BaseMovement : CharacterBase
 
         HandleTriggerButton();
         base.Update();
+
+        if (!isDetectable)
+        {
+            //将碰撞类型设置为触发器
+            collider2d.isTrigger = true;
+        }
+        else
+        {
+            collider2d.isTrigger = false;
+        }        
     }
 
     protected override void FixedUpdate()
@@ -242,7 +258,7 @@ public class BaseMovement : CharacterBase
     private void HandleEnemyCollision(GameObject other)
     {
         Guard guard = other.GetComponent<Guard>();
-        if (guard != null)
+        if (guard != null && isDetectable)
         {
             // 直接调用 GameManager 的 GameOver 方法
             GameManager.Instance.GameOver();
