@@ -24,6 +24,11 @@ public class ScanWave : MonoBehaviour
     private int burstParticleCount = 50;
 
     [SerializeField]
+    [Tooltip("Burst 间隔（秒）")]
+    [Range(0f, 10f)]
+    private float burstRepeatInterval = 1f;
+
+    [SerializeField]
     [Tooltip("粒子生命周期（秒，固定值）")]
     [Range(0.1f, 10f)]
     private float lifetime = 2f;
@@ -105,15 +110,29 @@ public class ScanWave : MonoBehaviour
     {
         if (particleSystem == null) return;
 
-        // 更新Burst发射的粒子数量
-        if (bursts != null && bursts.Length > 0)
+        // 确保有至少一个 burst 条目（若没有则创建）
+        if (bursts == null || bursts.Length == 0)
         {
+            bursts = new ParticleSystem.Burst[1];
+            // 默认 time 为 0
+            bursts[0] = new ParticleSystem.Burst(
+                0f,
+                (short)Mathf.Clamp(burstParticleCount, short.MinValue, short.MaxValue),
+                (short)Mathf.Clamp(burstParticleCount, short.MinValue, short.MaxValue),
+                0,
+                burstRepeatInterval
+            );
+            emissionModule.SetBursts(bursts);
+        }
+        else
+        {
+            // 更新第一个 burst 的数量与间隔
             bursts[0] = new ParticleSystem.Burst(
                 bursts[0].time,
-                (short)burstParticleCount, 
-                (short)burstParticleCount,
+                (short)Mathf.Clamp(burstParticleCount, short.MinValue, short.MaxValue),
+                (short)Mathf.Clamp(burstParticleCount, short.MinValue, short.MaxValue),
                 bursts[0].cycleCount,
-                bursts[0].repeatInterval
+                burstRepeatInterval
             );
             emissionModule.SetBursts(bursts);
         }

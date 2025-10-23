@@ -4938,6 +4938,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   burstParticleCount: 1813
+  burstRepeatInterval: 1
   lifetime: 1.8
   startSpeed: 3
   startColor: {r: 0.29696202, g: 0.76609534, b: 0.899371, a: 1}
