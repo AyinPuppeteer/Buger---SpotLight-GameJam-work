@@ -12,26 +12,25 @@ public class BaseMovement : CharacterBase
     protected bool canClimb = false;
     protected bool canLeave = false;
 
+
+    private I_Interacts i_interacts;
+
+    private bool firstBug = false;
+
+    private Collider2D collider2d;
+
     // 暴露属性
     public bool IsClimbing_ { get => isClimbing; }
     public bool CanClimb_ { get => canClimb; }
 
     protected override void Awake()
     {
-        // 单例模式实现
-        if (Instance == null)
-        {
-            Instance = this;
-            base.Awake();
-            canJump = true; // 玩家可以跳跃
+        base.Awake();
+        Instance = this;
+        canJump = true; // 玩家可以跳跃
 
-            // 可选：标记为跨场景不销毁
-            // DontDestroyOnLoad(gameObject);
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
+        //获取碰撞体组件
+        collider2d = GetComponent<Collider2D>();
     }
 
     protected override void Update()
@@ -41,6 +40,16 @@ public class BaseMovement : CharacterBase
 
         HandleTriggerButton();
         base.Update();
+
+        if (!isDetectable)
+        {
+            //将碰撞类型设置为触发器
+            collider2d.isTrigger = true;
+        }
+        else
+        {
+            collider2d.isTrigger = false;
+        }        
     }
 
     protected override void FixedUpdate()
@@ -78,7 +87,10 @@ public class BaseMovement : CharacterBase
         // 处理交互按钮逻辑
         if (GameInput.Instance.InteractInputDown())
         {
-            Debug.Log("Interact button pressed");
+            if(i_interacts != null)
+            {
+                i_interacts.TakeInteract();
+            }
         }
     }
 
@@ -102,7 +114,14 @@ public class BaseMovement : CharacterBase
 
             // 攀爬逻辑
             if (Mathf.Abs(vertical) > deadZone && canClimb)
+            {
                 isClimbing = true;
+                if (canLeave && firstBug)
+                {
+                    AlertPrinter.Instance.PrintLog("错误：未检测到物体：梯子。", LogType.错误);
+                    firstBug = false;
+                }
+                }
             else if (vertical < -0.5f && isGrounded)
                 isSneaking = true;
             else if (vertical > -deadZone || !isGrounded)
@@ -150,11 +169,6 @@ public class BaseMovement : CharacterBase
         {
             CheckVerticalCollision(ref move);
 
-            if (move.y == 0 && canLeave)
-            {
-                canClimb = false;
-                isClimbing = false;
-            }
         }
 
         // 应用移动
@@ -199,11 +213,21 @@ public class BaseMovement : CharacterBase
     protected virtual void OnTriggerEnter2D(Collider2D other)
     {
         Ladder ladder = other.GetComponent<Ladder>();
+        I_PickItem pickItem = other.GetComponent<I_PickItem>();
+        i_interacts = other.GetComponent<I_Interacts>();
+
         if (ladder != null)
         {
             canLeave = false;
             canClimb = true;
         }
+        if (pickItem != null)
+        {
+            pickItem.Pick();
+        }
+
+        // 敌人碰撞检测
+        HandleEnemyCollision(other.gameObject);
     }
 
     /// <summary>
@@ -212,10 +236,32 @@ public class BaseMovement : CharacterBase
     protected virtual void OnTriggerExit2D(Collider2D other)
     {
         Ladder ladder = other.GetComponent<Ladder>();
+        i_interacts = null;
         if (ladder != null)
         {
-            GameManager.Instance.BugAlert();
             canLeave = true;
+            firstBug = true;
+        }
+    }
+
+    /// <summary>
+    /// 碰撞进入事件处理
+    /// </summary>
+    protected virtual void OnCollisionEnter2D(Collision2D collision)
+    {
+        HandleEnemyCollision(collision.gameObject);
+    }
+
+    /// <summary>
+    /// 处理敌人碰撞逻辑
+    /// </summary>
+    private void HandleEnemyCollision(GameObject other)
+    {
+        Guard guard = other.GetComponent<Guard>();
+        if (guard != null && isDetectable)
+        {
+            // 直接调用 GameManager 的 GameOver 方法
+            GameManager.Instance.GameOver();
         }
     }
 }

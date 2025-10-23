@@ -11,7 +11,7 @@ public abstract class Lock : MonoBehaviour
     [SerializeField]
     protected List<Key> KeyList;
 
-    public bool IsOr { get; }//是否是或门（false表示所有钥匙均打开时触发，true表示只要有一个打开就触发）
+    public bool IsOr;//是否是或门（false表示所有钥匙均打开时触发，true表示只要有一个打开就触发）
 
     protected bool IsActive { get; set; }//是否处于激活状态
     public bool Active { get => IsActive; }
@@ -34,6 +34,7 @@ public abstract class Lock : MonoBehaviour
                 if(key.Active)
                 {
                     SetActive(true);
+                    return;
                 }
             }
             SetActive(false);
@@ -42,17 +43,18 @@ public abstract class Lock : MonoBehaviour
         {
             foreach (var key in KeyList)
             {
-                if (key.Active)
+                if (!key.Active)
                 {
                     SetActive(false);
+                    return;
                 }
             }
             SetActive(true);
         }
     }
 
-    public void SetActive(bool b)
+    public virtual void SetActive(bool b)
     {
-
+        IsActive = b;
     }
 }

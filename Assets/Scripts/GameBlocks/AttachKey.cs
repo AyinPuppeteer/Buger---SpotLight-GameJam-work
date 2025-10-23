@@ -16,6 +16,7 @@ public class AttachKey : Key, I_PickItem
             //�л�ͼƬΪ�Ѽ�ȡ״̬
             Image.enabled = false;
             SetActive(true);
+            IsPicked = true;
         }
     }
 }

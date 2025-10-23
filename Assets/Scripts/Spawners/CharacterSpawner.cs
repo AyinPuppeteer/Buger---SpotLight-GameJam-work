@@ -9,7 +9,6 @@ public class CharacterSpawner : MonoBehaviour
     [SerializeField] protected Transform spawnPoint;
     [SerializeField] protected Vector3 spawnOffset = Vector3.zero;
     [SerializeField] protected bool useWorldCenterAsFallback = true;
-    [SerializeField] protected bool markAsDontDestroyOnLoad = false;
 
     [Header("General Settings")]
     [SerializeField] protected string characterName = "Character";
@@ -54,37 +53,15 @@ public class CharacterSpawner : MonoBehaviour
     // 生成角色
     public virtual void Spawn()
     {
-        // 如果角色实例已存在，先销毁
-        if (characterInstance != null)
-        {
-            Destroy(characterInstance);
-        }
-
-        Vector3 spawnPos = GetSpawnPosition();
-        characterInstance = Instantiate(characterPrefab, spawnPos, Quaternion.identity);
-        characterInstance.name = characterName;
-
-        if (markAsDontDestroyOnLoad)
-        {
-            DontDestroyOnLoad(characterInstance);
-        }
+        SpawnAtPosition(GetSpawnPosition());
     }
-
     // 在指定位置生成角色
     public virtual void SpawnAtPosition(Vector3 position)
     {
-        if (characterInstance != null)
-        {
-            Destroy(characterInstance);
-        }
+        if (characterInstance != null) Destroy(characterInstance);
 
         characterInstance = Instantiate(characterPrefab, position, Quaternion.identity);
         characterInstance.name = characterName;
-
-        if (markAsDontDestroyOnLoad)
-        {
-            DontDestroyOnLoad(characterInstance);
-        }
     }
 
     // 重置角色位置
@@ -94,7 +71,6 @@ public class CharacterSpawner : MonoBehaviour
         {
             Vector3 spawnPos = GetSpawnPosition();
             characterInstance.transform.position = spawnPos;
-            Debug.Log($"{characterName} position reset to: {spawnPos}");
         }
     }
 
@@ -112,7 +88,6 @@ public class CharacterSpawner : MonoBehaviour
         {
             Destroy(characterInstance);
             characterInstance = null;
-            Debug.Log($"{characterName} destroyed");
         }
     }
 

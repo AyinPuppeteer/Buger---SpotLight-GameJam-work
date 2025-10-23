@@ -13,8 +13,6 @@ public class PlayerSpawner : CharacterSpawner
         if (Instance == null)
         {
             Instance = this;
-            // 玩家生成器通常需要跨场景持久化
-            markAsDontDestroyOnLoad = true;
         }
         else Destroy(gameObject);
     }

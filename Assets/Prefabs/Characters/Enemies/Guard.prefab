@@ -28,11 +28,12 @@ Transform:
   m_GameObject: {fileID: 1105908914230006644}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.89, y: -0.12, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 8933967585806433785}
+  - {fileID: 8585612610384199987}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!61 &6222344478464510297
@@ -140,23 +141,79 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 128
   isDetectable: 1
+  detectableAlpha: 1
+  undetectableAlpha: 0.5
+  alphaLerpSpeed: 5
   patrolSpeed: 1
   chaseSpeed: 3
   patrolRange: 1.2
   jumpCooldown: 1
-  returnToPatrolSpeed: 2
   stoppingDistance: 0.05
+  proximityRange: 3
+  proximityDetectionFrequency: 0.3
+  requireGroundedForProximity: 1
+  requireMovingForProximity: 1
   horizontalDetectionRays: 5
   obstacleDetectionDistance: 0.05
   maxJumpHeight: 0.72
   minJumpHeight: 0.1
-  edgeCheckDistance: 0.05
-  safeEdgeDistance: 0.03
-  enableEdgeStopping: 0
   stuckCheckTime: 1
   minMovementThreshold: 0.01
-  enableStuckDetectionInAllStates: 1
-  isActivated: 0
+--- !u!1 &4734365795161038448
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8585612610384199987}
+  - component: {fileID: 3507050639420661083}
+  m_Layer: 7
+  m_Name: FlashLight
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8585612610384199987
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4734365795161038448}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.16, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7594614131833452096}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3507050639420661083
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4734365795161038448}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f2d31d615dd0e694a92d279add7b3a8a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  detectionRange: 1
+  detectionAngle: 50
+  detectionFrequency: 0.05
+  obstacleLayerMask:
+    serializedVersion: 2
+    m_Bits: 8
+  drawDebugRays: 1
+  showVisionInGame: 1
+  visionMaterial: {fileID: 0}
+  normalVisionColor: {r: 1, g: 1, b: 0, a: 0.3}
+  detectedVisionColor: {r: 1, g: 0, b: 0, a: 0.5}
 --- !u!1 &5167824428684171498
 GameObject:
   m_ObjectHideFlags: 0

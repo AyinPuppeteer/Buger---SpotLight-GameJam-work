@@ -10,7 +10,7 @@ public class MainCamera : MonoBehaviour
 
     private GameObject Player;//角色物体
 
-    private void Update()
+    private void LateUpdate()
     {
         if(Player == null)//没有角色物体则利用单例化查找
         {

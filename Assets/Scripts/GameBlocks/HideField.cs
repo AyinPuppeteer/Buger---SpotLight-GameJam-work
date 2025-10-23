@@ -5,7 +5,7 @@ using UnityEngine;
 //Òþ²ØÇøÓò£¨²Ý´Ô£©µÄ½Å±¾
 public class HideField : MonoBehaviour
 {
-    private void OnTriggerEnter(Collider other)
+    private void OnTriggerEnter2D(Collider2D other)
     {
         CharacterBase cb = other.GetComponent<CharacterBase>();
         if (cb != null)
@@ -14,7 +14,7 @@ public class HideField : MonoBehaviour
         }
     }
 
-    private void OnTriggerExit(Collider other)
+    private void OnTriggerExit2D(Collider2D other)
     {
         CharacterBase cb = other.GetComponent<CharacterBase>();
         if (cb != null)

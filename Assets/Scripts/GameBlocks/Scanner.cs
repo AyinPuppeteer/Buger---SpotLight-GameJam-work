@@ -5,6 +5,11 @@ using UnityEngine;
 //扫描器的脚本
 public class Scanner : Lock
 {
+    [SerializeField]
+    private SpriteRenderer Image;
+    [SerializeField]
+    private Sprite OpenImg, CloseImg;
+
     private const float ActTime = 10f;
     private float ActTimer;//行动时间，行动计时器
 
@@ -24,9 +29,21 @@ public class Scanner : Lock
     }
 
     //进行扫描
-
     private void TakeScan()
     {
 
+    }
+
+    public override void SetActive(bool b)
+    {
+        base.SetActive(b);
+        if (b)
+        {
+            Image.sprite = OpenImg;
+        }
+        else
+        {
+            Image.sprite = CloseImg;
+        }
     }
 }

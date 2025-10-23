@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 public class CharacterBase : MonoBehaviour
 {
@@ -29,6 +30,11 @@ public class CharacterBase : MonoBehaviour
     [Header("Detection Settings")]
     [SerializeField] protected bool isDetectable = true; // 是否可被敌人和扫描线探测
 
+    [Header("Visual Settings")]
+    [SerializeField] protected float detectableAlpha = 1f;    // 可被发现时的透明度
+    [SerializeField] protected float undetectableAlpha = 0.5f; // 不可被发现时的透明度
+    [SerializeField] protected float alphaLerpSpeed = 5f;     // 透明度变化速度
+
     protected Rigidbody2D rb;
 
     protected float speed;
@@ -53,6 +59,12 @@ public class CharacterBase : MonoBehaviour
     protected Vector2 externalAcceleration = Vector2.zero;
     protected Vector2 externalVelocity = Vector2.zero;
 
+    // SpriteRenderer相关
+    protected List<SpriteRenderer> childSpriteRenderers = new List<SpriteRenderer>();
+    protected Dictionary<SpriteRenderer, Color> originalColors = new Dictionary<SpriteRenderer, Color>();
+    protected float currentAlpha = 1f;
+    protected float targetAlpha = 1f;
+
     // 暴露属性
     public bool IsGrounded_ { get => isGrounded; }
     public bool IsSneaking_ { get => isSneaking; }
@@ -67,6 +79,36 @@ public class CharacterBase : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         rb.gravityScale = 0f;
         gameObject.layer = LayerMask.NameToLayer("Player");
+
+        // 收集所有子物体的SpriteRenderer
+        CollectChildSpriteRenderers();
+
+        // 设置初始透明度
+        currentAlpha = isDetectable ? detectableAlpha : undetectableAlpha;
+        targetAlpha = currentAlpha;
+        UpdateSpriteAlpha();
+    }
+
+    /// <summary>
+    /// 收集所有子物体的SpriteRenderer
+    /// </summary>
+    protected virtual void CollectChildSpriteRenderers()
+    {
+        childSpriteRenderers.Clear();
+        originalColors.Clear();
+
+        // 获取所有子物体（包括孙子物体）的SpriteRenderer
+        SpriteRenderer[] allSpriteRenderers = GetComponentsInChildren<SpriteRenderer>();
+
+        foreach (SpriteRenderer spriteRenderer in allSpriteRenderers)
+        {
+            // 跳过自身的SpriteRenderer（如果有），只处理子物体
+            if (spriteRenderer.gameObject != gameObject)
+            {
+                childSpriteRenderers.Add(spriteRenderer);
+                originalColors[spriteRenderer] = spriteRenderer.color;
+            }
+        }
     }
 
     /// <summary>
@@ -75,6 +117,39 @@ public class CharacterBase : MonoBehaviour
     protected virtual void Update()
     {
         HandleVisualLayer();
+        UpdateAlphaTransition();
+    }
+
+    /// <summary>
+    /// 处理透明度过渡
+    /// </summary>
+    protected virtual void UpdateAlphaTransition()
+    {
+        // 根据可探测状态设置目标透明度
+        targetAlpha = isDetectable ? detectableAlpha : undetectableAlpha;
+
+        // 平滑过渡透明度
+        if (Mathf.Abs(currentAlpha - targetAlpha) > 0.01f)
+        {
+            currentAlpha = Mathf.Lerp(currentAlpha, targetAlpha, alphaLerpSpeed * Time.deltaTime);
+            UpdateSpriteAlpha();
+        }
+    }
+
+    /// <summary>
+    /// 更新所有子物体SpriteRenderer的透明度
+    /// </summary>
+    protected virtual void UpdateSpriteAlpha()
+    {
+        foreach (SpriteRenderer spriteRenderer in childSpriteRenderers)
+        {
+            if (spriteRenderer != null)
+            {
+                Color newColor = originalColors[spriteRenderer];
+                newColor.a = currentAlpha;
+                spriteRenderer.color = newColor;
+            }
+        }
     }
 
     /// <summary>

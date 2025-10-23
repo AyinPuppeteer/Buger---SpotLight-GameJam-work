@@ -4,10 +4,26 @@ using UnityEngine;
 
 public class Lever : Key, I_Interacts
 {
+    [SerializeField]
+    private SpriteRenderer Image;
+    [SerializeField]
+    private Sprite OpenImg, CloseImg;
+
     public void TakeInteract()
     {
-        //更新图片
-
         SetActive(!IsActive);//反转激活状态
+    }
+
+    public override void SetActive(bool b)
+    {
+        base.SetActive(b);
+        if (b)
+        {
+            Image.sprite = OpenImg;
+        }
+        else
+        {
+            Image.sprite = CloseImg;
+        }
     }
 }
