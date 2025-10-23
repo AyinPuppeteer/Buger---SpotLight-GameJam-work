@@ -2,6 +2,7 @@ using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class AlertPrinter : MonoBehaviour
 {
@@ -26,7 +27,7 @@ public class AlertPrinter : MonoBehaviour
     {
         AlertText at = Instantiate(LogOb, LogWindow.transform).GetComponent<AlertText>();
         at.GetComponent<RectTransform>().localPosition += Offset * Vector3.down;//新的文本向下移动
-        at.SetText(log, type);
+        at.SetText(log + " (位置: " + SceneManager.GetActiveScene().name + ")", type);
         Logs.Add(at);
         Offset += at.ReturnHeight() + 20;
         DOTween.To(() => LogWindow.transform.localPosition.y, x => 
