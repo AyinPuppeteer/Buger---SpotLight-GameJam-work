@@ -1,9 +1,18 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 public class BaseMovement : CharacterBase
 {
     // 单例实例
     public static BaseMovement Instance { get; private set; }
+
+    [Header("Detection Settings")]
+    [SerializeField] protected bool isDetectable = true; // 是否可被敌人和扫描线探测
+
+    [Header("Visual Settings")]
+    [SerializeField] protected float detectableAlpha = 1f;    // 可被发现时的透明度
+    [SerializeField] protected float undetectableAlpha = 0f;  // 不可被发现时的透明度（改为0，全透明）
+    [SerializeField] protected float alphaLerpSpeed = 5f;     // 透明度变化速度
 
     [Header("Climb Settings")]
     [SerializeField] protected float climbSpeed = 1.0f;
@@ -12,16 +21,20 @@ public class BaseMovement : CharacterBase
     protected bool canClimb = false;
     protected bool canLeave = false;
 
+    // SpriteRenderer相关
+    protected List<SpriteRenderer> childSpriteRenderers = new List<SpriteRenderer>();
+    protected Dictionary<SpriteRenderer, Color> originalColors = new Dictionary<SpriteRenderer, Color>();
+    protected float currentAlpha = 1f;
+    protected float targetAlpha = 1f;
 
     private I_Interacts i_interacts;
-
     private bool firstBug = false;
-
     private Collider2D collider2d;
 
     // 暴露属性
     public bool IsClimbing_ { get => isClimbing; }
     public bool CanClimb_ { get => canClimb; }
+    public bool IsDetectable_ { get => isDetectable; }
 
     protected override void Awake()
     {
@@ -29,8 +42,16 @@ public class BaseMovement : CharacterBase
         Instance = this;
         canJump = true; // 玩家可以跳跃
 
-        //获取碰撞体组件
+        // 获取碰撞体组件
         collider2d = GetComponent<Collider2D>();
+
+        // 收集所有子物体的SpriteRenderer
+        CollectChildSpriteRenderers();
+
+        // 设置初始透明度
+        currentAlpha = isDetectable ? detectableAlpha : undetectableAlpha;
+        targetAlpha = currentAlpha;
+        UpdateSpriteAlpha();
     }
 
     protected override void Update()
@@ -39,17 +60,25 @@ public class BaseMovement : CharacterBase
         if (Instance != this) return;
 
         HandleTriggerButton();
+        UpdateAlphaTransition();
         base.Update();
 
         if (!isDetectable)
         {
-            //将碰撞类型设置为触发器
-            collider2d.isTrigger = true;
+            gameObject.gameObject.layer = 8;
+            foreach (Transform child in transform)
+            {
+                child.gameObject.layer = 8;
+            }
         }
         else
         {
-            collider2d.isTrigger = false;
-        }        
+            gameObject.gameObject.layer = 7;
+            foreach (Transform child in transform)
+            {
+                child.gameObject.layer = 7;
+            }
+        }
     }
 
     protected override void FixedUpdate()
@@ -69,28 +98,95 @@ public class BaseMovement : CharacterBase
         }
     }
 
+    /// <summary>
+    /// 收集所有子物体的SpriteRenderer
+    /// </summary>
+    protected virtual void CollectChildSpriteRenderers()
+    {
+        childSpriteRenderers.Clear();
+        originalColors.Clear();
+
+        // 获取所有子物体（包括孙子物体）的SpriteRenderer
+        SpriteRenderer[] allSpriteRenderers = GetComponentsInChildren<SpriteRenderer>();
+
+        foreach (SpriteRenderer spriteRenderer in allSpriteRenderers)
+        {
+            // 跳过自身的SpriteRenderer（如果有），只处理子物体
+            if (spriteRenderer.gameObject != gameObject)
+            {
+                childSpriteRenderers.Add(spriteRenderer);
+                originalColors[spriteRenderer] = spriteRenderer.color;
+            }
+        }
+    }
+
+    /// <summary>
+    /// 处理透明度过渡
+    /// </summary>
+    protected virtual void UpdateAlphaTransition()
+    {
+        // 根据可探测状态设置目标透明度
+        targetAlpha = isDetectable ? detectableAlpha : undetectableAlpha;
+
+        // 平滑过渡透明度
+        if (Mathf.Abs(currentAlpha - targetAlpha) > 0.01f)
+        {
+            currentAlpha = Mathf.Lerp(currentAlpha, targetAlpha, alphaLerpSpeed * Time.deltaTime);
+            UpdateSpriteAlpha();
+        }
+    }
+
+    /// <summary>
+    /// 更新所有子物体SpriteRenderer的透明度
+    /// </summary>
+    protected virtual void UpdateSpriteAlpha()
+    {
+        foreach (SpriteRenderer spriteRenderer in childSpriteRenderers)
+        {
+            if (spriteRenderer != null)
+            {
+                Color newColor = originalColors[spriteRenderer];
+                newColor.a = currentAlpha;
+                spriteRenderer.color = newColor;
+            }
+        }
+    }
+
     protected override void GetInput()
     {
-        inputVector = GameInput.Instance.GetMovementInput();
-        horizontal = inputVector.x;
-        vertical = inputVector.y;
+        // 如果不可探测，禁止移动输入
+        if (!isDetectable)
+        {
+            inputVector = Vector2.zero;
+            horizontal = 0f;
+            vertical = 0f;
+        }
+        else
+        {
+            inputVector = GameInput.Instance.GetMovementInput();
+            horizontal = inputVector.x;
+            vertical = inputVector.y;
+        }
     }
 
     private void HandleTriggerButton()
     {
+        // 处理交互按钮逻辑 - 无论是否可探测都应该可以交互
+        if (GameInput.Instance.InteractInputDown())
+        {
+            if (i_interacts != null)
+            {
+                i_interacts.TakeInteract();
+            }
+        }
+
+        // 如果不可探测，禁止跳跃
+        if (!isDetectable) return;
+
         // 接收跳跃按钮
         if (GameInput.Instance.GetJumpInputDown())
         {
             jumpRequested = true;
-        }
-
-        // 处理交互按钮逻辑
-        if (GameInput.Instance.InteractInputDown())
-        {
-            if(i_interacts != null)
-            {
-                i_interacts.TakeInteract();
-            }
         }
     }
 
@@ -101,6 +197,14 @@ public class BaseMovement : CharacterBase
     {
         GetInput();
 
+        // 如果不可探测，禁止移动
+        if (!isDetectable)
+        {
+            speed = 0;
+            verticalVelocity = 0;
+            return;
+        }
+
         if (inputVector != Vector2.zero)
         {
             if (horizontal < -deadZone) toRight = false;
@@ -110,6 +214,7 @@ public class BaseMovement : CharacterBase
             {
                 canClimb = false;
                 isClimbing = false;
+                canLeave = false;
             }
 
             // 攀爬逻辑
@@ -121,7 +226,7 @@ public class BaseMovement : CharacterBase
                     AlertPrinter.Instance.PrintLog("错误：未检测到物体：梯子。", LogType.错误);
                     firstBug = false;
                 }
-                }
+            }
             else if (vertical < -0.5f && isGrounded)
                 isSneaking = true;
             else if (vertical > -deadZone || !isGrounded)
@@ -168,7 +273,6 @@ public class BaseMovement : CharacterBase
         if (move.y > 0) // 只在上移时检测上方碰撞
         {
             CheckVerticalCollision(ref move);
-
         }
 
         // 应用移动
@@ -180,6 +284,13 @@ public class BaseMovement : CharacterBase
     /// </summary>
     protected override void HandleForce()
     {
+        // 如果不可探测，禁止跳跃和重力
+        if (!isDetectable)
+        {
+            verticalVelocity = 0;
+            return;
+        }
+
         // 跳跃逻辑
         if (isGrounded && jumpRequested && canJump)
         {
@@ -218,7 +329,6 @@ public class BaseMovement : CharacterBase
 
         if (ladder != null)
         {
-            canLeave = false;
             canClimb = true;
         }
         if (pickItem != null)
@@ -226,7 +336,6 @@ public class BaseMovement : CharacterBase
             pickItem.Pick();
         }
 
-        // 敌人碰撞检测
         HandleEnemyCollision(other.gameObject);
     }
 
@@ -249,7 +358,7 @@ public class BaseMovement : CharacterBase
     /// </summary>
     protected virtual void OnCollisionEnter2D(Collision2D collision)
     {
-        HandleEnemyCollision(collision.gameObject);
+         HandleEnemyCollision(collision.gameObject);
     }
 
     /// <summary>
@@ -264,4 +373,22 @@ public class BaseMovement : CharacterBase
             GameManager.Instance.GameOver();
         }
     }
+
+    // ========== 新增功能 ==========
+
+    /// <summary>
+    /// 设置角色是否可被敌人和扫描线探测
+    /// </summary>
+    public void SetDetectable(bool detectable)
+    {
+        isDetectable = detectable;
+
+        // 当恢复可探测状态时，确保碰撞体恢复正常
+        if (isDetectable && collider2d != null)
+        {
+            collider2d.isTrigger = false;
+        }
+    }
+
+    // ==============================
 }

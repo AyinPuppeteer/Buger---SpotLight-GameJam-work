@@ -2,24 +2,18 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-//Òş²ØÇøÓò£¨²İ´Ô£©µÄ½Å±¾
-public class HideField : MonoBehaviour
+//éšè—åŒºåŸŸï¼ˆè‰ä¸›ï¼‰çš„è„šæœ¬
+public class HideField : Key, I_Interacts
 {
-    private void OnTriggerEnter2D(Collider2D other)
+    public void TakeInteract()
     {
-        CharacterBase cb = other.GetComponent<CharacterBase>();
-        if (cb != null)
+        if (BaseMovement.Instance != null && BaseMovement.Instance.IsDetectable_)
         {
-            cb.SetDetectable(false);//Ê¹Ä¿±ê½øÈë¡°ÒşÄä×´Ì¬¡±
+            BaseMovement.Instance.SetDetectable(false);
         }
-    }
-
-    private void OnTriggerExit2D(Collider2D other)
-    {
-        CharacterBase cb = other.GetComponent<CharacterBase>();
-        if (cb != null)
+        else if (BaseMovement.Instance != null && !BaseMovement.Instance.IsDetectable_)
         {
-            cb.SetDetectable(true);//Ê¹Ä¿±ê½â³ı¡°ÒşÄä×´Ì¬¡±
+            BaseMovement.Instance.SetDetectable(true);
         }
     }
 }
