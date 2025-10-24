@@ -29,6 +29,8 @@ public class GameManager : MonoBehaviour
         //开始时，生成角色
         CreatePlayer();
         CreateAllEnemies();
+
+        AlertPrinter.Instance.PrintLog("警告：检测到未知实体！", LogType.警告);
     }
 
     #region 角色生成
