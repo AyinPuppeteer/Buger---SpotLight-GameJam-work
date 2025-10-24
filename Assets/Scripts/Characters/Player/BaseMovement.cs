@@ -27,7 +27,10 @@ public class BaseMovement : CharacterBase
     protected float currentAlpha = 1f;
     protected float targetAlpha = 1f;
 
-    private I_Interacts i_interacts;
+    // 交互系统：使用列表管理多个交互对象
+    private List<I_Interacts> interactables = new List<I_Interacts>();
+    private I_Interacts currentInteractable = null;
+
     private bool firstBug = false;
     private Collider2D collider2d;
 
@@ -61,6 +64,7 @@ public class BaseMovement : CharacterBase
 
         HandleTriggerButton();
         UpdateAlphaTransition();
+        UpdateCurrentInteractable(); // 更新当前交互对象
         base.Update();
 
         if (!isDetectable)
@@ -79,6 +83,33 @@ public class BaseMovement : CharacterBase
                 child.gameObject.layer = 7;
             }
         }
+    }
+
+    /// <summary>
+    /// 更新当前交互对象
+    /// </summary>
+    private void UpdateCurrentInteractable()
+    {
+        if (interactables.Count == 0)
+        {
+            currentInteractable = null;
+            return;
+        }
+
+        // 优先选择非梯子的交互对象（如柜子）
+        I_Interacts preferred = null;
+        foreach (I_Interacts interactable in interactables)
+        {
+            // 柜子（HideField）优先于梯子
+            if (!(interactable is Ladder))
+            {
+                preferred = interactable;
+                break;
+            }
+        }
+
+        // 如果没有柜子，选择第一个交互对象
+        currentInteractable = preferred ?? interactables[0];
     }
 
     protected override void FixedUpdate()
@@ -174,9 +205,9 @@ public class BaseMovement : CharacterBase
         // 处理交互按钮逻辑 - 无论是否可探测都应该可以交互
         if (GameInput.Instance.InteractInputDown())
         {
-            if (i_interacts != null)
+            if (currentInteractable != null)
             {
-                i_interacts.TakeInteract();
+                currentInteractable.TakeInteract();
             }
         }
 
@@ -325,7 +356,7 @@ public class BaseMovement : CharacterBase
     {
         Ladder ladder = other.GetComponent<Ladder>();
         I_PickItem pickItem = other.GetComponent<I_PickItem>();
-        i_interacts = other.GetComponent<I_Interacts>();
+        I_Interacts interacts = other.GetComponent<I_Interacts>();
 
         if (ladder != null)
         {
@@ -334,6 +365,11 @@ public class BaseMovement : CharacterBase
         if (pickItem != null)
         {
             pickItem.Pick();
+        }
+        // 添加交互对象到列表
+        if (interacts != null && !interactables.Contains(interacts))
+        {
+            interactables.Add(interacts);
         }
 
         HandleEnemyCollision(other.gameObject);
@@ -344,8 +380,14 @@ public class BaseMovement : CharacterBase
     /// </summary>
     protected virtual void OnTriggerExit2D(Collider2D other)
     {
+        I_Interacts interacts = other.GetComponent<I_Interacts>();
+        // 从交互对象列表中移除
+        if (interacts != null && interactables.Contains(interacts))
+        {
+            interactables.Remove(interacts);
+        }
+
         Ladder ladder = other.GetComponent<Ladder>();
-        i_interacts = null;
         if (ladder != null)
         {
             canLeave = true;
@@ -358,7 +400,7 @@ public class BaseMovement : CharacterBase
     /// </summary>
     protected virtual void OnCollisionEnter2D(Collision2D collision)
     {
-         HandleEnemyCollision(collision.gameObject);
+        HandleEnemyCollision(collision.gameObject);
     }
 
     /// <summary>
