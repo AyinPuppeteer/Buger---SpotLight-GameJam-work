@@ -12,6 +12,8 @@ public class MainCamera : MonoBehaviour
 
     private void LateUpdate()
     {
+        if (GameManager.Instance == null) return;//没在关卡中就跳出
+
         if(Player == null)//没有角色物体则利用单例化查找
         {
             if(BaseMovement.Instance != null)
@@ -22,7 +24,7 @@ public class MainCamera : MonoBehaviour
         else
         {
             //跟随玩家移动
-            transform.position = Player.transform.position;
+            transform.position = new(transform.position.x, Player.transform.position.y, transform.position.z);//只移动Y轴
         }
     }
 }

@@ -8,7 +8,7 @@ public class Guard : CharacterBase
     [SerializeField] private float chaseSpeed = 3f;
     [SerializeField] private float patrolRange = 5.0f;
     [SerializeField] private float jumpCooldown = 1.0f;
-    [SerializeField] private float stoppingDistance = 0.01f;
+    [SerializeField] private float stoppingDistance = 0.5f; // 增加停止距离
 
     [Header("Proximity Detection")]
     [SerializeField] private float proximityRange = 3.0f; // 近距离检测范围
@@ -58,7 +58,7 @@ public class Guard : CharacterBase
         startPosition = transform.position;
         currentPatrolCenter = startPosition;
         canJump = true;
-        lastXPosition = transform.position.x;
+        lastXPosition = currentPatrolCenter.x;
 
         // 获取手电筒组件
         flashlight = GetComponentInChildren<FlashlightDetector>();
@@ -211,17 +211,28 @@ public class Guard : CharacterBase
             // 记录玩家最后位置
             Vector3 playerPosition = playerMovement.transform.position;
 
-            // 追逐玩家
-            float targetDirection = Mathf.Sign(playerPosition.x - transform.position.x);
+            // 检查水平距离是否小于停止距离
+            float horizontalDistance = Mathf.Abs(playerPosition.x - transform.position.x);
 
-            // 如果处于临时反向状态，使用反向方向
-            if (isTemporarilyReversed)
+            // 如果水平距离小于停止距离，停止移动
+            if (horizontalDistance <= stoppingDistance)
             {
-                horizontal = -targetDirection;
+                horizontal = 0f;
             }
             else
             {
-                horizontal = targetDirection;
+                // 追逐玩家
+                float targetDirection = Mathf.Sign(playerPosition.x - transform.position.x);
+
+                // 如果处于临时反向状态，使用反向方向
+                if (isTemporarilyReversed)
+                {
+                    horizontal = -targetDirection;
+                }
+                else
+                {
+                    horizontal = targetDirection;
+                }
             }
 
             vertical = 0f;
@@ -470,6 +481,10 @@ public class Guard : CharacterBase
         Gizmos.color = playerInProximity ? Color.magenta : new Color(1, 0, 1, 0.3f); // 紫色
         Gizmos.DrawWireSphere(transform.position, proximityRange);
 
+        // 绘制停止距离
+        Gizmos.color = Color.cyan;
+        Gizmos.DrawWireSphere(transform.position, stoppingDistance);
+
         // 绘制追逐状态和计时器
         if (Application.isPlaying)
         {
@@ -542,6 +557,13 @@ public class Guard : CharacterBase
                 moveStyle.normal.textColor = isMoving ? Color.cyan : Color.white;
                 UnityEditor.Handles.Label(transform.position + Vector3.down * 3f,
                     $"Moving: {isMoving}", moveStyle);
+
+                // 显示与玩家的水平距离
+                float horizontalDistance = Mathf.Abs(playerMovement.transform.position.x - transform.position.x);
+                GUIStyle distanceStyle = new GUIStyle();
+                distanceStyle.normal.textColor = horizontalDistance <= stoppingDistance ? Color.green : Color.white;
+                UnityEditor.Handles.Label(transform.position + Vector3.down * 3.5f,
+                    $"Horizontal Distance: {horizontalDistance:F2}", distanceStyle);
             }
 #endif
         }

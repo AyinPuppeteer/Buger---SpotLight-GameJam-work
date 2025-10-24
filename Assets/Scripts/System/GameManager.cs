@@ -9,8 +9,9 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     private Animator AlertAnim;
 
-    [HideInInspector]
-    public SavePoint SavePoint;//记录的存档点（临时）
+    private SavePoint SavePoint;//记录的存档点
+    [SerializeField]
+    private SavePoint StartSavePoint;//起始记录点
 
     private readonly List<EnemySpawner> Spawners = new();//角色生成器列表
 
@@ -23,9 +24,13 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
+        //设置起始出生点
+        SetSavePoint(StartSavePoint);
         //开始时，生成角色
         CreatePlayer();
         CreateAllEnemies();
+
+        AlertPrinter.Instance.PrintLog("警告：检测到未知实体！", LogType.警告);
     }
 
     #region 角色生成

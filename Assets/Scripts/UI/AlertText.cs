@@ -10,19 +10,21 @@ public class AlertText : MonoBehaviour
     [SerializeField]
     private TextMeshProUGUI Text;
 
-    private float ExistTimer, ExistTime = 2f;
+    private float ExistTimer, ExistTime = 1.5f;
 
     private void Update()
     {
-        ExistTimer += Time.deltaTime;
-        if(ExistTimer > ExistTime)
+        if(ExistTimer < ExistTime)
         {
-            DOTween.To(() => Text.color.a, x =>
+            if ((ExistTimer += Time.deltaTime) > ExistTime)
             {
-                Color c = Text.color;
-                c.a = x;
-                Text.color = c;
-            }, 0, 0.5f).OnComplete(() => Destroy(gameObject));
+                DOTween.To(() => Text.color.a, x =>
+                {
+                    Color c = Text.color;
+                    c.a = x;
+                    Text.color = c;
+                }, 0, 0.3f).OnComplete(() => Destroy(gameObject));
+            }
         }
     }
 

@@ -215,7 +215,6 @@ MonoBehaviour:
     m_Bits: 128
   isDetectable: 1
   detectableAlpha: 1
-  undetectableAlpha: 0.5
+  undetectableAlpha: 0
   alphaLerpSpeed: 5
   climbSpeed: 1
-  enableEnemyCollision: 1

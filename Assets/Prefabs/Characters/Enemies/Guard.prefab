@@ -140,15 +140,14 @@ MonoBehaviour:
   enemyLayerMask:
     serializedVersion: 2
     m_Bits: 128
-  isDetectable: 1
-  detectableAlpha: 1
-  undetectableAlpha: 0.5
-  alphaLerpSpeed: 5
+  playerHiddenLayerMask:
+    serializedVersion: 2
+    m_Bits: 256
   patrolSpeed: 1
   chaseSpeed: 3
   patrolRange: 1.2
   jumpCooldown: 1
-  stoppingDistance: 0.05
+  stoppingDistance: 0.1
   proximityRange: 3
   proximityDetectionFrequency: 0.3
   requireGroundedForProximity: 1

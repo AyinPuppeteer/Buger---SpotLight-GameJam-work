@@ -16,7 +16,7 @@ TagManager:
   - UI
   - Interacts
   - Player
-  - 
+  - 'PlayerHidden '
   - 
   - 
   - 
@@ -50,11 +50,11 @@ TagManager:
   - name: Block
     uniqueID: 3720814457
     locked: 0
-  - name: Player
-    uniqueID: 4225959761
-    locked: 0
   - name: Interacts
     uniqueID: 3016093461
+    locked: 0
+  - name: Player
+    uniqueID: 4225959761
     locked: 0
   - name: UI
     uniqueID: 1988036591
