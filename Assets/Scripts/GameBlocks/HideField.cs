@@ -2,24 +2,18 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-//Òş²ØÇøÓò£¨²İ´Ô£©µÄ½Å±¾
+//éšè—åŒºåŸŸï¼ˆè‰ä¸›ï¼‰çš„è„šæœ¬
 public class HideField : MonoBehaviour, I_Interacts
 {
     public void TakeInteract()
     {
-        if (true)//ÊÇ·ñ´¦ÓÚ¡°ÒşÄä×´Ì¬¡±
+        if (BaseMovement.Instance != null && BaseMovement.Instance.IsDetectable_)
         {
-            if (BaseMovement.Instance != null)
-            {
-                BaseMovement.Instance.SetDetectable(false);//Ê¹Ä¿±ê½øÈë¡°ÒşÄä×´Ì¬¡±
-            }
+            BaseMovement.Instance.SetDetectable(false);
         }
-        else
+        else if (BaseMovement.Instance != null && !BaseMovement.Instance.IsDetectable_)
         {
-            if (BaseMovement.Instance != null)
-            {
-                BaseMovement.Instance.SetDetectable(false);//Ê¹Ä¿±ê½â³ı¡°ÒşÄä×´Ì¬¡±
-            }
+            BaseMovement.Instance.SetDetectable(true);
         }
     }
 }
