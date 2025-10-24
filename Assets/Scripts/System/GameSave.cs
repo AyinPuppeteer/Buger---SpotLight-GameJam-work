@@ -21,7 +21,10 @@ public class GameSave : MonoBehaviour
         else
         {
             Destroy(gameObject);
+            return;
         }
+
+        Data = new();
     }
 
     #region ¥Êµµº”‘ÿ∫Õ∂¡»°
