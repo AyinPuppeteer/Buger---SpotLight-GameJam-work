@@ -121,7 +121,7 @@ public class BaseMovement : CharacterBase
                     AlertPrinter.Instance.PrintLog("错误：未检测到物体：梯子。", LogType.错误);
                     firstBug = false;
                 }
-                }
+            }
             else if (vertical < -0.5f && isGrounded)
                 isSneaking = true;
             else if (vertical > -deadZone || !isGrounded)

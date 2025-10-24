@@ -982,8 +982,8 @@ ParticleSystem:
       countCurve:
         serializedVersion: 2
         minMaxState: 3
-        scalar: 1813
-        minScalar: 1813
+        scalar: 1791
+        minScalar: 1791
         maxCurve:
           serializedVersion: 2
           m_Curve:
@@ -4937,7 +4937,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4ec3ac352fd6bce4e852eebacc5ed083, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  burstParticleCount: 1813
+  burstParticleCount: 1791
   burstRepeatInterval: 1
   lifetime: 1.8
   startSpeed: 3

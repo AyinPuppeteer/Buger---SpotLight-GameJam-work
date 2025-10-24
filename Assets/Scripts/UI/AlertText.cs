@@ -10,7 +10,7 @@ public class AlertText : MonoBehaviour
     [SerializeField]
     private TextMeshProUGUI Text;
 
-    private float ExistTimer, ExistTime = 2f;
+    private float ExistTimer, ExistTime = 1f;
 
     private void Update()
     {

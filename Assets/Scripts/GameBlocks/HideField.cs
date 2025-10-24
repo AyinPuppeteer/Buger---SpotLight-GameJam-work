@@ -3,23 +3,23 @@ using System.Collections.Generic;
 using UnityEngine;
 
 //隐藏区域（草丛）的脚本
-public class HideField : MonoBehaviour
+public class HideField : MonoBehaviour, I_Interacts
 {
-    private void OnTriggerEnter2D(Collider2D other)
+    public void TakeInteract()
     {
-        CharacterBase cb = other.GetComponent<CharacterBase>();
-        if (cb != null)
+        if (true)//是否处于“隐匿状态”
         {
-            cb.SetDetectable(false);//使目标进入“隐匿状态”
+            if (BaseMovement.Instance != null)
+            {
+                BaseMovement.Instance.SetDetectable(false);//使目标进入“隐匿状态”
+            }
         }
-    }
-
-    private void OnTriggerExit2D(Collider2D other)
-    {
-        CharacterBase cb = other.GetComponent<CharacterBase>();
-        if (cb != null)
+        else
         {
-            cb.SetDetectable(true);//使目标解除“隐匿状态”
+            if (BaseMovement.Instance != null)
+            {
+                BaseMovement.Instance.SetDetectable(false);//使目标解除“隐匿状态”
+            }
         }
     }
 }
