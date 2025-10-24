@@ -18,7 +18,7 @@ public class WoveThread : MonoBehaviour, I_PickItem
 
     private bool Gained;//是否被获取
 
-    private void Awake()
+    private void Start()
     {
         SceneName = SceneManager.GetActiveScene().name;
         if(GameSave.Instance.CheckThread(SceneName, ID))
