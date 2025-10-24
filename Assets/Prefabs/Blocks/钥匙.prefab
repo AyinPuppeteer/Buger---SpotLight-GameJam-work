@@ -95,7 +95,7 @@ GameObject:
   - component: {fileID: 5411981874900592747}
   - component: {fileID: 8292192408290822855}
   - component: {fileID: 3139783802316385170}
-  - component: {fileID: 5557746771595077103}
+  - component: {fileID: 7284837346370172782}
   m_Layer: 6
   m_Name: "\u94A5\u5319"
   m_TagString: Untagged
@@ -176,8 +176,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b5ffa45291fcb1a4ebf67c2308e61f23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  IsActive: 0
   Image: {fileID: 1615323856110960317}
---- !u!95 &5557746771595077103
+--- !u!95 &7284837346370172782
 Animator:
   serializedVersion: 5
   m_ObjectHideFlags: 0
