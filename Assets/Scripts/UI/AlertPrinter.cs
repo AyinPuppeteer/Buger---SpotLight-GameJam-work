@@ -37,6 +37,4 @@ public class AlertPrinter : MonoBehaviour
             LogWindow.transform.localPosition = pos; 
         }, Offset, 0.5f);//»ºÂıÏòÉÏÒÆ¶¯
     }
-
-
 }

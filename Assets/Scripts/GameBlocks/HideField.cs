@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 //隐藏区域（草丛）的脚本
-public class HideField : Key, I_Interacts
+public class HideField : MonoBehaviour, I_Interacts
 {
     public void TakeInteract()
     {
