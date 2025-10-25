@@ -25,7 +25,7 @@ public class ScanWave : MonoBehaviour
         BaseMovement bm = another.GetComponent<BaseMovement>();
         if(bm != null)
         {
-            if (bm.IsDetectable_)//能够被检测的情况下才进行下一步
+            if (bm.IsDetectable_ && !bm.IsExposed_)//能够被检测且并未暴露的情况下才进行下一步
             {
                 if (Vector2.Distance(another.transform.position, transform.position) > transform.localScale.x * RawRadius - 0.3f)//当目标在边缘处才会检测
                 {

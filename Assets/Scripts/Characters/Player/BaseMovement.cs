@@ -8,7 +8,10 @@ public class BaseMovement : CharacterBase
 
     [Header("Detection Settings")]
     [SerializeField] protected bool isDetectable = true; // 是否可被敌人和扫描线探测
+    public bool IsDetectable_ { get => isDetectable; }
+
     protected bool isExposed;//处于暴露状态（定位追捕）
+    public bool IsExposed_ { get => isExposed; }
 
     [Header("Visual Settings")]
     [SerializeField] protected float detectableAlpha = 1f;    // 可被发现时的透明度
@@ -19,7 +22,9 @@ public class BaseMovement : CharacterBase
     [SerializeField] protected float climbSpeed = 1.0f;
 
     protected bool isClimbing = false;
+    public bool IsClimbing_ { get => isClimbing; }
     protected bool canClimb = false;
+    public bool CanClimb_ { get => canClimb; }
     protected bool canLeave = false;
 
     // SpriteRenderer相关
@@ -34,11 +39,6 @@ public class BaseMovement : CharacterBase
 
     private bool firstBug = false;
     private Collider2D collider2d;
-
-    // 暴露属性
-    public bool IsClimbing_ { get => isClimbing; }
-    public bool CanClimb_ { get => canClimb; }
-    public bool IsDetectable_ { get => isDetectable; }
 
     protected override void Awake()
     {
@@ -443,6 +443,7 @@ public class BaseMovement : CharacterBase
             if (exposed)
             {
                 GameManager.Instance.PlayerExposed();
+                AlertPrinter.Instance.PrintLog("警告：检测到未知实体！所在位置：(" + (int)(transform.position.x / 0.16f) + ", " + (int)(transform.position.y / 0.16f) + ")。", LogType.警告);
             }
             else
             {
