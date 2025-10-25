@@ -68,6 +68,24 @@ public class ScanWave : MonoBehaviour
             circleCollider = GetComponent<CircleCollider2D>();
         }
     }
+
+    // 确保在运行时开始时自动播放粒子系统
+    private void Start()
+    {
+        if (particleSystem == null)
+        {
+            particleSystem = GetComponent<ParticleSystem>();
+            if (particleSystem == null) return;
+            mainModule = particleSystem.main;
+            emissionModule = particleSystem.emission;
+        }
+
+        if (!particleSystem.isPlaying)
+        {
+            particleSystem.Play();
+        }
+    }
+
     void OnValidate()
     {
         // 编辑模式下实时更新

@@ -13,7 +13,8 @@ GameObject:
   - component: {fileID: 1817706429376410669}
   - component: {fileID: 6839341151026055584}
   - component: {fileID: 4808003500758148969}
-  m_Layer: 0
+  - component: {fileID: 9068809224225799309}
+  m_Layer: 7
   m_Name: Scan
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4855,8 +4856,8 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -69007535
+  m_SortingLayer: 4
   m_SortingOrder: 0
   m_RenderMode: 0
   m_MeshDistribution: 0
@@ -4942,3 +4943,15 @@ MonoBehaviour:
   lifetime: 1.8
   startSpeed: 3
   startColor: {r: 0.29696202, g: 0.76609534, b: 0.899371, a: 1}
+--- !u!114 &9068809224225799309
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2563950366828167320}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ba062810c3535944ebe3bc967b7e2ea2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
