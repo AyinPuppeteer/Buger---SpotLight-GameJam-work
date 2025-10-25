@@ -8,6 +8,7 @@ public class BaseMovement : CharacterBase
 
     [Header("Detection Settings")]
     [SerializeField] protected bool isDetectable = true; // 是否可被敌人和扫描线探测
+    protected bool isExposed;//处于暴露状态（定位追捕）
 
     [Header("Visual Settings")]
     [SerializeField] protected float detectableAlpha = 1f;    // 可被发现时的透明度
@@ -416,8 +417,6 @@ public class BaseMovement : CharacterBase
         }
     }
 
-    // ========== 新增功能 ==========
-
     /// <summary>
     /// 设置角色是否可被敌人和扫描线探测
     /// </summary>
@@ -430,7 +429,25 @@ public class BaseMovement : CharacterBase
         {
             collider2d.isTrigger = false;
         }
+
+        //如果不可探测，则取消暴露状态
+        if (!isDetectable) SetExposed(false);
     }
 
-    // ==============================
+    //设置角色是否处于暴露状态
+    public void SetExposed(bool exposed)
+    {
+        if (isExposed != exposed)
+        {
+            isExposed = exposed;
+            if (exposed)
+            {
+                GameManager.Instance.PlayerExposed();
+            }
+            else
+            {
+                GameManager.Instance.PlayerDisexposed();
+            }
+        }
+    }
 }

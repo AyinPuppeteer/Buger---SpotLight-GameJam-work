@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
@@ -76,5 +77,25 @@ public class GameManager : MonoBehaviour
     {
         CreatePlayer();
         CreateAllEnemies();
+    }
+
+    //角色处于暴露状态时修改
+    public void PlayerExposed()
+    {
+        AlertAnim.SetInteger("Anim", 1);
+
+        foreach(var guard in CharacterManager.Instance.ReturnAllEnemies())
+        {
+            guard.SetActive(true);
+        }
+    }
+    public void PlayerDisexposed()
+    {
+        AlertAnim.SetInteger("Anim", 0);
+
+        foreach (var guard in CharacterManager.Instance.ReturnAllEnemies())
+        {
+            guard.SetActive(false);
+        }
     }
 }

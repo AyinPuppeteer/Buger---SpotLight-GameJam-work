@@ -60,7 +60,7 @@ public class CharacterSpawner : MonoBehaviour
     {
         if (characterInstance != null) Destroy(characterInstance);
 
-        characterInstance = Instantiate(characterPrefab, position, Quaternion.identity);
+        characterInstance = Instantiate(characterPrefab, position, Quaternion.identity, CharacterManager.Instance.transform);
         characterInstance.name = characterName;
     }
 

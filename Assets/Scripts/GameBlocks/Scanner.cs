@@ -10,7 +10,10 @@ public class Scanner : Lock
     [SerializeField]
     private Sprite OpenImg, CloseImg;
 
-    private const float ActTime = 10f;
+    [SerializeField]
+    private GameObject WaveOb;//扫描波物体
+
+    private const float ActTime = 5f;
     private float ActTimer;//行动时间，行动计时器
 
     public float Radius;//扫描半径
@@ -31,7 +34,8 @@ public class Scanner : Lock
     //进行扫描
     private void TakeScan()
     {
-
+        GameObject ob = Instantiate(WaveOb, transform.position, Quaternion.identity, transform);//生成波物体
+        ob.GetComponent<ScanWave>().SetRadius(Radius);
     }
 
     public override void SetActive(bool b)
