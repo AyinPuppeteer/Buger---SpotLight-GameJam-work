@@ -255,7 +255,7 @@ public class BaseMovement : CharacterBase
                 isClimbing = true;
                 if (canLeave && firstBug)
                 {
-                    AlertPrinter.Instance.PrintLog("错误：未检测到物体：梯子。", LogType.错误);
+                    AlertPrinter.Instance.PrintLog("错误：实体试图攀爬，但未检测到物体：梯子！", LogType.错误);
                     firstBug = false;
                 }
             }
@@ -443,7 +443,7 @@ public class BaseMovement : CharacterBase
             if (exposed)
             {
                 GameManager.Instance.PlayerExposed();
-                AlertPrinter.Instance.PrintLog("警告：检测到未知实体！所在位置：(" + (int)(transform.position.x / 0.16f) + ", " + (int)(transform.position.y / 0.16f) + ")。", LogType.警告);
+                AlertPrinter.Instance.PrintLog("警告：检测到未知实体！所在位置：(" + (int)(transform.position.x / 0.16f) + ", " + (int)(transform.position.y / 0.16f) + ")", LogType.警告);
             }
             else
             {

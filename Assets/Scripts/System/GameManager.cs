@@ -53,6 +53,7 @@ public class GameManager : MonoBehaviour
             //将所有的敌人生成器重置
             spawner.SpawnEnemy();
         }
+        AlertPrinter.Instance.PrintLog("已生成警卫实体: " + Spawners.Count, LogType.调试);
     }
     #endregion
 
@@ -70,16 +71,20 @@ public class GameManager : MonoBehaviour
     public void GameOver()
     {
         Destroy(BaseMovement.Instance.gameObject);
-        AlertPrinter.Instance.PrintLog("未知实体已死亡，清理完成。", LogType.调试);
+        AlertPrinter.Instance.PrintLog("已控制位置实体，执行摧毁操作", LogType.调试);
         PlayerDisexposed();
 
-        FadeEvent.Instance.FakeFade();
-        DOTween.To(() => 0, x => { }, 0, 0.8f).OnComplete(GameRestart);
+        DOTween.To(() => 0, x => { }, 0, 1f).OnComplete(() =>
+        {
+            FadeEvent.Instance.FakeFade();
+            DOTween.To(() => 0, x => { }, 0, 0.8f).OnComplete(GameRestart);
+        });
     }
     //重新开始
     public void GameRestart()
     {
         CreatePlayer();
+        AlertPrinter.Instance.PrintLog("错误：目标实体摧毁失败！原因：未拥有权限", LogType.错误);
         CreateAllEnemies();
     }
 

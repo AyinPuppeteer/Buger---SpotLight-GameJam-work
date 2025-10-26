@@ -16,7 +16,7 @@ public class ScanWave : MonoBehaviour
     private void Start()
     {
         transform.localScale = new(0, 0, 1);
-        transform.DOScale(new Vector3(Radius / RawRadius, Radius / RawRadius, 1), 1f);
+        transform.DOScale(new Vector3(Radius / RawRadius, Radius / RawRadius, 1), 1.5f);
         Image.DOColor(new(1, 1, 1, 0), 0.6f).OnComplete(() => Destroy(gameObject)).SetDelay(0.5f);
     }
 
