@@ -1,3 +1,4 @@
+using DG.Tweening;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -69,8 +70,11 @@ public class GameManager : MonoBehaviour
     public void GameOver()
     {
         Destroy(BaseMovement.Instance.gameObject);
-        GameRestart();
         AlertPrinter.Instance.PrintLog("未知实体已死亡，清理完成。", LogType.调试);
+        PlayerDisexposed();
+
+        FadeEvent.Instance.FakeFade();
+        DOTween.To(() => 0, x => { }, 0, 0.8f).OnComplete(GameRestart);
     }
     //重新开始
     public void GameRestart()
