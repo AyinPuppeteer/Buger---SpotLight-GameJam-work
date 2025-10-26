@@ -374,6 +374,8 @@ public class BaseMovement : CharacterBase
         if (bug2Active) return;
 
         bug2Active = true;
+
+        AlertPrinter.Instance.PrintLog("错误：加速度过快，翻转单位重力！", LogType.错误);
     }
 
     /// <summary>
@@ -384,6 +386,8 @@ public class BaseMovement : CharacterBase
         if (!bug2Active) return;
 
         bug2Active = false;
+
+        AlertPrinter.Instance.PrintLog("错误：加速度过快，翻转单位重力！", LogType.错误);
     }
 
     /// <summary>

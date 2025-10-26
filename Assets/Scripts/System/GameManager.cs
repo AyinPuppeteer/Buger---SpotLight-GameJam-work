@@ -83,6 +83,8 @@ public class GameManager : MonoBehaviour
     //重新开始
     public void GameRestart()
     {
+        MainCamera.Instance.Reset();
+
         CreatePlayer();
         AlertPrinter.Instance.PrintLog("错误：目标实体摧毁失败！原因：未拥有权限", LogType.错误);
         CreateAllEnemies();
