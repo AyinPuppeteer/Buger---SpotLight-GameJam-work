@@ -107,6 +107,17 @@ public class BaseMovement : CharacterBase
         }
     }
 
+    protected override void HandleVisualLayer()
+    {
+        base.HandleVisualLayer();
+        if(isWalking) animator.SetBool(param[0], true); 
+        else animator.SetBool(param[0], false);
+        if (isSneaking) animator.SetBool(param[1], true);
+        else animator.SetBool(param[1], false);
+        //if (isClimbing) animator.SetBool(param3, true);
+        //else animator.SetBool(param3, false);
+    }
+
     /// <summary>
     /// 收集所有子物体的SpriteRenderer
     /// </summary>
@@ -236,10 +247,18 @@ public class BaseMovement : CharacterBase
                     firstBug = false;
                 }
             }
-            else if (vertical < -0.5f && isGrounded)
-                isSneaking = true;
-            else if (vertical > -deadZone || !isGrounded)
+            else if (isGrounded && Mathf.Abs(horizontal) > deadZone){
+                if(vertical < -0.5f)
+                    isSneaking = true;
+                else{
+                    isSneaking = false;
+                    isWalking = true;
+                }
+            }
+            else{
                 isSneaking = false;
+                isWalking = false;
+            }
 
             if (!canClimb || Mathf.Abs(vertical) < deadZone)
                 isClimbing = false;
@@ -529,11 +548,6 @@ public class BaseMovement : CharacterBase
         //如果不可探测，则取消暴露状态
         if (!isDetectable) SetExposed(false);
 
-        // 如果变为不可探测，关闭BUG2
-        if (!isDetectable && bug2Active)
-        {
-            DeactivateBUG2();
-        }
     }
 
     //设置角色是否处于暴露状态

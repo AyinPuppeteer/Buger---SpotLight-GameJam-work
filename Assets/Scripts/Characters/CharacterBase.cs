@@ -31,6 +31,10 @@ public class CharacterBase : MonoBehaviour
     [Header("BUG2 Settings")]
     [SerializeField] protected bool bug2Active = false;     // BUG2是否激活
 
+    [Header("Animtor Setting")]
+    [SerializeField] protected Animator animator;             // 动画器
+    [SerializeField] protected string[] param;
+
     protected Rigidbody2D rb;
 
     protected float speed;
