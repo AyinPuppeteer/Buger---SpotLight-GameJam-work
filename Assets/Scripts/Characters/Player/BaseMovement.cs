@@ -40,6 +40,9 @@ public class BaseMovement : CharacterBase
     private bool firstBug = false;
     private Collider2D collider2d;
 
+    // BUG2相关变量
+    private bool bug2WasActive = false; // 上一帧BUG2状态
+
     protected override void Awake()
     {
         base.Awake();
@@ -56,6 +59,7 @@ public class BaseMovement : CharacterBase
         currentAlpha = isDetectable ? detectableAlpha : undetectableAlpha;
         targetAlpha = currentAlpha;
         UpdateSpriteAlpha();
+
     }
 
     protected override void Update()
@@ -84,33 +88,6 @@ public class BaseMovement : CharacterBase
                 child.gameObject.layer = 7;
             }
         }
-    }
-
-    /// <summary>
-    /// 更新当前交互对象
-    /// </summary>
-    private void UpdateCurrentInteractable()
-    {
-        if (interactables.Count == 0)
-        {
-            currentInteractable = null;
-            return;
-        }
-
-        // 优先选择非梯子的交互对象（如柜子）
-        I_Interacts preferred = null;
-        foreach (I_Interacts interactable in interactables)
-        {
-            // 柜子（HideField）优先于梯子
-            if (!(interactable is Ladder))
-            {
-                preferred = interactable;
-                break;
-            }
-        }
-
-        // 如果没有柜子，选择第一个交互对象
-        currentInteractable = preferred ?? interactables[0];
     }
 
     protected override void FixedUpdate()
@@ -307,6 +284,8 @@ public class BaseMovement : CharacterBase
             CheckVerticalCollision(ref move);
         }
 
+        move.y *= bug2Active ? -1f : 1f;
+
         // 应用移动
         rb.MovePosition(rb.position + move);
     }
@@ -340,6 +319,12 @@ public class BaseMovement : CharacterBase
             if (verticalVelocity < -maxFallSpeed)
             {
                 verticalVelocity = -maxFallSpeed;
+
+                // 达到最大下落速度时触发BUG2
+                if (!bug2Active)
+                {
+                    ActivateBUG2();
+                }
             }
         }
 
@@ -347,7 +332,118 @@ public class BaseMovement : CharacterBase
         if (isGrounded && verticalVelocity < 0)
         {
             verticalVelocity = 0;
+            // 落地时关闭BUG2，为下一次触发做准备
+            if (bug2Active)
+            {
+                DeactivateBUG2();
+            }
         }
+
+        // 检查BUG2状态变化
+        if (bug2WasActive != bug2Active)
+        {
+            UpdateBUG2Effects();
+            bug2WasActive = bug2Active;
+        }
+    }
+
+    /// <summary>
+    /// 激活BUG2效果
+    /// </summary>
+    protected virtual void ActivateBUG2()
+    {
+        if (bug2Active) return;
+
+        bug2Active = true;
+    }
+
+    /// <summary>
+    /// 关闭BUG2效果
+    /// </summary>
+    protected virtual void DeactivateBUG2()
+    {
+        if (!bug2Active) return;
+
+        bug2Active = false;
+    }
+
+    /// <summary>
+    /// 更新BUG2效果（翻转摄像机、重力和sprite）
+    /// </summary>
+    protected virtual void UpdateBUG2Effects()
+    {
+        if (bug2Active)
+        {
+
+            // 翻转所有sprite子物体
+            FlipAllSprites();
+
+            // 翻转摄像机
+            FlipCamera();
+
+        }
+        else
+        {
+
+            // 恢复所有sprite子物体
+            FlipAllSprites();
+
+            // 恢复摄像机
+            FlipCamera();
+
+        }
+    }
+
+    /// <summary>
+    /// 翻转所有sprite子物体
+    /// </summary>
+    public virtual void FlipAllSprites()
+    {
+        foreach (SpriteRenderer spriteRenderer in childSpriteRenderers)
+        {
+            if (spriteRenderer != null)
+            {
+                spriteRenderer.flipY = !spriteRenderer.flipY;
+            }
+        }
+    }
+
+    /// <summary>
+    /// 翻转摄像机
+    /// </summary>
+    public virtual void FlipCamera()
+    {
+        if (MainCamera.Instance != null)
+        {
+            MainCamera.Instance.FlipCamera();
+        }
+    }
+
+    /// <summary>
+    /// 更新当前交互对象
+    /// </summary>
+    private void UpdateCurrentInteractable()
+    {
+        if (interactables.Count == 0)
+        {
+            currentInteractable = null;
+            return;
+        }
+
+        // 优先选择非梯子的交互对象（如柜子）
+        I_Interacts preferred = null;
+        foreach (I_Interacts interactable in interactables)
+        {
+            // 柜子（HideField）优先于梯子
+            if (!(interactable is Ladder))
+            {
+                preferred = interactable;
+                break;
+            }
+        }
+
+        // 如果没有柜子，选择第一个交互对象
+        currentInteractable = preferred ?? interactables[0];
     }
 
     /// <summary>
@@ -432,6 +528,12 @@ public class BaseMovement : CharacterBase
 
         //如果不可探测，则取消暴露状态
         if (!isDetectable) SetExposed(false);
+
+        // 如果变为不可探测，关闭BUG2
+        if (!isDetectable && bug2Active)
+        {
+            DeactivateBUG2();
+        }
     }
 
     //设置角色是否处于暴露状态

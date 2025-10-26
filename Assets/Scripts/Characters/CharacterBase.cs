@@ -28,6 +28,9 @@ public class CharacterBase : MonoBehaviour
     [SerializeField] protected LayerMask enemyLayerMask = 1 << 7;    // Player图层
     [SerializeField] protected LayerMask playerHiddenLayerMask = 1 << 8;
 
+    [Header("BUG2 Settings")]
+    [SerializeField] protected bool bug2Active = false;     // BUG2是否激活
+
     protected Rigidbody2D rb;
 
     protected float speed;
@@ -273,7 +276,7 @@ public class CharacterBase : MonoBehaviour
     /// </summary>
     protected virtual void CheckVerticalCollision(ref Vector2 move)
     {
-        if (move.y <= 0) return; // 只处理向上的移动
+        if (move.y <= 0 && !bug2Active || bug2Active && move.y >= 0) return; // 只处理向上的移动
 
         float rayLength = Mathf.Abs(move.y) + groundCheckDistance;
 
@@ -288,7 +291,7 @@ public class CharacterBase : MonoBehaviour
             rayOrigin.y += playerHeight / 2; // 从角色顶部发射
 
             RaycastHit2D hit = Physics2D.Raycast(rayOrigin,
-                Vector2.up,
+                bug2Active ? Vector2.down : Vector2.up,
                 rayLength,
                 obstacleLayerMask);
 
@@ -310,9 +313,9 @@ public class CharacterBase : MonoBehaviour
         Vector2 rayStart = (Vector2)transform.position;
         float rayLength = playerHeight / 2 + groundCheckDistance;
 
-        RaycastHit2D hitCenter = Physics2D.Raycast(rayStart, Vector2.down, rayLength, groundLayerMask);
-        RaycastHit2D hitLeft = Physics2D.Raycast(rayStart + Vector2.left * playerWidth / 2, Vector2.down, rayLength, groundLayerMask);
-        RaycastHit2D hitRight = Physics2D.Raycast(rayStart + Vector2.right * playerWidth / 2, Vector2.down, rayLength, groundLayerMask);
+        RaycastHit2D hitCenter = Physics2D.Raycast(rayStart, bug2Active ? Vector2.up : Vector2.down, rayLength, groundLayerMask);
+        RaycastHit2D hitLeft = Physics2D.Raycast(rayStart + Vector2.left * playerWidth / 2, bug2Active ? Vector2.up : Vector2.down, rayLength, groundLayerMask);
+        RaycastHit2D hitRight = Physics2D.Raycast(rayStart + Vector2.right * playerWidth / 2, bug2Active ? Vector2.up : Vector2.down, rayLength, groundLayerMask);
 
         isGrounded = hitCenter.collider != null || hitLeft.collider != null || hitRight.collider != null;
 
@@ -329,7 +332,8 @@ public class CharacterBase : MonoBehaviour
             float adjustment = minDistance - (playerHeight / 2);
             if (adjustment > 0.001f) // 只有需要调整时才进行
             {
-                rb.position = new Vector2(rb.position.x, rb.position.y - adjustment);
+                rb.position = new Vector2(rb.position.x, rb.position.y +
+                    adjustment * (bug2Active ? 1f : -1f));
             }
         }
     }
@@ -441,4 +445,6 @@ public class CharacterBase : MonoBehaviour
             }
         }
     }
+
+    public bool bug2Active_ { get => bug2Active; }
 }

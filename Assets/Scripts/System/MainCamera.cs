@@ -2,19 +2,26 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-//ÓÃÓÚ¹ÜÀíÖ÷ÉãÏñ»úµÄ½Å±¾
+//ç”¨äºç®¡ç†ä¸»æ‘„åƒæœºçš„è„šæœ¬
 public class MainCamera : MonoBehaviour
 {
+    public static MainCamera Instance { get; private set; }
+
     [SerializeField]
     private Camera Camera;
 
-    private GameObject Player;//½ÇÉ«ÎïÌå
+    private GameObject Player;//è§’è‰²ç‰©ä½“
+
+    private void Awake()
+    {
+        Instance = this;
+    }
 
     private void LateUpdate()
     {
-        if (GameManager.Instance == null) return;//Ã»ÔÚ¹Ø¿¨ÖĞ¾ÍÌø³ö
+        if (GameManager.Instance == null) return;//æ²¡åœ¨å…³å¡ä¸­å°±è·³å‡º
 
-        if(Player == null)//Ã»ÓĞ½ÇÉ«ÎïÌåÔòÀûÓÃµ¥Àı»¯²éÕÒ
+        if(Player == null)//æ²¡æœ‰è§’è‰²ç‰©ä½“åˆ™åˆ©ç”¨å•ä¾‹åŒ–æŸ¥æ‰¾
         {
             if(BaseMovement.Instance != null)
             {
@@ -23,8 +30,17 @@ public class MainCamera : MonoBehaviour
         }
         else
         {
-            //¸úËæÍæ¼ÒÒÆ¶¯
-            transform.position = new(transform.position.x, Player.transform.position.y, transform.position.z);//Ö»ÒÆ¶¯YÖá
+            //è·Ÿéšç©å®¶ç§»åŠ¨
+            transform.position = new(transform.position.x, Player.transform.position.y, transform.position.z);//åªç§»åŠ¨Yè½´
         }
+
+    }
+
+    //ç¿»è½¬æ‘„åƒå¤´
+    public void FlipCamera()
+    {
+        Matrix4x4 projection = Camera.projectionMatrix;
+        projection *= Matrix4x4.Scale(new Vector3(1, -1, 1));
+        Camera.projectionMatrix = projection;
     }
 }

@@ -10,11 +10,11 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     private Animator AlertAnim;
 
-    private SavePoint SavePoint;//¼ÇÂ¼µÄ´æµµµã
+    private SavePoint SavePoint;//è®°å½•çš„å­˜æ¡£ç‚¹
     [SerializeField]
-    private SavePoint StartSavePoint;//ÆğÊ¼¼ÇÂ¼µã
+    private SavePoint StartSavePoint;//èµ·å§‹è®°å½•ç‚¹
 
-    private readonly List<EnemySpawner> Spawners = new();//½ÇÉ«Éú³ÉÆ÷ÁĞ±í
+    private readonly List<EnemySpawner> Spawners = new();//è§’è‰²ç”Ÿæˆå™¨åˆ—è¡¨
 
     public static GameManager Instance;
 
@@ -25,31 +25,31 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        //ÉèÖÃÆğÊ¼³öÉúµã
+        //è®¾ç½®èµ·å§‹å‡ºç”Ÿç‚¹
         SetSavePoint(StartSavePoint);
-        //¿ªÊ¼Ê±£¬Éú³É½ÇÉ«
+        //å¼€å§‹æ—¶ï¼Œç”Ÿæˆè§’è‰²
         CreatePlayer();
         CreateAllEnemies();
 
-        AlertPrinter.Instance.PrintLog("¾¯¸æ£º¼ì²âµ½Î´ÖªÊµÌå£¡", LogType.¾¯¸æ);
+        AlertPrinter.Instance.PrintLog("è­¦å‘Šï¼šæ£€æµ‹åˆ°æœªçŸ¥å®ä½“ï¼", LogType.è­¦å‘Š);
     }
 
-    #region ½ÇÉ«Éú³É
+    #region è§’è‰²ç”Ÿæˆ
     public void AddSpawner(EnemySpawner spawner)
     {
         Spawners.Add(spawner);
     }
-    //Éú³ÉÍæ¼Ò
+    //ç”Ÿæˆç©å®¶
     private void CreatePlayer()
     {
         PlayerSpawner.Instance.SpawnAtPosition(SavePoint.Position);
     }
-    //Éú³ÉËùÓĞµĞÈË
+    //ç”Ÿæˆæ‰€æœ‰æ•Œäºº
     private void CreateAllEnemies()
     {
         foreach(var spawner in Spawners)
         {
-            //½«ËùÓĞµÄµĞÈËÉú³ÉÆ÷ÖØÖÃ
+            //å°†æ‰€æœ‰çš„æ•Œäººç”Ÿæˆå™¨é‡ç½®
             spawner.SpawnEnemy();
         }
     }
@@ -60,26 +60,35 @@ public class GameManager : MonoBehaviour
         SavePoint = sp;
     }
 
-    //ÓÎÏ·Ê¤Àû
+    //æ¸¸æˆèƒœåˆ©
     public void GameWin()
     {
         Debug.Log("You win the Game!");
     }
-    //ÓÎÏ·Ê§°Ü
+    //æ¸¸æˆå¤±è´¥
     public void GameOver()
     {
+        if(BaseMovement.Instance != null)
+        {
+            if (BaseMovement.Instance.bug2Active_)
+            {
+                BaseMovement.Instance.FlipAllSprites();
+                BaseMovement.Instance.FlipCamera();
+            }
+        }
+
         Destroy(BaseMovement.Instance.gameObject);
         GameRestart();
-        AlertPrinter.Instance.PrintLog("Î´ÖªÊµÌåÒÑËÀÍö£¬ÇåÀíÍê³É¡£", LogType.µ÷ÊÔ);
+        AlertPrinter.Instance.PrintLog("æœªçŸ¥å®ä½“å·²æ­»äº¡ï¼Œæ¸…ç†å®Œæˆã€‚", LogType.è°ƒè¯•);
     }
-    //ÖØĞÂ¿ªÊ¼
+    //é‡æ–°å¼€å§‹
     public void GameRestart()
     {
         CreatePlayer();
         CreateAllEnemies();
     }
 
-    //½ÇÉ«´¦ÓÚ±©Â¶×´Ì¬Ê±ĞŞ¸Ä
+    //è§’è‰²å¤„äºæš´éœ²çŠ¶æ€æ—¶ä¿®æ”¹
     public void PlayerExposed()
     {
         AlertAnim.SetInteger("Anim", 1);

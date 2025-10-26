@@ -71,7 +71,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -69007535
-  m_SortingLayer: 3
+  m_SortingLayer: 4
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 5f0708da73997804288c86381312be96, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -203,7 +203,7 @@ MonoBehaviour:
   verticalRays: 5
   gravity: 18
   jumpForce: 5
-  maxFallSpeed: 5
+  maxFallSpeed: 8
   obstacleLayerMask:
     serializedVersion: 2
     m_Bits: 8
@@ -213,6 +213,10 @@ MonoBehaviour:
   enemyLayerMask:
     serializedVersion: 2
     m_Bits: 128
+  playerHiddenLayerMask:
+    serializedVersion: 2
+    m_Bits: 256
+  bug2Active: 0
   isDetectable: 1
   detectableAlpha: 1
   undetectableAlpha: 0
