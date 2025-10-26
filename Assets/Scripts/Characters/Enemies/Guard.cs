@@ -90,6 +90,13 @@ public class Guard : CharacterBase
         base.FixedUpdate();
     }
 
+    protected override void HandleVisualLayer()
+    {
+        base.HandleVisualLayer(); 
+        if(isChasing) { animator.SetBool(param[0], true);}
+        else animator.SetBool(param[0], false);
+    }
+
     /// <summary>
     /// 玩家检测协程
     /// </summary>
