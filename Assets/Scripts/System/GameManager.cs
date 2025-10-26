@@ -11,11 +11,11 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     private Animator AlertAnim;
 
-    private SavePoint SavePoint;//è®°å½•çš„å­˜æ¡£ç‚¹
+    private SavePoint SavePoint;//¼ÇÂ¼µÄ´æµµµã
     [SerializeField]
-    private SavePoint StartSavePoint;//èµ·å§‹è®°å½•ç‚¹
+    private SavePoint StartSavePoint;//ÆğÊ¼¼ÇÂ¼µã
 
-    private readonly List<EnemySpawner> Spawners = new();//è§’è‰²ç”Ÿæˆå™¨åˆ—è¡¨
+    private readonly List<EnemySpawner> Spawners = new();//½ÇÉ«Éú³ÉÆ÷ÁĞ±í
 
     public static GameManager Instance;
 
@@ -26,33 +26,34 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        //è®¾ç½®èµ·å§‹å‡ºç”Ÿç‚¹
+        //ÉèÖÃÆğÊ¼³öÉúµã
         SetSavePoint(StartSavePoint);
-        //å¼€å§‹æ—¶ï¼Œç”Ÿæˆè§’è‰²
+        //¿ªÊ¼Ê±£¬Éú³É½ÇÉ«
         CreatePlayer();
         CreateAllEnemies();
 
-        AlertPrinter.Instance.PrintLog("è­¦å‘Šï¼šæ£€æµ‹åˆ°æœªçŸ¥å®ä½“ï¼", LogType.è­¦å‘Š);
+        AlertPrinter.Instance.PrintLog("¾¯¸æ£º¼ì²âµ½Î´ÖªÊµÌå£¡", LogType.¾¯¸æ);
     }
 
-    #region è§’è‰²ç”Ÿæˆ
+    #region ½ÇÉ«Éú³É
     public void AddSpawner(EnemySpawner spawner)
     {
         Spawners.Add(spawner);
     }
-    //ç”Ÿæˆç©å®¶
+    //Éú³ÉÍæ¼Ò
     private void CreatePlayer()
     {
         PlayerSpawner.Instance.SpawnAtPosition(SavePoint.Position);
     }
-    //ç”Ÿæˆæ‰€æœ‰æ•Œäºº
+    //Éú³ÉËùÓĞµĞÈË
     private void CreateAllEnemies()
     {
         foreach(var spawner in Spawners)
         {
-            //å°†æ‰€æœ‰çš„æ•Œäººç”Ÿæˆå™¨é‡ç½®
+            //½«ËùÓĞµÄµĞÈËÉú³ÉÆ÷ÖØÖÃ
             spawner.SpawnEnemy();
         }
+        AlertPrinter.Instance.PrintLog("ÒÑÉú³É¾¯ÎÀÊµÌå: " + Spawners.Count, LogType.µ÷ÊÔ);
     }
     #endregion
 
@@ -61,38 +62,33 @@ public class GameManager : MonoBehaviour
         SavePoint = sp;
     }
 
-    //æ¸¸æˆèƒœåˆ©
+    //ÓÎÏ·Ê¤Àû
     public void GameWin()
     {
         Debug.Log("You win the Game!");
     }
-    //æ¸¸æˆå¤±è´¥
+    //ÓÎÏ·Ê§°Ü
     public void GameOver()
     {
-        if(BaseMovement.Instance != null)
-        {
-            if (BaseMovement.Instance.bug2Active_)
-            {
-                BaseMovement.Instance.FlipAllSprites();
-                BaseMovement.Instance.FlipCamera();
-            }
-        }
-
         Destroy(BaseMovement.Instance.gameObject);
-        AlertPrinter.Instance.PrintLog("Î´ÖªÊµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É¡ï¿½", LogType.ï¿½ï¿½ï¿½ï¿½);
+        AlertPrinter.Instance.PrintLog("ÒÑ¿ØÖÆÎ»ÖÃÊµÌå£¬Ö´ĞĞ´İ»Ù²Ù×÷", LogType.µ÷ÊÔ);
         PlayerDisexposed();
 
-        FadeEvent.Instance.FakeFade();
-        DOTween.To(() => 0, x => { }, 0, 0.8f).OnComplete(GameRestart);
+        DOTween.To(() => 0, x => { }, 0, 1f).OnComplete(() =>
+        {
+            FadeEvent.Instance.FakeFade();
+            DOTween.To(() => 0, x => { }, 0, 0.8f).OnComplete(GameRestart);
+        });
     }
-    //é‡æ–°å¼€å§‹
+    //ÖØĞÂ¿ªÊ¼
     public void GameRestart()
     {
         CreatePlayer();
+        AlertPrinter.Instance.PrintLog("´íÎó£ºÄ¿±êÊµÌå´İ»ÙÊ§°Ü£¡Ô­Òò£ºÎ´ÓµÓĞÈ¨ÏŞ", LogType.´íÎó);
         CreateAllEnemies();
     }
 
-    //è§’è‰²å¤„äºæš´éœ²çŠ¶æ€æ—¶ä¿®æ”¹
+    //½ÇÉ«´¦ÓÚ±©Â¶×´Ì¬Ê±ĞŞ¸Ä
     public void PlayerExposed()
     {
         AlertAnim.SetInteger("Anim", 1);
