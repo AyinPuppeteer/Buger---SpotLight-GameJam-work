@@ -17,6 +17,10 @@ public class GameManager : MonoBehaviour
 
     private readonly List<EnemySpawner> Spawners = new();//角色生成器列表
 
+    private static LevelPack LevelNow;
+    public static void SetPack(LevelPack pack) => LevelNow = pack;
+    public int LevelID { get => LevelNow.ID; }
+
     public static GameManager Instance;
 
     private void Awake()
@@ -53,6 +57,7 @@ public class GameManager : MonoBehaviour
             //将所有的敌人生成器重置
             spawner.SpawnEnemy();
         }
+        AlertPrinter.Instance.PrintLog("已生成警卫实体: " + Spawners.Count, LogType.调试);
     }
     #endregion
 
@@ -69,26 +74,23 @@ public class GameManager : MonoBehaviour
     //游戏失败
     public void GameOver()
     {
-        if(BaseMovement.Instance != null)
-        {
-            if (BaseMovement.Instance.bug2Active_)
-            {
-                BaseMovement.Instance.FlipAllSprites();
-                BaseMovement.Instance.FlipCamera();
-            }
-        }
-
         Destroy(BaseMovement.Instance.gameObject);
         AlertPrinter.Instance.PrintLog("已控制位置实体，执行摧毁操作", LogType.调试);
         PlayerDisexposed();
 
-        FadeEvent.Instance.FakeFade();
-        DOTween.To(() => 0, x => { }, 0, 0.8f).OnComplete(GameRestart);
+        DOTween.To(() => 0, x => { }, 0, 1f).OnComplete(() =>
+        {
+            FadeEvent.Instance.FakeFade();
+            DOTween.To(() => 0, x => { }, 0, 0.8f).OnComplete(GameRestart);
+        });
     }
     //重新开始
     public void GameRestart()
     {
+        MainCamera.Instance.Reset();
+
         CreatePlayer();
+        AlertPrinter.Instance.PrintLog("错误：目标实体摧毁失败！原因：未拥有权限", LogType.错误);
         CreateAllEnemies();
     }
 

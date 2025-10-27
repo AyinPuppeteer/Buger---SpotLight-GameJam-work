@@ -27,7 +27,7 @@ public class AlertPrinter : MonoBehaviour
     {
         AlertText at = Instantiate(LogOb, LogWindow.transform).GetComponent<AlertText>();
         at.GetComponent<RectTransform>().localPosition += Offset * Vector3.down;//新的文本向下移动
-        at.SetText(log + "\n(区域: " + SceneManager.GetActiveScene().name + ")", type);
+        at.SetText(log + " (区域: " + SceneManager.GetActiveScene().name + ")", type);
         Logs.Add(at);
         Offset += at.ReturnHeight() + 20;
         DOTween.To(() => LogWindow.transform.localPosition.y, x => 
