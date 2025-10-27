@@ -63,6 +63,7 @@ public class CharacterBase : MonoBehaviour
     public bool IsGrounded_ { get => isGrounded; }
     public bool IsSneaking_ { get => isSneaking; }
     public bool CanJump_ { get => canJump; }
+    public bool toRight_ { get => toRight; }
 
     /// <summary>
     /// 初始化组件和参数
