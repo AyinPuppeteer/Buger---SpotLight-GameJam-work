@@ -36,7 +36,7 @@ public class LevelManager : MonoBehaviour
         string text = "所选关卡：" + LevelNow.Name + "\n" +
             "关卡编号：" + LevelNow.ID + "\n" +
             "安保等级：" + LevelNow.Security + "\n" +
-            "订单情况：" + GameSave.Instance.LevelFinish(LevelNow.ID) + "\n" +
+            "订单情况：" + (GameSave.Instance.LevelFinish(LevelNow.ID) ? "已送达" : "未送达") + "\n" +
             "收集情况：" + GameSave.Instance.WoveAtLevel(LevelNow.ID) + "/" + LevelNow.MaxWoves + "\n\n";
         Text.SetTextForce(text);
         Text.AddText(LevelNow.Description);
@@ -77,6 +77,15 @@ public class LevelPack
     public int MaxWoves;//最大织线数量
 
     public string Description;//描述文本
+
+    public LevelPack()
+    {
+        Name = "未知区域";
+        ID = -1;
+        Security = SecurityLevel.无法评估;
+        MaxWoves = -1;
+        Description = "你落入了未知的空间，或许有人能为你清除烦恼。（这是真BUG，请找Ayin帮助修理）";
+    }
 }
 
 public enum SecurityLevel

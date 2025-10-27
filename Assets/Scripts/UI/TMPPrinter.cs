@@ -11,7 +11,7 @@ public class TMPPrinter : MonoBehaviour
     private string AimText = "";
 
     private float PrintTimer;//打字计时器
-    public float PrintTime = 0.2f;//打字间隔
+    public float PrintTime = 0.05f;//打字间隔
 
     public bool IsFinished { get => Text.text.Length >= AimText.Length; }
 
@@ -36,6 +36,7 @@ public class TMPPrinter : MonoBehaviour
     public void SetTextForce(string text)
     {
         Text.text = text;
+        AimText = text;
     }
 
     public void SetText(string text)
