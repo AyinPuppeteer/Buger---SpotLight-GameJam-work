@@ -34,7 +34,7 @@ public class MainCamera : MonoBehaviour
         else
         {
             //跟随玩家移动
-            transform.position = new(transform.position.x, Player.transform.position.y, transform.position.z);//只移动Y轴
+            transform.position = new(transform.position.x, Mathf.Max(Player.transform.position.y, 0), transform.position.z);//只移动Y轴
         }
 
     }
