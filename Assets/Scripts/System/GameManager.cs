@@ -79,7 +79,7 @@ public class GameManager : MonoBehaviour
         }
 
         Destroy(BaseMovement.Instance.gameObject);
-        AlertPrinter.Instance.PrintLog("δ֪ʵ����������������ɡ�", LogType.����);
+        AlertPrinter.Instance.PrintLog("已控制位置实体，执行摧毁操作", LogType.调试);
         PlayerDisexposed();
 
         FadeEvent.Instance.FakeFade();
