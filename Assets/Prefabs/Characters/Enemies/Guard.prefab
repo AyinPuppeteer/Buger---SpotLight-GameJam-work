@@ -148,7 +148,7 @@ MonoBehaviour:
   - isChasing
   patrolSpeed: 1
   chaseSpeed: 3
-  patrolRange: 1.2
+  patrolRange: 6
   jumpCooldown: 1
   stoppingDistance: 0.1
   proximityRange: 3
