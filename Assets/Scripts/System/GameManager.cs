@@ -17,6 +17,10 @@ public class GameManager : MonoBehaviour
 
     private readonly List<EnemySpawner> Spawners = new();//角色生成器列表
 
+    private static LevelPack LevelNow;
+    public static void SetPack(LevelPack pack) => LevelNow = pack;
+    public int LevelID { get => LevelNow.ID; }
+
     public static GameManager Instance;
 
     private void Awake()

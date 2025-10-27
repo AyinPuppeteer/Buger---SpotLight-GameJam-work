@@ -39,17 +39,43 @@ public class GameSave : MonoBehaviour
     #endregion
 
     #region 管理收藏品
-    public void GainThread(string SceneName, int ID)
+    public void GainWove(int Level, int ID)
     {
-        Data.Threads_.Add(SceneName + "-" + ID);
+        if (Data.Woves_.ContainsKey(Level))
+        {
+            Data.Woves_[Level] &= (1 << ID);
+        }
     }
     
-    public bool CheckThread(string SceneName, int ID)
+    public bool CheckWove(int Level, int ID)
     {
-        if (Data.Threads_.Contains(SceneName + "-" + ID)) return true;
+        if (Data.Woves_.ContainsKey(Level) & (1 << ID) > 0) return true;
         else return false;
     }
+
+    //查询给定ID关卡的织线收集情况
+    public int WoveAtLevel(int ID)
+    {
+        if (!Data.Woves_.ContainsKey(ID)) return 0;
+        int info = Data.Woves_[ID];
+        int cnt = 0;
+        while (info > 0)
+        {
+            if (info % 2 == 1) cnt++;
+            info /= 2;
+        }
+        return cnt;
+    }
     #endregion
+
+    public bool LevelFinish(int id)
+    {
+        if (data.FinishLevel_.Contains(id.ToString()))
+        {
+            return true;
+        }
+        else return false;
+    }
 }
 
 //存档文件
@@ -57,8 +83,8 @@ public class GameSave : MonoBehaviour
 public class SaveData
 {
     //收集到的织线（以"场景名-编号"储存）
-    private HashSet<string> Threads = new();
-    public HashSet<string> Threads_ { get => Threads; }
+    private Dictionary<int, int> Woves = new();
+    public Dictionary<int, int> Woves_ { get => Woves; }
 
     private HashSet<string> FinishLevel = new();
     public HashSet<string> FinishLevel_ { get => FinishLevel; }
