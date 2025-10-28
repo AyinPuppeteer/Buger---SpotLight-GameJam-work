@@ -72,7 +72,7 @@ public class GameManager : MonoBehaviour
     //游戏胜利
     public void GameWin()
     {
-        Debug.Log("You win the Game!");
+        FadeEvent.Instance.Fadeto("MainScene");
     }
     //游戏失败
     public void GameOver()

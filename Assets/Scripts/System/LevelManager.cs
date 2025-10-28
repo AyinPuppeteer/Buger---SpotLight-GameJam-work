@@ -43,7 +43,7 @@ public class LevelManager : MonoBehaviour
     }
 
     //根据关卡编号查找配置包
-    private LevelPack ReturnLevelPack(int t)
+    private static LevelPack ReturnLevelPack(int t)
     {
         LevelPack pack = new();
         pack.ID = t;
@@ -51,10 +51,10 @@ public class LevelManager : MonoBehaviour
         {
             case 1:
                 {
-                    LevelNow.Name = "新生";
-                    LevelNow.Security = SecurityLevel.低;
-                    LevelNow.MaxWoves = 0;
-                    LevelNow.Description = "你来到了这座破败的楼房，将快递送达顶端，这是你唯一的目的。";
+                    pack.Name = "新生";
+                    pack.Security = SecurityLevel.低;
+                    pack.MaxWoves = 1;
+                    pack.Description = "你来到了这座破败的楼房，将快递送达顶端，这是你唯一的目的。";
                     break;
                 }
         }
