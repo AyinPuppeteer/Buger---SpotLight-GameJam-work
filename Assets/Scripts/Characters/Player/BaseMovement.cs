@@ -23,7 +23,6 @@ public class BaseMovement : CharacterBase
 
     [Header("BUG Settings")]
     [SerializeField] private float penetrationSpeedThreshold = 15f; // 穿透所需的最小速度
-    [SerializeField] private float penetrationCooldown = 1.0f; // 穿透冷却时间
     [SerializeField] private bool drawPenetrationDebug = true; // 穿透调试显示
 
     protected bool isClimbing = false;
@@ -45,12 +44,15 @@ public class BaseMovement : CharacterBase
     // BUG相关变量
     private bool canPenetrate = false;
     private bool isPenetrating = false;
-    private float lastPenetrationTime = 0f;
     private Vector2 penetrationDirection = Vector2.zero;
     private LayerMask originalObstacleLayerMask;
 
     private bool firstBug = false;
     private Collider2D collider2d;
+
+    // 穿透状态跟踪
+    private bool wasTouchingBlock = false;
+    private ContactFilter2D blockContactFilter;
 
     protected override void Awake()
     {
@@ -63,6 +65,11 @@ public class BaseMovement : CharacterBase
 
         // 保存原始的障碍物图层掩码
         originalObstacleLayerMask = obstacleLayerMask;
+
+        // 设置Block接触过滤器
+        blockContactFilter = new ContactFilter2D();
+        blockContactFilter.SetLayerMask(originalObstacleLayerMask);
+        blockContactFilter.useLayerMask = true;
 
         // 收集所有子物体的SpriteRenderer
         CollectChildSpriteRenderers();
@@ -136,15 +143,19 @@ public class BaseMovement : CharacterBase
     /// </summary>
     private void CheckPenetrationBug()
     {
+        // 如果正在穿透，检查结束条件
+        if (isPenetrating)
+        {
+            CheckPenetrationEnd();
+            return;
+        }
+
         // 计算总速度（包括外部速度）
         Vector2 totalVelocity = new Vector2(horizontal * speed, verticalVelocity) + externalVelocity;
         float totalSpeed = totalVelocity.magnitude;
 
-        // 检查冷却时间
-        bool cooldownOver = Time.time - lastPenetrationTime >= penetrationCooldown;
-
-        // 如果总速度超过阈值且不在冷却中，可以触发穿透
-        if (totalSpeed >= penetrationSpeedThreshold && cooldownOver && !isPenetrating)
+        // 如果总速度超过阈值，可以触发穿透
+        if (totalSpeed >= penetrationSpeedThreshold)
         {
             canPenetrate = true;
 
@@ -153,6 +164,9 @@ public class BaseMovement : CharacterBase
             {
                 Debug.DrawRay(transform.position, totalVelocity.normalized * 2f, Color.magenta, 0.1f);
             }
+
+            // 立即开始穿透
+            StartPenetration(totalVelocity.normalized);
         }
         else
         {
@@ -161,44 +175,21 @@ public class BaseMovement : CharacterBase
     }
 
     /// <summary>
-    /// 处理穿透BUG
-    /// </summary>
-    private void HandlePenetrationBug()
-    {
-        if (!canPenetrate || isPenetrating) return;
-
-        // 计算总速度方向
-        Vector2 totalVelocity = new Vector2(horizontal * speed, verticalVelocity) + externalVelocity;
-        penetrationDirection = totalVelocity.normalized;
-
-        // 检查前方是否有Block
-        RaycastHit2D hit = Physics2D.Raycast(
-            transform.position,
-            penetrationDirection,
-            playerWidth * 2f,
-            obstacleLayerMask
-        );
-
-        if (hit.collider != null)
-        {
-            // 开始穿透
-            StartPenetration();
-        }
-    }
-
-    /// <summary>
     /// 开始穿透状态
     /// </summary>
-    private void StartPenetration()
+    private void StartPenetration(Vector2 direction)
     {
+        if (isPenetrating) return;
+
         isPenetrating = true;
         canPenetrate = false;
-
-        // 记录穿透时间
-        lastPenetrationTime = Time.time;
+        penetrationDirection = direction;
 
         // 临时忽略障碍物碰撞
         obstacleLayerMask = 0;
+
+        // 检查初始是否接触Block
+        wasTouchingBlock = IsTouchingBlock();
 
         // 打印BUG信息
         AlertPrinter.Instance.PrintLog("错误：实体速度异常，发生穿透现象！", LogType.错误);
@@ -207,6 +198,38 @@ public class BaseMovement : CharacterBase
         if (drawPenetrationDebug)
         {
             Debug.DrawRay(transform.position, penetrationDirection * playerWidth * 2f, Color.red, 1f);
+        }
+    }
+
+    /// <summary>
+    /// 检查是否接触Block
+    /// </summary>
+    private bool IsTouchingBlock()
+    {
+        if (collider2d == null) return false;
+
+        Collider2D[] results = new Collider2D[5];
+        int count = Physics2D.OverlapCollider(collider2d, blockContactFilter, results);
+        return count > 0;
+    }
+
+    /// <summary>
+    /// 检查是否应该结束穿透状态
+    /// </summary>
+    private void CheckPenetrationEnd()
+    {
+        if (!isPenetrating) return;
+
+        bool currentlyTouchingBlock = IsTouchingBlock();
+
+        // 如果之前接触Block但现在不接触了，结束穿透状态
+        if (wasTouchingBlock && !currentlyTouchingBlock)
+        {
+            EndPenetration();
+        }
+        else
+        {
+            wasTouchingBlock = currentlyTouchingBlock;
         }
     }
 
@@ -226,33 +249,22 @@ public class BaseMovement : CharacterBase
         horizontal = 0f;
         vertical = 0f;
 
+        // 重置刚体速度
+        if (rb != null)
+        {
+            rb.velocity = Vector2.zero;
+        }
+
+        // 重置移动状态
+        isWalking = false;
+        isSneaking = false;
+
         // 结束穿透状态
         isPenetrating = false;
+        wasTouchingBlock = false;
 
         // 打印结束信息
         AlertPrinter.Instance.PrintLog("错误修正：实体速度恢复正常", LogType.错误);
-    }
-
-    /// <summary>
-    /// 检查是否应该结束穿透状态
-    /// </summary>
-    private void CheckPenetrationEnd()
-    {
-        if (!isPenetrating) return;
-
-        // 检查是否已经穿过障碍物
-        RaycastHit2D hit = Physics2D.Raycast(
-            transform.position,
-            penetrationDirection,
-            playerWidth * 2f,
-            originalObstacleLayerMask
-        );
-
-        // 如果前方没有障碍物，结束穿透状态
-        if (hit.collider == null)
-        {
-            EndPenetration();
-        }
     }
 
     /// <summary>
@@ -431,27 +443,19 @@ public class BaseMovement : CharacterBase
         // 添加外部速度的影响
         move += externalVelocity * Time.fixedDeltaTime;
 
-        // 检查并处理穿透BUG
+        // 简化的碰撞检测：只在非穿透状态下检测碰撞
         if (!isPenetrating)
         {
-            HandlePenetrationBug();
-        }
-        else
-        {
-            // 如果正在穿透，检查是否应该结束穿透
-            CheckPenetrationEnd();
-        }
+            if (Mathf.Abs(move.x) > deadZone)
+            {
+                CheckHorizontalCollision(ref move);
+            }
 
-        // 简化的碰撞检测：先水平后垂直
-        if (Mathf.Abs(move.x) > deadZone)
-        {
-            CheckHorizontalCollision(ref move);
-        }
-
-        // 垂直碰撞检测只在上方有障碍物时阻止移动
-        if (move.y > 0) // 只在上移时检测上方碰撞
-        {
-            CheckVerticalCollision(ref move);
+            // 垂直碰撞检测只在上方有障碍物时阻止移动
+            if (move.y > 0) // 只在上移时检测上方碰撞
+            {
+                CheckVerticalCollision(ref move);
+            }
         }
 
         move.y *= bug2Active ? -1f : 1f;
@@ -692,6 +696,13 @@ public class BaseMovement : CharacterBase
             UnityEditor.Handles.Label(transform.position + Vector3.up * 1f,
                 isPenetrating ? "PENETRATING" : (canPenetrate ? "CAN PENETRATE" : "Normal"), style);
 #endif
+
+            // 绘制穿透状态下的接触检测区域
+            if (isPenetrating)
+            {
+                Gizmos.color = wasTouchingBlock ? Color.red : Color.green;
+                Gizmos.DrawWireCube(transform.position, new Vector3(playerWidth, playerHeight, 0));
+            }
         }
     }
 }
