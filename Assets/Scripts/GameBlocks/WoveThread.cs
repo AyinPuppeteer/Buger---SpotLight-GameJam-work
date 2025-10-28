@@ -21,7 +21,7 @@ public class WoveThread : MonoBehaviour, I_PickItem
     private void Start()
     {
         SceneName = SceneManager.GetActiveScene().name;
-        if(GameSave.Instance.CheckThread(SceneName, ID))
+        if(GameSave.Instance.CheckWove(GameManager.Instance.LevelID, ID))
         {
             //ÉèÖÃÎªÍ¸Ã÷×´Ì¬
             Image.sprite = GainedImg;
@@ -32,7 +32,7 @@ public class WoveThread : MonoBehaviour, I_PickItem
     public void Pick()
     {
         if (Gained) return;
-        GameSave.Instance.GainThread(SceneName, ID);
+        GameSave.Instance.GainWove(GameManager.Instance.LevelID, ID);
         //ÇÐ»»ÎªÍ¸Ã÷×´Ì¬
         Image.sprite = GainedImg;
         Gained = true;

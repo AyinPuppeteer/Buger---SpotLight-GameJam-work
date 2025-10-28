@@ -36,5 +36,10 @@ public class AlertPrinter : MonoBehaviour
             pos.y = x;
             LogWindow.transform.localPosition = pos; 
         }, Offset, 0.5f);//»ºÂıÏòÉÏÒÆ¶¯
+
+        if(type == LogType.´íÎó)
+        {
+            GameManager.Instance.BUGAppear();
+        }
     }
 }
