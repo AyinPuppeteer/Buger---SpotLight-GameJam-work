@@ -65,7 +65,7 @@ public class FlashlightDetector : MonoBehaviour
         if (parentGuard != null)
         {
             // 根据保安的朝向调整手电筒方向
-            bool facingRight = parentGuard.toRight_;
+            bool facingRight = parentGuard.ToRight_;
 
             // 如果朝向发生变化，重新生成视野网格
             if (facingRight != isFacingRight)
@@ -174,6 +174,9 @@ public class FlashlightDetector : MonoBehaviour
         // 创建Mesh组件
         meshFilter = gameObject.AddComponent<MeshFilter>();
         meshRenderer = gameObject.AddComponent<MeshRenderer>();
+
+        //渲染层级设置为Player
+        meshRenderer.sortingLayerName = "Player";
 
         // 创建材质
         if (visionMaterial == null)

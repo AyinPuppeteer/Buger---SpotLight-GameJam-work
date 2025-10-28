@@ -51,7 +51,10 @@ public class LevelManager : MonoBehaviour
         {
             case 1:
                 {
-
+                    LevelNow.Name = "新生";
+                    LevelNow.Security = SecurityLevel.低;
+                    LevelNow.MaxWoves = 0;
+                    LevelNow.Description = "你来到了这座破败的楼房，将快递送达顶端，这是你唯一的目的。";
                     break;
                 }
         }

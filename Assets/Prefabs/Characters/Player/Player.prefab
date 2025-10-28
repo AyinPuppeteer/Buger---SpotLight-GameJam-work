@@ -280,3 +280,5 @@ MonoBehaviour:
   undetectableAlpha: 0
   alphaLerpSpeed: 5
   climbSpeed: 1
+  penetrationSpeedThreshold: 8
+  drawPenetrationDebug: 1

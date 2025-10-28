@@ -10,7 +10,7 @@ public class BUGBlockKey : Key
         GameManager.Instance.SubscribeWhenBUGAppear(() =>//BUG出现时翻转状态
         {
             SetActive(!IsActive);
-            AlertPrinter.Instance.PrintLog("以下数量的方块状态被反转:" + LockList.Count, LogType.调试);
+            if(LockList.Count != 0) AlertPrinter.Instance.PrintLog("以下数量的方块状态被反转:" + LockList.Count, LogType.调试);
         });
     }
 }
