@@ -148,11 +148,7 @@ MonoBehaviour:
   - isChasing
   patrolSpeed: 1
   chaseSpeed: 3
-<<<<<<< HEAD
   patrolRange: 6
-=======
-  patrolRange: 1.5
->>>>>>> 8f888eece9933fd4bf1443d3946596bc4481a3c1
   jumpCooldown: 1
   stoppingDistance: 0.1
   proximityRange: 3
