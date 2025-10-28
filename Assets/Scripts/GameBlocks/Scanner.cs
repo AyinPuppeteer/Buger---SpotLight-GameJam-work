@@ -38,7 +38,7 @@ public class Scanner : Lock
         ob.GetComponent<ScanWave>().SetRadius(Radius);
     }
 
-    public override void SetActive(bool b)
+    protected override void SetActive(bool b)
     {
         base.SetActive(b);
         if (b)

@@ -12,7 +12,7 @@ public class FinalPoint : Lock, I_PickItem
     [SerializeField]
     private Sprite OpenImg;
 
-    public override void SetActive(bool b)
+    protected override void SetActive(bool b)
     {
         base.SetActive(b);
         if (b)
