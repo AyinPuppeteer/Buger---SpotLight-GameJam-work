@@ -175,6 +175,9 @@ public class FlashlightDetector : MonoBehaviour
         meshFilter = gameObject.AddComponent<MeshFilter>();
         meshRenderer = gameObject.AddComponent<MeshRenderer>();
 
+        //渲染层级设置为Player
+        meshRenderer.sortingLayerName = "Player";
+
         // 创建材质
         if (visionMaterial == null)
         {
