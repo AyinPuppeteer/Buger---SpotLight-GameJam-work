@@ -40,9 +40,6 @@ public class BaseMovement : CharacterBase
     private bool firstBug = false;
     private Collider2D collider2d;
 
-    // BUG2相关变量
-    private bool bug2WasActive = false; // 上一帧BUG2状态
-
     protected override void Awake()
     {
         base.Awake();
@@ -338,12 +335,6 @@ public class BaseMovement : CharacterBase
             if (verticalVelocity < -maxFallSpeed)
             {
                 verticalVelocity = -maxFallSpeed;
-
-                // 达到最大下落速度时触发BUG2
-                if (!bug2Active)
-                {
-                    ActivateBUG2();
-                }
             }
         }
 
@@ -351,70 +342,24 @@ public class BaseMovement : CharacterBase
         if (isGrounded && verticalVelocity < 0)
         {
             verticalVelocity = 0;
-            // 落地时关闭BUG2，为下一次触发做准备
-            if (bug2Active)
-            {
-                DeactivateBUG2();
-            }
         }
 
-        // 检查BUG2状态变化
-        if (bug2WasActive != bug2Active)
-        {
-            UpdateBUG2Effects();
-            bug2WasActive = bug2Active;
-        }
     }
 
     /// <summary>
     /// 激活BUG2效果
     /// </summary>
-    protected virtual void ActivateBUG2()
+    public virtual void ActivateBUG2()
     {
-        if (bug2Active) return;
+        // 翻转所有sprite子物体
+        FlipAllSprites();
 
-        bug2Active = true;
+        // 翻转摄像机
+        FlipCamera();
+
+        bug2Active = !bug2Active;
 
         AlertPrinter.Instance.PrintLog("错误：加速度过快，翻转单位重力！", LogType.错误);
-    }
-
-    /// <summary>
-    /// 关闭BUG2效果
-    /// </summary>
-    protected virtual void DeactivateBUG2()
-    {
-        if (!bug2Active) return;
-
-        bug2Active = false;
-
-        AlertPrinter.Instance.PrintLog("错误：加速度过快，翻转单位重力！", LogType.错误);
-    }
-
-    /// <summary>
-    /// 更新BUG2效果（翻转摄像机、重力和sprite）
-    /// </summary>
-    protected virtual void UpdateBUG2Effects()
-    {
-        if (bug2Active)
-        {
-
-            // 翻转所有sprite子物体
-            FlipAllSprites();
-
-            // 翻转摄像机
-            FlipCamera();
-
-        }
-        else
-        {
-
-            // 恢复所有sprite子物体
-            FlipAllSprites();
-
-            // 恢复摄像机
-            FlipCamera();
-
-        }
     }
 
     /// <summary>
