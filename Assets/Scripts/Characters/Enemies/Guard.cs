@@ -79,6 +79,7 @@ public class Guard : CharacterBase
     protected override void Update()
     {
         HandleEnemyBehavior();
+        CheckForEdge();
         base.Update();
     }
 
@@ -252,16 +253,16 @@ public class Guard : CharacterBase
             originSpeed = patrolSpeed;
         }
 
-        CheckJump();
+        //CheckJump();
         inputVector = new Vector2(horizontal, vertical);
 
-        if (shouldJump && isGrounded && Time.time - lastJumpTime > jumpCooldown)
-        {
-            jumpRequested = true;
-            shouldJump = false;
-            lastJumpTime = Time.time;
-            consecutiveJumps++;
-        }
+        //if (shouldJump && isGrounded && Time.time - lastJumpTime > jumpCooldown)
+        //{
+        //    jumpRequested = true;
+        //    shouldJump = false;
+        //    lastJumpTime = Time.time;
+        //    consecutiveJumps++;
+        //}
     }
 
     private void UpdateChaseState()
@@ -355,7 +356,7 @@ public class Guard : CharacterBase
             }
         }
 
-        CheckForEdge(rayDirection);
+        CheckForEdge();
     }
 
     private float GetObstacleHeight(RaycastHit2D hit)
@@ -375,14 +376,23 @@ public class Guard : CharacterBase
         return hit.point.y + playerHeight / 2;
     }
 
-    private void CheckForEdge(Vector2 rayDirection)
+    private void CheckForEdge()
     {
-        Vector2 edgeCheckPos = (Vector2)transform.position + rayDirection * 0.5f;
-        RaycastHit2D groundCheck = Physics2D.Raycast(edgeCheckPos, Vector2.down, playerHeight * 3, groundLayerMask);
+        Vector2 rayDirection = toRight ? Vector2.right : Vector2.left;
+        Vector2 edgeCheckPos = (Vector2)transform.position + rayDirection * 0.5f * playerWidth;
+        RaycastHit2D groundCheck = Physics2D.Raycast(edgeCheckPos, Vector2.down, playerHeight * .6f, groundLayerMask);
 
-        if (groundCheck.collider == null && isGrounded)
+        //if (groundCheck.collider == null && isGrounded)
+        //{
+        //    shouldJump = true;
+        //}
+        if (!groundCheck.collider)
         {
-            shouldJump = true;
+            // 如果在巡逻状态下，遇到悬崖则反向
+            patrolDirection *= -1;
+            horizontal = patrolDirection;
+            stuckTimer = 0f;
+            consecutiveJumps = 0;
         }
     }
 

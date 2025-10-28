@@ -21,6 +21,11 @@ public class BaseMovement : CharacterBase
     [Header("Climb Settings")]
     [SerializeField] protected float climbSpeed = 1.0f;
 
+    [Header("BUG Settings")]
+    [SerializeField] private float penetrationSpeedThreshold = 15f; // 穿透所需的最小速度
+    [SerializeField] private float penetrationCooldown = 1.0f; // 穿透冷却时间
+    [SerializeField] private bool drawPenetrationDebug = true; // 穿透调试显示
+
     protected bool isClimbing = false;
     public bool IsClimbing_ { get => isClimbing; }
     protected bool canClimb = false;
@@ -37,6 +42,13 @@ public class BaseMovement : CharacterBase
     private List<I_Interacts> interactables = new List<I_Interacts>();
     private I_Interacts currentInteractable = null;
 
+    // BUG相关变量
+    private bool canPenetrate = false;
+    private bool isPenetrating = false;
+    private float lastPenetrationTime = 0f;
+    private Vector2 penetrationDirection = Vector2.zero;
+    private LayerMask originalObstacleLayerMask;
+
     private bool firstBug = false;
     private Collider2D collider2d;
 
@@ -49,6 +61,9 @@ public class BaseMovement : CharacterBase
         // 获取碰撞体组件
         collider2d = GetComponent<Collider2D>();
 
+        // 保存原始的障碍物图层掩码
+        originalObstacleLayerMask = obstacleLayerMask;
+
         // 收集所有子物体的SpriteRenderer
         CollectChildSpriteRenderers();
 
@@ -56,7 +71,6 @@ public class BaseMovement : CharacterBase
         currentAlpha = isDetectable ? detectableAlpha : undetectableAlpha;
         targetAlpha = currentAlpha;
         UpdateSpriteAlpha();
-
     }
 
     protected override void Update()
@@ -67,6 +81,10 @@ public class BaseMovement : CharacterBase
         HandleTriggerButton();
         UpdateAlphaTransition();
         UpdateCurrentInteractable(); // 更新当前交互对象
+
+        // 检查是否可以触发穿透BUG
+        CheckPenetrationBug();
+
         base.Update();
 
         if (!isDetectable)
@@ -107,12 +125,134 @@ public class BaseMovement : CharacterBase
     protected override void HandleVisualLayer()
     {
         base.HandleVisualLayer();
-        if(isWalking) animator.SetBool(param[0], true); 
+        if (isWalking) animator.SetBool(param[0], true);
         else animator.SetBool(param[0], false);
         if (isSneaking) animator.SetBool(param[1], true);
         else animator.SetBool(param[1], false);
-        //if (isClimbing) animator.SetBool(param3, true);
-        //else animator.SetBool(param3, false);
+    }
+
+    /// <summary>
+    /// 检查是否可以触发穿透BUG
+    /// </summary>
+    private void CheckPenetrationBug()
+    {
+        // 计算总速度（包括外部速度）
+        Vector2 totalVelocity = new Vector2(horizontal * speed, verticalVelocity) + externalVelocity;
+        float totalSpeed = totalVelocity.magnitude;
+
+        // 检查冷却时间
+        bool cooldownOver = Time.time - lastPenetrationTime >= penetrationCooldown;
+
+        // 如果总速度超过阈值且不在冷却中，可以触发穿透
+        if (totalSpeed >= penetrationSpeedThreshold && cooldownOver && !isPenetrating)
+        {
+            canPenetrate = true;
+
+            // 绘制调试信息
+            if (drawPenetrationDebug)
+            {
+                Debug.DrawRay(transform.position, totalVelocity.normalized * 2f, Color.magenta, 0.1f);
+            }
+        }
+        else
+        {
+            canPenetrate = false;
+        }
+    }
+
+    /// <summary>
+    /// 处理穿透BUG
+    /// </summary>
+    private void HandlePenetrationBug()
+    {
+        if (!canPenetrate || isPenetrating) return;
+
+        // 计算总速度方向
+        Vector2 totalVelocity = new Vector2(horizontal * speed, verticalVelocity) + externalVelocity;
+        penetrationDirection = totalVelocity.normalized;
+
+        // 检查前方是否有Block
+        RaycastHit2D hit = Physics2D.Raycast(
+            transform.position,
+            penetrationDirection,
+            playerWidth * 2f,
+            obstacleLayerMask
+        );
+
+        if (hit.collider != null)
+        {
+            // 开始穿透
+            StartPenetration();
+        }
+    }
+
+    /// <summary>
+    /// 开始穿透状态
+    /// </summary>
+    private void StartPenetration()
+    {
+        isPenetrating = true;
+        canPenetrate = false;
+
+        // 记录穿透时间
+        lastPenetrationTime = Time.time;
+
+        // 临时忽略障碍物碰撞
+        obstacleLayerMask = 0;
+
+        // 打印BUG信息
+        AlertPrinter.Instance.PrintLog("错误：实体速度异常，发生穿透现象！", LogType.错误);
+
+        // 绘制调试射线
+        if (drawPenetrationDebug)
+        {
+            Debug.DrawRay(transform.position, penetrationDirection * playerWidth * 2f, Color.red, 1f);
+        }
+    }
+
+    /// <summary>
+    /// 结束穿透状态
+    /// </summary>
+    private void EndPenetration()
+    {
+        if (!isPenetrating) return;
+
+        // 恢复障碍物碰撞检测
+        obstacleLayerMask = originalObstacleLayerMask;
+
+        // 重置所有速度
+        verticalVelocity = 0f;
+        externalVelocity = Vector2.zero;
+        horizontal = 0f;
+        vertical = 0f;
+
+        // 结束穿透状态
+        isPenetrating = false;
+
+        // 打印结束信息
+        AlertPrinter.Instance.PrintLog("错误修正：实体速度恢复正常", LogType.错误);
+    }
+
+    /// <summary>
+    /// 检查是否应该结束穿透状态
+    /// </summary>
+    private void CheckPenetrationEnd()
+    {
+        if (!isPenetrating) return;
+
+        // 检查是否已经穿过障碍物
+        RaycastHit2D hit = Physics2D.Raycast(
+            transform.position,
+            penetrationDirection,
+            playerWidth * 2f,
+            originalObstacleLayerMask
+        );
+
+        // 如果前方没有障碍物，结束穿透状态
+        if (hit.collider == null)
+        {
+            EndPenetration();
+        }
     }
 
     /// <summary>
@@ -244,15 +384,18 @@ public class BaseMovement : CharacterBase
                     firstBug = false;
                 }
             }
-            else if (isGrounded && Mathf.Abs(horizontal) > deadZone){
-                if(vertical < -0.5f)
+            else if (isGrounded && Mathf.Abs(horizontal) > deadZone)
+            {
+                if (vertical < -0.5f)
                     isSneaking = true;
-                else{
+                else
+                {
                     isSneaking = false;
                     isWalking = true;
                 }
             }
-            else{
+            else
+            {
                 isSneaking = false;
                 isWalking = false;
             }
@@ -287,6 +430,17 @@ public class BaseMovement : CharacterBase
 
         // 添加外部速度的影响
         move += externalVelocity * Time.fixedDeltaTime;
+
+        // 检查并处理穿透BUG
+        if (!isPenetrating)
+        {
+            HandlePenetrationBug();
+        }
+        else
+        {
+            // 如果正在穿透，检查是否应该结束穿透
+            CheckPenetrationEnd();
+        }
 
         // 简化的碰撞检测：先水平后垂直
         if (Mathf.Abs(move.x) > deadZone)
@@ -343,7 +497,6 @@ public class BaseMovement : CharacterBase
         {
             verticalVelocity = 0;
         }
-
     }
 
     /// <summary>
@@ -496,7 +649,6 @@ public class BaseMovement : CharacterBase
 
         //如果不可探测，则取消暴露状态
         if (!isDetectable) SetExposed(false);
-
     }
 
     //设置角色是否处于暴露状态
@@ -514,6 +666,32 @@ public class BaseMovement : CharacterBase
             {
                 GameManager.Instance.PlayerDisexposed();
             }
+        }
+    }
+
+    protected override void OnDrawGizmosSelected()
+    {
+        base.OnDrawGizmosSelected();
+
+        // 绘制穿透BUG相关的调试信息
+        if (Application.isPlaying)
+        {
+            // 绘制总速度向量
+            Vector2 totalVelocity = new Vector2(horizontal * speed, verticalVelocity) + externalVelocity;
+            Gizmos.color = canPenetrate ? Color.magenta : Color.cyan;
+            Gizmos.DrawRay(transform.position, totalVelocity.normalized * 2f);
+
+            // 绘制穿透阈值圆
+            Gizmos.color = canPenetrate ? Color.red : Color.green;
+            Gizmos.DrawWireSphere(transform.position, penetrationSpeedThreshold * 0.1f);
+
+            // 显示穿透状态
+            GUIStyle style = new GUIStyle();
+            style.normal.textColor = isPenetrating ? Color.red : (canPenetrate ? Color.yellow : Color.white);
+#if UNITY_EDITOR
+            UnityEditor.Handles.Label(transform.position + Vector3.up * 1f,
+                isPenetrating ? "PENETRATING" : (canPenetrate ? "CAN PENETRATE" : "Normal"), style);
+#endif
         }
     }
 }
