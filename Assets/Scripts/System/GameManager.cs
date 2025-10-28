@@ -21,6 +21,9 @@ public class GameManager : MonoBehaviour
     public static void SetPack(LevelPack pack) => LevelNow = pack;
     public int LevelID { get => LevelNow.ID; }
 
+    private Action WhenBUGAppear;
+    public void SubscribeWhenBUGAppear(Action action) => WhenBUGAppear += action;
+
     public static GameManager Instance;
 
     private void Awake()
@@ -112,5 +115,10 @@ public class GameManager : MonoBehaviour
         {
             guard.SetActive(false);
         }
+    }
+
+    public void BUGAppear()
+    {
+        WhenBUGAppear?.Invoke();
     }
 }
