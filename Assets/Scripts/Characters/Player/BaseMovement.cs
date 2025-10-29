@@ -23,6 +23,7 @@ public class BaseMovement : CharacterBase
 
     [Header("BUG Settings")]
     [SerializeField] private float penetrationSpeedThreshold = 15f; // 穿透所需的最小速度
+    [SerializeField] private float penetrationEndDelay = 0.1f; // 穿透结束延迟时间
     [SerializeField] private bool drawPenetrationDebug = true; // 穿透调试显示
 
     protected bool isClimbing = false;
@@ -47,6 +48,7 @@ public class BaseMovement : CharacterBase
     private Vector2 penetrationDirection = Vector2.zero;
     private LayerMask originalObstacleLayerMask;
     private LayerMask originalGroundLayerMask;
+    private float penetrationEndTimer = 0f; // 穿透结束计时器
 
     private bool firstBug = false;
     private Collider2D collider2d;
@@ -72,6 +74,7 @@ public class BaseMovement : CharacterBase
         blockContactFilter = new ContactFilter2D();
         blockContactFilter.SetLayerMask(originalObstacleLayerMask);
         blockContactFilter.useLayerMask = true;
+        blockContactFilter.useTriggers = true;
 
         // 收集所有子物体的SpriteRenderer
         CollectChildSpriteRenderers();
@@ -80,8 +83,6 @@ public class BaseMovement : CharacterBase
         currentAlpha = isDetectable ? detectableAlpha : undetectableAlpha;
         targetAlpha = currentAlpha;
         UpdateSpriteAlpha();
-
-        if (MainCamera.Instance.IsFlipped_) ActivateBUG2();
     }
 
     protected override void Update()
@@ -92,9 +93,6 @@ public class BaseMovement : CharacterBase
         HandleTriggerButton();
         UpdateAlphaTransition();
         UpdateCurrentInteractable(); // 更新当前交互对象
-
-        // 检查是否可以触发穿透BUG
-        CheckPenetrationBug();
 
         base.Update();
 
@@ -132,11 +130,14 @@ public class BaseMovement : CharacterBase
         if (Instance != this) return;
 
         // 在FixedUpdate中检查穿透结束条件
-        if (isPenetrating && wasTouchingBlock)
+        if (isPenetrating)
         {
             CheckPenetrationEnd();
         }
-            
+
+        // 检查是否可以触发穿透BUG
+        CheckPenetrationBug();
+
         base.FixedUpdate();
     }
 
@@ -174,7 +175,7 @@ public class BaseMovement : CharacterBase
         if (totalSpeed >= penetrationSpeedThreshold)
         {
             canPenetrate = true;
-            
+
             // 绘制调试信息
             if (drawPenetrationDebug)
             {
@@ -201,10 +202,6 @@ public class BaseMovement : CharacterBase
         canPenetrate = false;
         penetrationDirection = direction;
 
-        // 关键：临时忽略障碍物和地面碰撞
-        obstacleLayerMask = 1 << 8;
-        groundLayerMask = 1 << 8;
-
         //变为触发器以避免物理碰撞
         if (collider2d != null)
         {
@@ -213,6 +210,10 @@ public class BaseMovement : CharacterBase
 
         // 检查初始是否接触Block
         wasTouchingBlock = IsTouchingBlock();
+
+        // 临时忽略障碍物和地面碰撞
+        obstacleLayerMask = 1 << 8;
+        groundLayerMask = 1 << 8;
 
         // 打印BUG信息
         AlertPrinter.Instance.PrintLog("错误：实体速度异常，发生穿透现象！", LogType.错误);
@@ -230,9 +231,9 @@ public class BaseMovement : CharacterBase
     private bool IsTouchingBlock()
     {
         if (collider2d == null) return false;
-
-        Collider2D[] results = new Collider2D[5];
+        List<Collider2D> results = new List<Collider2D>();
         int count = Physics2D.OverlapCollider(collider2d, blockContactFilter, results);
+        Debug.Log("检测到Block数量: " + count + "block物体:" + results);
         return count > 0;
     }
 
@@ -248,7 +249,13 @@ public class BaseMovement : CharacterBase
         // 如果之前接触Block但现在不接触了，结束穿透状态
         if (wasTouchingBlock && !currentlyTouchingBlock)
         {
-            EndPenetration();
+            penetrationEndTimer += Time.fixedDeltaTime;
+
+            // 延迟一段时间确保完全离开障碍物
+            if (penetrationEndTimer >= penetrationEndDelay)
+            {
+                EndPenetration();
+            }
         }
         else
         {
@@ -582,9 +589,12 @@ public class BaseMovement : CharacterBase
         // 翻转所有sprite子物体
         FlipAllSprites();
 
+        // 翻转摄像机
+        FlipCamera();
+
         bug2Active = !bug2Active;
 
-        AlertPrinter.Instance.PrintLog("错误：单位所处位置正负性错误，执行翻转！", LogType.错误);
+        AlertPrinter.Instance.PrintLog("错误：加速度过快，翻转单位重力！", LogType.错误);
     }
 
     /// <summary>
@@ -598,6 +608,17 @@ public class BaseMovement : CharacterBase
             {
                 spriteRenderer.flipY = !spriteRenderer.flipY;
             }
+        }
+    }
+
+    /// <summary>
+    /// 翻转摄像机
+    /// </summary>
+    public virtual void FlipCamera()
+    {
+        if (MainCamera.Instance != null)
+        {
+            MainCamera.Instance.FlipCamera();
         }
     }
 
