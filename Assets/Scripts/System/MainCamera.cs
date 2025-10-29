@@ -33,8 +33,21 @@ public class MainCamera : MonoBehaviour
         }
         else
         {
-            //跟随玩家移动
-            transform.position = new(transform.position.x, Mathf.Max(Player.transform.position.y, 0), transform.position.z);//只移动Y轴
+            if(Player.transform.position.y > 0f)
+            {
+                //跟随玩家移动
+                transform.position = new(transform.position.x, Player.transform.position.y, transform.position.z);//只移动Y轴
+            }
+            else if(Player.transform.position.y < -3f)
+            {
+                //跟随玩家移动
+                transform.position = new(transform.position.x, Player.transform.position.y + 3f, transform.position.z);//只移动Y轴
+            }
+            else
+            {
+                //回归原点
+                transform.position = new(transform.position.x, 0, transform.position.z);
+            }
         }
 
     }

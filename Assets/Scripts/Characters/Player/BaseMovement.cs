@@ -233,7 +233,6 @@ public class BaseMovement : CharacterBase
         if (collider2d == null) return false;
         List<Collider2D> results = new List<Collider2D>();
         int count = Physics2D.OverlapCollider(collider2d, blockContactFilter, results);
-        Debug.Log("检测到Block数量: " + count + "block物体:" + results);
         return count > 0;
     }
 
@@ -301,7 +300,7 @@ public class BaseMovement : CharacterBase
         wasTouchingBlock = false;
 
         // 打印结束信息
-        AlertPrinter.Instance.PrintLog("错误修正：实体速度恢复正常", LogType.错误);
+        AlertPrinter.Instance.PrintLog("实体速度恢复正常", LogType.调试);
     }
 
     /// <summary>
