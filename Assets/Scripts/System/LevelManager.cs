@@ -68,12 +68,20 @@ public class LevelManager : MonoBehaviour
             case 2:
                 {
                     pack.Name = "梯";
-                    pack.Security = SecurityLevel.低;
+                    pack.Security = SecurityLevel.中等;
                     pack.MaxWoves = 1;
                     pack.Description = "当你紧闭双眼，无尽的长梯在你面前延伸。你所缺的，是向那无形之物伸手的勇气。";
                     break;
                 }
             case 3:
+                {
+                    pack.Name = "悬崖";
+                    pack.Security = SecurityLevel.中等;
+                    pack.MaxWoves = 2;
+                    pack.Description = "鲁莽往往不能成事。放缓步伐，享受旅途中的一切，才能发现隐藏的美。";
+                    break;
+                }
+            case 4:
                 {
                     pack.Name = "观者";
                     pack.Security = SecurityLevel.低;
@@ -101,7 +109,7 @@ public class LevelManager : MonoBehaviour
                 {
                     pack.Name = "孤岛";
                     pack.Security = SecurityLevel.低;
-                    pack.MaxWoves = 1;
+                    pack.MaxWoves = 2;
                     pack.Description = "世上的一切都有其存在的意义，任何阻碍与危险都有其存在的意义。";
                     break;
                 }
