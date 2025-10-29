@@ -46,6 +46,7 @@ public class BaseMovement : CharacterBase
     private bool isPenetrating = false;
     private Vector2 penetrationDirection = Vector2.zero;
     private LayerMask originalObstacleLayerMask;
+    private LayerMask originalGroundLayerMask;
 
     private bool firstBug = false;
     private Collider2D collider2d;
@@ -63,8 +64,9 @@ public class BaseMovement : CharacterBase
         // 获取碰撞体组件
         collider2d = GetComponent<Collider2D>();
 
-        // 保存原始的障碍物图层掩码
+        // 保存原始的障碍物和地面图层掩码
         originalObstacleLayerMask = obstacleLayerMask;
+        originalGroundLayerMask = groundLayerMask;
 
         // 设置Block接触过滤器
         blockContactFilter = new ContactFilter2D();
@@ -96,19 +98,29 @@ public class BaseMovement : CharacterBase
 
         if (!isDetectable)
         {
-            gameObject.gameObject.layer = 8;
-            foreach (Transform child in transform)
-            {
-                child.gameObject.layer = 8;
-            }
+            HideLayer();
         }
         else
         {
-            gameObject.gameObject.layer = 7;
-            foreach (Transform child in transform)
-            {
-                child.gameObject.layer = 7;
-            }
+            ShowLayer();
+        }
+    }
+
+    private void HideLayer()
+    {
+        gameObject.gameObject.layer = 8;
+        foreach (Transform child in transform)
+        {
+            child.gameObject.layer = 8;
+        }
+    }
+
+    private void ShowLayer()
+    {
+        gameObject.gameObject.layer = 7;
+        foreach (Transform child in transform)
+        {
+            child.gameObject.layer = 7;
         }
     }
 
@@ -117,6 +129,12 @@ public class BaseMovement : CharacterBase
         // 确保只有单例实例执行固定更新逻辑
         if (Instance != this) return;
 
+        // 在FixedUpdate中检查穿透结束条件
+        if (isPenetrating && wasTouchingBlock)
+        {
+            CheckPenetrationEnd();
+        }
+            
         base.FixedUpdate();
     }
 
@@ -143,12 +161,8 @@ public class BaseMovement : CharacterBase
     /// </summary>
     private void CheckPenetrationBug()
     {
-        // 如果正在穿透，检查结束条件
-        if (isPenetrating)
-        {
-            CheckPenetrationEnd();
-            return;
-        }
+        // 如果正在穿透，不检查触发条件
+        if (isPenetrating) return;
 
         // 计算总速度（包括外部速度）
         Vector2 totalVelocity = new Vector2(horizontal * speed, verticalVelocity) + externalVelocity;
@@ -158,7 +172,7 @@ public class BaseMovement : CharacterBase
         if (totalSpeed >= penetrationSpeedThreshold)
         {
             canPenetrate = true;
-
+            
             // 绘制调试信息
             if (drawPenetrationDebug)
             {
@@ -185,8 +199,9 @@ public class BaseMovement : CharacterBase
         canPenetrate = false;
         penetrationDirection = direction;
 
-        // 临时忽略障碍物碰撞
-        obstacleLayerMask = 0;
+        // 关键：临时忽略障碍物和地面碰撞
+        obstacleLayerMask = 8;
+        groundLayerMask = 8;
 
         // 检查初始是否接触Block
         wasTouchingBlock = IsTouchingBlock();
@@ -240,8 +255,9 @@ public class BaseMovement : CharacterBase
     {
         if (!isPenetrating) return;
 
-        // 恢复障碍物碰撞检测
+        // 恢复障碍物和地面碰撞检测
         obstacleLayerMask = originalObstacleLayerMask;
+        groundLayerMask = originalGroundLayerMask;
 
         // 重置所有速度
         verticalVelocity = 0f;
@@ -457,6 +473,7 @@ public class BaseMovement : CharacterBase
                 CheckVerticalCollision(ref move);
             }
         }
+        // 穿透状态下不进行任何碰撞检测，可以穿过所有Block
 
         move.y *= bug2Active ? -1f : 1f;
 
@@ -500,6 +517,46 @@ public class BaseMovement : CharacterBase
         if (isGrounded && verticalVelocity < 0)
         {
             verticalVelocity = 0;
+        }
+    }
+
+    /// <summary>
+    /// 地面检测 - 在穿透状态下忽略地面检测
+    /// </summary>
+    protected override void CheckGrounded()
+    {
+        // 如果在穿透状态下，不进行地面检测
+        if (isPenetrating)
+        {
+            isGrounded = false;
+            return;
+        }
+
+        Vector2 rayStart = (Vector2)transform.position;
+        float rayLength = playerHeight / 2 + groundCheckDistance;
+
+        RaycastHit2D hitCenter = Physics2D.Raycast(rayStart, bug2Active ? Vector2.up : Vector2.down, rayLength, groundLayerMask);
+        RaycastHit2D hitLeft = Physics2D.Raycast(rayStart + Vector2.left * playerWidth / 2, bug2Active ? Vector2.up : Vector2.down, rayLength, groundLayerMask);
+        RaycastHit2D hitRight = Physics2D.Raycast(rayStart + Vector2.right * playerWidth / 2, bug2Active ? Vector2.up : Vector2.down, rayLength, groundLayerMask);
+
+        isGrounded = hitCenter.collider != null || hitLeft.collider != null || hitRight.collider != null;
+
+        // 如果检测到地面，确保不会陷入地面
+        if (isGrounded)
+        {
+            // 找到最近的碰撞点
+            float minDistance = float.MaxValue;
+            if (hitCenter.collider != null && hitCenter.distance < minDistance) minDistance = hitCenter.distance;
+            if (hitLeft.collider != null && hitLeft.distance < minDistance) minDistance = hitLeft.distance;
+            if (hitRight.collider != null && hitRight.distance < minDistance) minDistance = hitRight.distance;
+
+            // 微调位置以确保正好在地面上
+            float adjustment = minDistance - (playerHeight / 2);
+            if (adjustment > 0.001f) // 只有需要调整时才进行
+            {
+                rb.position = new Vector2(rb.position.x, rb.position.y +
+                    adjustment * (bug2Active ? 1f : -1f));
+            }
         }
     }
 
@@ -702,6 +759,10 @@ public class BaseMovement : CharacterBase
             {
                 Gizmos.color = wasTouchingBlock ? Color.red : Color.green;
                 Gizmos.DrawWireCube(transform.position, new Vector3(playerWidth, playerHeight, 0));
+
+                // 绘制穿透方向
+                Gizmos.color = Color.yellow;
+                Gizmos.DrawRay(transform.position, penetrationDirection * 1f);
             }
         }
     }
