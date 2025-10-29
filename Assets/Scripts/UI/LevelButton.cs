@@ -24,8 +24,11 @@ public class LevelButton : MonoBehaviour
     {
         Text.text = Level.ToString();
 
+        /*
+         * 测试版不锁关
         //根据解锁情况判断是否激活按钮
         if (Level > 1 && !GameSave.Instance.CheckLevel(Level - 1)) Button.enabled = false; 
+        */
     }
 
     //点击时

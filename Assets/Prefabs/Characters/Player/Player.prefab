@@ -74,7 +74,7 @@ SpriteRenderer:
   m_SortingLayerID: -69007535
   m_SortingLayer: 4
   m_SortingOrder: 2
-  m_Sprite: {fileID: 21300000, guid: 14746f7a8e8e4b14ca94f3696e1730ef, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 54e17c536777e1a4886cc2edd9eeaa4e, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -257,7 +257,7 @@ MonoBehaviour:
   verticalRays: 5
   gravity: 18
   jumpForce: 5
-  maxFallSpeed: 8
+  maxFallSpeed: 10.5
   obstacleLayerMask:
     serializedVersion: 2
     m_Bits: 8
@@ -280,5 +280,6 @@ MonoBehaviour:
   undetectableAlpha: 0
   alphaLerpSpeed: 5
   climbSpeed: 1
-  penetrationSpeedThreshold: 8
+  penetrationSpeedThreshold: 10
+  penetrationEndDelay: 0
   drawPenetrationDebug: 1

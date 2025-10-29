@@ -18,6 +18,11 @@ public class Scanner : Lock
 
     public float Radius;//É¨Ãè°ë¾¶
 
+    private void Start()
+    {
+        Refresh();
+    }
+
     private void Update()
     {
         if (IsActive)

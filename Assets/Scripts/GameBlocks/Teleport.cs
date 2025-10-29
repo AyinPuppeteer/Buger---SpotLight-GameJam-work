@@ -31,7 +31,7 @@ public class Teleport : MonoBehaviour, I_Interacts
     {
         if(another.GetComponent<BaseMovement>() != null)
         {
-            EffTransform.DOScale(new Vector3(0.05f, 0.05f, 0.05f), 0.2f);
+            EffTransform.DOScale(new Vector3(0.1f, 0.1f, 0.1f), 0.2f);
             Image.material.SetFloat("_RotateSpeed", 2);
         }
     }
@@ -40,7 +40,7 @@ public class Teleport : MonoBehaviour, I_Interacts
     {
         if (another.GetComponent<BaseMovement>() != null)
         {
-            EffTransform.DOScale(new Vector3(0.03f, 0.03f, 0.03f), 0.2f);
+            EffTransform.DOScale(new Vector3(0.06f, 0.06f, 0.06f), 0.2f);
             Image.material.SetFloat("_RotateSpeed", 1);
         }
     }
