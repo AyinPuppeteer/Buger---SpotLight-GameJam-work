@@ -200,8 +200,14 @@ public class BaseMovement : CharacterBase
         penetrationDirection = direction;
 
         // 关键：临时忽略障碍物和地面碰撞
-        obstacleLayerMask = 8;
-        groundLayerMask = 8;
+        obstacleLayerMask = 1 << 8;
+        groundLayerMask = 1 << 8;
+
+        //变为触发器以避免物理碰撞
+        if (collider2d != null)
+        {
+            collider2d.isTrigger = true;
+        }
 
         // 检查初始是否接触Block
         wasTouchingBlock = IsTouchingBlock();
@@ -258,6 +264,12 @@ public class BaseMovement : CharacterBase
         // 恢复障碍物和地面碰撞检测
         obstacleLayerMask = originalObstacleLayerMask;
         groundLayerMask = originalGroundLayerMask;
+
+        // 恢复碰撞体非触发器状态
+        if (collider2d != null)
+        {
+            collider2d.isTrigger = false;
+        }
 
         // 重置所有速度
         verticalVelocity = 0f;

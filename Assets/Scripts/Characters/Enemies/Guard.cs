@@ -216,6 +216,9 @@ public class Guard : CharacterBase
         // AI控制移动
         if ((isChasing || playerInSight || playerInProximity) && playerMovement != null)
         {
+            //追逐的时候也不能掉下平台o(╥﹏╥)o
+            CheckForEdge();
+
             // 记录玩家最后位置
             Vector3 playerPosition = playerMovement.transform.position;
 
@@ -388,11 +391,18 @@ public class Guard : CharacterBase
         //}
         if (!groundCheck.collider)
         {
-            // 如果在巡逻状态下，遇到悬崖则反向
-            patrolDirection *= -1;
-            horizontal = patrolDirection;
-            stuckTimer = 0f;
-            consecutiveJumps = 0;
+            if (isChasing)
+            {
+                StartTemporaryReverse(.5f);
+            }
+            else
+            {
+                // 如果在巡逻状态下，遇到悬崖则反向
+                patrolDirection *= -1;
+                horizontal = patrolDirection;
+                stuckTimer = 0f;
+                consecutiveJumps = 0;
+            }
         }
     }
 
