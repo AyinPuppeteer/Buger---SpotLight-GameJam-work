@@ -81,6 +81,14 @@ public class LevelManager : MonoBehaviour
                     pack.Description = "“它们”的视野已蔓延到每个角落，但你仍有躲藏之所。";
                     break;
                 }
+            case 6:
+                {
+                    pack.Name = "天网";
+                    pack.Security = SecurityLevel.高;
+                    pack.MaxWoves = 1;
+                    pack.Description = "一味的躲避无法迎来胜利，唯有“主动出击”才有获胜的机会。";
+                    break;
+                }
             case 7:
                 {
                     pack.Name = "传送门";
