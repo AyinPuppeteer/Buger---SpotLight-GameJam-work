@@ -275,6 +275,8 @@ MonoBehaviour:
   param:
   - isWalking
   - isSneaking
+  - isClimbing
+  - climbWait
   isDetectable: 1
   detectableAlpha: 1
   undetectableAlpha: 0
