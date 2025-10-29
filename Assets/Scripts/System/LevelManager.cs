@@ -97,6 +97,14 @@ public class LevelManager : MonoBehaviour
                     pack.Description = "世上的一切都有其存在的意义，任何阻碍与危险都有其存在的意义。";
                     break;
                 }
+            case 9:
+                {
+                    pack.Name = "夹道欢迎";
+                    pack.Security = SecurityLevel.高;
+                    pack.MaxWoves = 1;
+                    pack.Description = "保安们为你的到来“欢呼雀跃”，你难以忍受他们的“热情”。幸好，那些奇异的方块能够帮助你。";
+                    break;
+                }
             case 10:
                 {
                     pack.Name = "游戏机";
