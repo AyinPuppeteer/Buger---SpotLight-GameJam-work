@@ -39,15 +39,15 @@ public class MainCamera : MonoBehaviour
 
     }
 
-    public void Reset()
-    {
-        if (IsFlipped) FlipCamera();
-    }
-
     //翻转摄像头
     public void FlipCamera()
     {
         IsFlipped = !IsFlipped;
         transform.Rotate(new(0, 180, 180));
+
+        if(BaseMovement.Instance != null)
+        {
+            BaseMovement.Instance.ActivateBUG2();
+        }
     }
 }

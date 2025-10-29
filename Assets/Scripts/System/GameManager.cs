@@ -21,6 +21,9 @@ public class GameManager : MonoBehaviour
     public static void SetPack(LevelPack pack) => LevelNow = pack;
     public int LevelID { get => LevelNow == null ? 0 : LevelNow.ID; }
 
+    private bool TransStatus;//传送状态
+    public void DoTrans() => TransStatus = !TransStatus;
+
     private Action WhenBUGAppear;
     public void SubscribeWhenBUGAppear(Action action) => WhenBUGAppear += action;
 
@@ -91,7 +94,11 @@ public class GameManager : MonoBehaviour
     //重新开始
     public void GameRestart()
     {
-        MainCamera.Instance.Reset();
+        if(TransStatus)
+        {
+            TransStatus = false;//取消传送状态
+            MainCamera.Instance.FlipCamera();//如果处于传送状态，则翻转
+        }
 
         CreatePlayer();
         AlertPrinter.Instance.PrintLog("错误：目标实体摧毁失败！原因：未拥有权限", LogType.错误);
@@ -100,11 +107,11 @@ public class GameManager : MonoBehaviour
     //强制重启
     public void ForceRestart()
     {
+        TransStatus = false;//取消传送状态
+
         FadeEvent.Instance.FakeFade();
         DOTween.To(() => 0, x => { }, 0, 0.8f).OnComplete(() =>
         {
-            MainCamera.Instance.Reset();
-
             CreatePlayer();
             AlertPrinter.Instance.PrintLog("警告：外部请求：重新加载环境！", LogType.警告);
             CreateAllEnemies();

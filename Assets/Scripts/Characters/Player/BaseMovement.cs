@@ -80,6 +80,8 @@ public class BaseMovement : CharacterBase
         currentAlpha = isDetectable ? detectableAlpha : undetectableAlpha;
         targetAlpha = currentAlpha;
         UpdateSpriteAlpha();
+
+        if (MainCamera.Instance.IsFlipped_) ActivateBUG2();
     }
 
     protected override void Update()
@@ -580,12 +582,9 @@ public class BaseMovement : CharacterBase
         // 翻转所有sprite子物体
         FlipAllSprites();
 
-        // 翻转摄像机
-        FlipCamera();
-
         bug2Active = !bug2Active;
 
-        AlertPrinter.Instance.PrintLog("错误：加速度过快，翻转单位重力！", LogType.错误);
+        AlertPrinter.Instance.PrintLog("错误：单位所处位置正负性错误，执行翻转！", LogType.错误);
     }
 
     /// <summary>
@@ -599,17 +598,6 @@ public class BaseMovement : CharacterBase
             {
                 spriteRenderer.flipY = !spriteRenderer.flipY;
             }
-        }
-    }
-
-    /// <summary>
-    /// 翻转摄像机
-    /// </summary>
-    public virtual void FlipCamera()
-    {
-        if (MainCamera.Instance != null)
-        {
-            MainCamera.Instance.FlipCamera();
         }
     }
 
