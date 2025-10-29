@@ -72,6 +72,7 @@ public class GameManager : MonoBehaviour
     //游戏胜利
     public void GameWin()
     {
+        GameSave.Instance.LevelFinish(LevelID);
         FadeEvent.Instance.Fadeto("MainScene");
     }
     //游戏失败
@@ -95,6 +96,25 @@ public class GameManager : MonoBehaviour
         CreatePlayer();
         AlertPrinter.Instance.PrintLog("错误：目标实体摧毁失败！原因：未拥有权限", LogType.错误);
         CreateAllEnemies();
+    }
+    //强制重启
+    public void ForceRestart()
+    {
+        FadeEvent.Instance.FakeFade();
+        DOTween.To(() => 0, x => { }, 0, 0.8f).OnComplete(() =>
+        {
+            MainCamera.Instance.Reset();
+
+            CreatePlayer();
+            AlertPrinter.Instance.PrintLog("警告：外部请求：重新加载环境！", LogType.警告);
+            CreateAllEnemies();
+        });
+    }
+
+    //返回主菜单
+    public void ReturnMainPage()
+    {
+        FadeEvent.Instance.Fadeto("MainScene");
     }
 
     //角色处于暴露状态时修改
