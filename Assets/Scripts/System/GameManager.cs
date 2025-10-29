@@ -19,7 +19,7 @@ public class GameManager : MonoBehaviour
 
     private static LevelPack LevelNow;
     public static void SetPack(LevelPack pack) => LevelNow = pack;
-    public int LevelID { get => LevelNow.ID; }
+    public int LevelID { get => LevelNow == null ? 0 : LevelNow.ID; }
 
     private Action WhenBUGAppear;
     public void SubscribeWhenBUGAppear(Action action) => WhenBUGAppear += action;
