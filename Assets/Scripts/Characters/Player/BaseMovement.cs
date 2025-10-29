@@ -216,7 +216,7 @@ public class BaseMovement : CharacterBase
         groundLayerMask = 1 << 8;
 
         // 打印BUG信息
-        AlertPrinter.Instance.PrintLog("错误：实体速度异常，发生穿透现象！", LogType.错误);
+        AlertPrinter.Instance.PrintLog("错误：实体速度异常，发生隧穿现象！", LogType.错误);
 
         // 绘制调试射线
         if (drawPenetrationDebug)

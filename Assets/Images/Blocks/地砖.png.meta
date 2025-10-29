@@ -298,6 +298,90 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
+    - serializedVersion: 2
+      name: "\u5730\u7816_9"
+      rect:
+        serializedVersion: 2
+        x: 48
+        y: 32
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 77c16c492ca6a714596d63d97de6ba5d
+      internalID: -8578057
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "\u5730\u7816_10"
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 32
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2cc8c790958004f40b9e6c41c6acf45d
+      internalID: 1005366855
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "\u5730\u7816_11"
+      rect:
+        serializedVersion: 2
+        x: 48
+        y: 16
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f9db16095612fa74d93c3ace1558d82e
+      internalID: -1096239786
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "\u5730\u7816_12"
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 16
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b4141f581ddb9c14c866e611a24e86ac
+      internalID: 1423127848
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     physicsShape: []
     bones: []
@@ -311,6 +395,9 @@ TextureImporter:
     nameFileIdTable:
       "\u5730\u7816_0": -2044945464
       "\u5730\u7816_1": 577192989
+      "\u5730\u7816_10": 1005366855
+      "\u5730\u7816_11": -1096239786
+      "\u5730\u7816_12": 1423127848
       "\u5730\u7816_2": -1304821305
       "\u5730\u7816_3": 461416552
       "\u5730\u7816_4": 1155398455
@@ -318,6 +405,7 @@ TextureImporter:
       "\u5730\u7816_6": 225080693
       "\u5730\u7816_7": -718479433
       "\u5730\u7816_8": -1316311776
+      "\u5730\u7816_9": -8578057
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

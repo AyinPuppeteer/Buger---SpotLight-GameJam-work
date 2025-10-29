@@ -65,6 +65,46 @@ public class LevelManager : MonoBehaviour
                     pack.Description = "你来到了这座破败的楼房，将快递送达顶端，这是你唯一的目的。";
                     break;
                 }
+            case 2:
+                {
+                    pack.Name = "梯";
+                    pack.Security = SecurityLevel.低;
+                    pack.MaxWoves = 1;
+                    pack.Description = "当你紧闭双眼，无尽的长梯在你面前延伸。你所缺的，是向那无形之物伸手的勇气。";
+                    break;
+                }
+            case 3:
+                {
+                    pack.Name = "观者";
+                    pack.Security = SecurityLevel.低;
+                    pack.MaxWoves = 1;
+                    pack.Description = "“它们”的视野已蔓延到每个角落，但你仍有躲藏之所。";
+                    break;
+                }
+            case 7:
+                {
+                    pack.Name = "传送门";
+                    pack.Security = SecurityLevel.中等;
+                    pack.MaxWoves = 1;
+                    pack.Description = "深邃之门的背后，是胜利还是死亡，抑或是颠倒反转的世界。";
+                    break;
+                }
+            case 8:
+                {
+                    pack.Name = "孤岛";
+                    pack.Security = SecurityLevel.低;
+                    pack.MaxWoves = 1;
+                    pack.Description = "世上的一切都有其存在的意义，任何阻碍与危险都有其存在的意义。";
+                    break;
+                }
+            case 10:
+                {
+                    pack.Name = "游戏机";
+                    pack.Security = SecurityLevel.低;
+                    pack.MaxWoves = 1;
+                    pack.Description = "借此，你能够短暂的尝试“它们”的娱乐方式。";
+                    break;
+                }
         }
         return pack;
     }
