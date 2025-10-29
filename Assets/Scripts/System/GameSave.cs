@@ -30,6 +30,7 @@ public class GameSave : MonoBehaviour
         }
 
         Data = LoadData();
+        SaveData();
     }
 
     #region 存档加载和读取
@@ -41,13 +42,9 @@ public class GameSave : MonoBehaviour
         // 构建保存路径
         string path = Path.Combine(Application.persistentDataPath, SaveFileName);
 
-        if (File.Exists(path))
-        {
-            // 写入文件
-            File.WriteAllText(path, json);
-            Debug.Log($"成功保存到 {path}");
-        }
-        else Debug.LogError("无法存档，请联系Ayin修复！");
+        // 写入文件
+        File.WriteAllText(path, json);
+        Debug.Log($"成功保存到 {path}");
     }
     private SaveData LoadData()
     {
@@ -73,9 +70,13 @@ public class GameSave : MonoBehaviour
     {
         if (Data.Woves_.ContainsKey(Level))
         {
-            Data.Woves_[Level] &= (1 << ID);
-            SaveData();
+            Data.Woves_[Level] |= (1 << ID);
         }
+        else
+        {
+            Data.Woves_[Level] = (1 << ID);
+        }
+        SaveData();
     }
     
     public bool CheckWove(int Level, int ID)

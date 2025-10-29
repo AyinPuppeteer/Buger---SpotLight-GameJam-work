@@ -83,10 +83,18 @@ public class LevelManager : MonoBehaviour
                 }
             case 4:
                 {
-                    pack.Name = "观者";
-                    pack.Security = SecurityLevel.低;
+                    pack.Name = "废墟";
+                    pack.Security = SecurityLevel.高;
                     pack.MaxWoves = 1;
-                    pack.Description = "“它们”的视野已蔓延到每个角落，但你仍有躲藏之所。";
+                    pack.Description = "看似杂乱，实则四通八达。于此，你将找寻属于自己的路。";
+                    break;
+                }
+            case 5:
+                {
+                    pack.Name = "舍汝皮肉";
+                    pack.Security = SecurityLevel.高;
+                    pack.MaxWoves = 1;
+                    pack.Description = "倘若陷入绝境是生存的唯一方式，你能做的也就只有忍受苦难。当然，待到时机成熟，你自然能得到解脱。";
                     break;
                 }
             case 6:
