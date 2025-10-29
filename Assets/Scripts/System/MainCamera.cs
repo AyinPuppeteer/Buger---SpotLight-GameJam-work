@@ -38,10 +38,10 @@ public class MainCamera : MonoBehaviour
                 //跟随玩家移动
                 transform.position = new(transform.position.x, Player.transform.position.y, transform.position.z);//只移动Y轴
             }
-            else if(Player.transform.position.y < -4f)
+            else if(Player.transform.position.y < -3f)
             {
                 //跟随玩家移动
-                transform.position = new(transform.position.x, Player.transform.position.y + 4f, transform.position.z);//只移动Y轴
+                transform.position = new(transform.position.x, Player.transform.position.y + 3f, transform.position.z);//只移动Y轴
             }
             else
             {
