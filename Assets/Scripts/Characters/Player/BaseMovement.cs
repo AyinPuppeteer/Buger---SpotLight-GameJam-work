@@ -158,6 +158,10 @@ public class BaseMovement : CharacterBase
         else animator.SetBool(param[0], false);
         if (isSneaking) animator.SetBool(param[1], true);
         else animator.SetBool(param[1], false);
+        if (isClimbing) animator.SetBool(param[2], true);
+        else animator.SetBool(param[2], false);
+        if (canClimb) animator.SetBool(param[3], true);
+        else animator.SetBool(param[3], false);
     }
 
     /// <summary>
