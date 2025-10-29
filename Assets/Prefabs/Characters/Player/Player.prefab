@@ -256,7 +256,7 @@ MonoBehaviour:
   horizontalRays: 5
   verticalRays: 5
   gravity: 18
-  jumpForce: 5
+  jumpForce: 6
   maxFallSpeed: 8
   obstacleLayerMask:
     serializedVersion: 2

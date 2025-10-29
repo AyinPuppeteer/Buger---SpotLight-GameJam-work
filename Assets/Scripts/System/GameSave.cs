@@ -63,7 +63,7 @@ public class GameSave : MonoBehaviour
         else
         {
             Debug.LogWarning($"存档文件不存在: {path}");
-            return null;
+            return new();
         }
     }
     #endregion

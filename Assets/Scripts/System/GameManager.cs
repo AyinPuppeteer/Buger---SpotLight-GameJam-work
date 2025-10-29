@@ -82,7 +82,7 @@ public class GameManager : MonoBehaviour
     public void GameOver()
     {
         Destroy(BaseMovement.Instance.gameObject);
-        AlertPrinter.Instance.PrintLog("已控制位置实体，执行摧毁操作", LogType.调试);
+        AlertPrinter.Instance.PrintLog("已控制未知实体，执行摧毁操作", LogType.调试);
         PlayerDisexposed();
 
         DOTween.To(() => 0, x => { }, 0, 1f).OnComplete(() =>
