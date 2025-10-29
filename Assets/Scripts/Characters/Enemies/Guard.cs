@@ -25,6 +25,7 @@ public class Guard : CharacterBase
     [Header("Stuck Detection")]
     [SerializeField] private float stuckCheckTime = 2.0f;
     [SerializeField] private float minMovementThreshold = 0.01f;
+    [SerializeField] private float reserveTime = .2f;
 
     // 手电筒引用
     private FlashlightDetector flashlight;
@@ -216,6 +217,9 @@ public class Guard : CharacterBase
         // AI控制移动
         if ((isChasing || playerInSight || playerInProximity) && playerMovement != null)
         {
+            //追逐的时候也不能掉下平台o(╥﹏╥)o
+            CheckForEdge();
+
             // 记录玩家最后位置
             Vector3 playerPosition = playerMovement.transform.position;
 
@@ -388,11 +392,7 @@ public class Guard : CharacterBase
         //}
         if (!groundCheck.collider)
         {
-            // 如果在巡逻状态下，遇到悬崖则反向
-            patrolDirection *= -1;
-            horizontal = patrolDirection;
-            stuckTimer = 0f;
-            consecutiveJumps = 0;
+            ReverseDirection();
         }
     }
 
@@ -430,7 +430,7 @@ public class Guard : CharacterBase
     {
         if (isChasing)
         {
-            StartTemporaryReverse(.5f);
+            StartTemporaryReverse(reserveTime);
         }
         else
         {

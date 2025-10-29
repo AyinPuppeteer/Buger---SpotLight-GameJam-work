@@ -151,7 +151,7 @@ MonoBehaviour:
   patrolRange: 6
   jumpCooldown: 1
   stoppingDistance: 0.1
-  proximityRange: 0.8
+  proximityRange: 1.5
   proximityDetectionFrequency: 0.3
   requireGroundedForProximity: 1
   requireMovingForProximity: 1
