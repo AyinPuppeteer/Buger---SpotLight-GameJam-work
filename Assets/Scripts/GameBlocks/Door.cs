@@ -24,6 +24,6 @@ public class Door : Lock
         {
             Image.sprite = CloseImg;
         }
-        Collider.enabled = b;
+        Collider.enabled = !b;
     }
 }
