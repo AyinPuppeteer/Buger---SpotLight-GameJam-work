@@ -2,12 +2,16 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 //关卡管理（选关）的脚本
 public class LevelManager : MonoBehaviour
 {
     [SerializeField]
     private TMPPrinter Text;
+
+    [SerializeField]
+    private Button ContinueButton;//“继续”的按钮
 
     private Animator Anim;
 
@@ -20,6 +24,8 @@ public class LevelManager : MonoBehaviour
     {
         Instance = this;
         Anim = GetComponent<Animator>();
+
+        ContinueButton.enabled = false;
     }
 
     //打开选关界面
@@ -36,14 +42,16 @@ public class LevelManager : MonoBehaviour
         string text = "所选关卡：" + LevelNow.Name + "\n" +
             "关卡编号：" + LevelNow.ID + "\n" +
             "安保等级：" + LevelNow.Security + "\n" +
-            "订单情况：" + (GameSave.Instance.LevelFinish(LevelNow.ID) ? "已送达" : "未送达") + "\n" +
+            "订单情况：" + (GameSave.Instance.CheckLevel(LevelNow.ID) ? "已送达" : "未送达") + "\n" +
             "收集情况：" + GameSave.Instance.WoveAtLevel(LevelNow.ID) + "/" + LevelNow.MaxWoves + "\n\n";
         Text.SetTextForce(text);
         Text.AddText(LevelNow.Description);
+
+        ContinueButton.enabled = true;
     }
 
     //根据关卡编号查找配置包
-    private LevelPack ReturnLevelPack(int t)
+    private static LevelPack ReturnLevelPack(int t)
     {
         LevelPack pack = new();
         pack.ID = t;
@@ -51,7 +59,10 @@ public class LevelManager : MonoBehaviour
         {
             case 1:
                 {
-
+                    pack.Name = "新生";
+                    pack.Security = SecurityLevel.低;
+                    pack.MaxWoves = 1;
+                    pack.Description = "你来到了这座破败的楼房，将快递送达顶端，这是你唯一的目的。";
                     break;
                 }
         }

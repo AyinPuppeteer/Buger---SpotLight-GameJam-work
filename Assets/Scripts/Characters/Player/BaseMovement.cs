@@ -21,6 +21,10 @@ public class BaseMovement : CharacterBase
     [Header("Climb Settings")]
     [SerializeField] protected float climbSpeed = 1.0f;
 
+    [Header("BUG Settings")]
+    [SerializeField] private float penetrationSpeedThreshold = 15f; // 穿透所需的最小速度
+    [SerializeField] private bool drawPenetrationDebug = true; // 穿透调试显示
+
     protected bool isClimbing = false;
     public bool IsClimbing_ { get => isClimbing; }
     protected bool canClimb = false;
@@ -37,11 +41,19 @@ public class BaseMovement : CharacterBase
     private List<I_Interacts> interactables = new List<I_Interacts>();
     private I_Interacts currentInteractable = null;
 
+    // BUG相关变量
+    private bool canPenetrate = false;
+    private bool isPenetrating = false;
+    private Vector2 penetrationDirection = Vector2.zero;
+    private LayerMask originalObstacleLayerMask;
+    private LayerMask originalGroundLayerMask;
+
     private bool firstBug = false;
     private Collider2D collider2d;
 
-    // BUG2相关变量
-    private bool bug2WasActive = false; // 上一帧BUG2状态
+    // 穿透状态跟踪
+    private bool wasTouchingBlock = false;
+    private ContactFilter2D blockContactFilter;
 
     protected override void Awake()
     {
@@ -52,6 +64,15 @@ public class BaseMovement : CharacterBase
         // 获取碰撞体组件
         collider2d = GetComponent<Collider2D>();
 
+        // 保存原始的障碍物和地面图层掩码
+        originalObstacleLayerMask = obstacleLayerMask;
+        originalGroundLayerMask = groundLayerMask;
+
+        // 设置Block接触过滤器
+        blockContactFilter = new ContactFilter2D();
+        blockContactFilter.SetLayerMask(originalObstacleLayerMask);
+        blockContactFilter.useLayerMask = true;
+
         // 收集所有子物体的SpriteRenderer
         CollectChildSpriteRenderers();
 
@@ -60,6 +81,7 @@ public class BaseMovement : CharacterBase
         targetAlpha = currentAlpha;
         UpdateSpriteAlpha();
 
+        if (MainCamera.Instance.IsFlipped_) ActivateBUG2();
     }
 
     protected override void Update()
@@ -70,23 +92,37 @@ public class BaseMovement : CharacterBase
         HandleTriggerButton();
         UpdateAlphaTransition();
         UpdateCurrentInteractable(); // 更新当前交互对象
+
+        // 检查是否可以触发穿透BUG
+        CheckPenetrationBug();
+
         base.Update();
 
         if (!isDetectable)
         {
-            gameObject.gameObject.layer = 8;
-            foreach (Transform child in transform)
-            {
-                child.gameObject.layer = 8;
-            }
+            HideLayer();
         }
         else
         {
-            gameObject.gameObject.layer = 7;
-            foreach (Transform child in transform)
-            {
-                child.gameObject.layer = 7;
-            }
+            ShowLayer();
+        }
+    }
+
+    private void HideLayer()
+    {
+        gameObject.gameObject.layer = 8;
+        foreach (Transform child in transform)
+        {
+            child.gameObject.layer = 8;
+        }
+    }
+
+    private void ShowLayer()
+    {
+        gameObject.gameObject.layer = 7;
+        foreach (Transform child in transform)
+        {
+            child.gameObject.layer = 7;
         }
     }
 
@@ -95,6 +131,12 @@ public class BaseMovement : CharacterBase
         // 确保只有单例实例执行固定更新逻辑
         if (Instance != this) return;
 
+        // 在FixedUpdate中检查穿透结束条件
+        if (isPenetrating && wasTouchingBlock)
+        {
+            CheckPenetrationEnd();
+        }
+            
         base.FixedUpdate();
     }
 
@@ -110,12 +152,149 @@ public class BaseMovement : CharacterBase
     protected override void HandleVisualLayer()
     {
         base.HandleVisualLayer();
-        if(isWalking) animator.SetBool(param[0], true); 
+        if (isWalking) animator.SetBool(param[0], true);
         else animator.SetBool(param[0], false);
         if (isSneaking) animator.SetBool(param[1], true);
         else animator.SetBool(param[1], false);
-        //if (isClimbing) animator.SetBool(param3, true);
-        //else animator.SetBool(param3, false);
+    }
+
+    /// <summary>
+    /// 检查是否可以触发穿透BUG
+    /// </summary>
+    private void CheckPenetrationBug()
+    {
+        // 如果正在穿透，不检查触发条件
+        if (isPenetrating) return;
+
+        // 计算总速度（包括外部速度）
+        Vector2 totalVelocity = new Vector2(horizontal * speed, verticalVelocity) + externalVelocity;
+        float totalSpeed = totalVelocity.magnitude;
+
+        // 如果总速度超过阈值，可以触发穿透
+        if (totalSpeed >= penetrationSpeedThreshold)
+        {
+            canPenetrate = true;
+            
+            // 绘制调试信息
+            if (drawPenetrationDebug)
+            {
+                Debug.DrawRay(transform.position, totalVelocity.normalized * 2f, Color.magenta, 0.1f);
+            }
+
+            // 立即开始穿透
+            StartPenetration(totalVelocity.normalized);
+        }
+        else
+        {
+            canPenetrate = false;
+        }
+    }
+
+    /// <summary>
+    /// 开始穿透状态
+    /// </summary>
+    private void StartPenetration(Vector2 direction)
+    {
+        if (isPenetrating) return;
+
+        isPenetrating = true;
+        canPenetrate = false;
+        penetrationDirection = direction;
+
+        // 关键：临时忽略障碍物和地面碰撞
+        obstacleLayerMask = 1 << 8;
+        groundLayerMask = 1 << 8;
+
+        //变为触发器以避免物理碰撞
+        if (collider2d != null)
+        {
+            collider2d.isTrigger = true;
+        }
+
+        // 检查初始是否接触Block
+        wasTouchingBlock = IsTouchingBlock();
+
+        // 打印BUG信息
+        AlertPrinter.Instance.PrintLog("错误：实体速度异常，发生穿透现象！", LogType.错误);
+
+        // 绘制调试射线
+        if (drawPenetrationDebug)
+        {
+            Debug.DrawRay(transform.position, penetrationDirection * playerWidth * 2f, Color.red, 1f);
+        }
+    }
+
+    /// <summary>
+    /// 检查是否接触Block
+    /// </summary>
+    private bool IsTouchingBlock()
+    {
+        if (collider2d == null) return false;
+
+        Collider2D[] results = new Collider2D[5];
+        int count = Physics2D.OverlapCollider(collider2d, blockContactFilter, results);
+        return count > 0;
+    }
+
+    /// <summary>
+    /// 检查是否应该结束穿透状态
+    /// </summary>
+    private void CheckPenetrationEnd()
+    {
+        if (!isPenetrating) return;
+
+        bool currentlyTouchingBlock = IsTouchingBlock();
+
+        // 如果之前接触Block但现在不接触了，结束穿透状态
+        if (wasTouchingBlock && !currentlyTouchingBlock)
+        {
+            EndPenetration();
+        }
+        else
+        {
+            wasTouchingBlock = currentlyTouchingBlock;
+        }
+    }
+
+    /// <summary>
+    /// 结束穿透状态
+    /// </summary>
+    private void EndPenetration()
+    {
+        if (!isPenetrating) return;
+
+        // 恢复障碍物和地面碰撞检测
+        obstacleLayerMask = originalObstacleLayerMask;
+        groundLayerMask = originalGroundLayerMask;
+
+        // 恢复碰撞体非触发器状态
+        if (collider2d != null)
+        {
+            collider2d.isTrigger = false;
+        }
+
+        // 重置所有速度
+        verticalVelocity = 0f;
+        externalVelocity = Vector2.zero;
+        horizontal = 0f;
+        vertical = 0f;
+
+        // 重置刚体速度
+        if (rb != null)
+        {
+            rb.velocity = Vector2.zero;
+        }
+
+        // 重置移动状态
+        isWalking = false;
+        isSneaking = false;
+
+        // 结束穿透状态
+        isPenetrating = false;
+        wasTouchingBlock = false;
+
+        // 打印结束信息
+        AlertPrinter.Instance.PrintLog("错误修正：实体速度恢复正常", LogType.错误);
     }
 
     /// <summary>
@@ -247,15 +426,18 @@ public class BaseMovement : CharacterBase
                     firstBug = false;
                 }
             }
-            else if (isGrounded && Mathf.Abs(horizontal) > deadZone){
-                if(vertical < -0.5f)
+            else if (isGrounded && Mathf.Abs(horizontal) > deadZone)
+            {
+                if (vertical < -0.5f)
                     isSneaking = true;
-                else{
+                else
+                {
                     isSneaking = false;
                     isWalking = true;
                 }
             }
-            else{
+            else
+            {
                 isSneaking = false;
                 isWalking = false;
             }
@@ -291,17 +473,21 @@ public class BaseMovement : CharacterBase
         // 添加外部速度的影响
         move += externalVelocity * Time.fixedDeltaTime;
 
-        // 简化的碰撞检测：先水平后垂直
-        if (Mathf.Abs(move.x) > deadZone)
+        // 简化的碰撞检测：只在非穿透状态下检测碰撞
+        if (!isPenetrating)
         {
-            CheckHorizontalCollision(ref move);
-        }
+            if (Mathf.Abs(move.x) > deadZone)
+            {
+                CheckHorizontalCollision(ref move);
+            }
 
-        // 垂直碰撞检测只在上方有障碍物时阻止移动
-        if (move.y > 0) // 只在上移时检测上方碰撞
-        {
-            CheckVerticalCollision(ref move);
+            // 垂直碰撞检测只在上方有障碍物时阻止移动
+            if (move.y > 0) // 只在上移时检测上方碰撞
+            {
+                CheckVerticalCollision(ref move);
+            }
         }
+        // 穿透状态下不进行任何碰撞检测，可以穿过所有Block
 
         move.y *= bug2Active ? -1f : 1f;
 
@@ -338,12 +524,6 @@ public class BaseMovement : CharacterBase
             if (verticalVelocity < -maxFallSpeed)
             {
                 verticalVelocity = -maxFallSpeed;
-
-                // 达到最大下落速度时触发BUG2
-                if (!bug2Active)
-                {
-                    ActivateBUG2();
-                }
             }
         }
 
@@ -351,70 +531,60 @@ public class BaseMovement : CharacterBase
         if (isGrounded && verticalVelocity < 0)
         {
             verticalVelocity = 0;
-            // 落地时关闭BUG2，为下一次触发做准备
-            if (bug2Active)
-            {
-                DeactivateBUG2();
-            }
+        }
+    }
+
+    /// <summary>
+    /// 地面检测 - 在穿透状态下忽略地面检测
+    /// </summary>
+    protected override void CheckGrounded()
+    {
+        // 如果在穿透状态下，不进行地面检测
+        if (isPenetrating)
+        {
+            isGrounded = false;
+            return;
         }
 
-        // 检查BUG2状态变化
-        if (bug2WasActive != bug2Active)
+        Vector2 rayStart = (Vector2)transform.position;
+        float rayLength = playerHeight / 2 + groundCheckDistance;
+
+        RaycastHit2D hitCenter = Physics2D.Raycast(rayStart, bug2Active ? Vector2.up : Vector2.down, rayLength, groundLayerMask);
+        RaycastHit2D hitLeft = Physics2D.Raycast(rayStart + Vector2.left * playerWidth / 2, bug2Active ? Vector2.up : Vector2.down, rayLength, groundLayerMask);
+        RaycastHit2D hitRight = Physics2D.Raycast(rayStart + Vector2.right * playerWidth / 2, bug2Active ? Vector2.up : Vector2.down, rayLength, groundLayerMask);
+
+        isGrounded = hitCenter.collider != null || hitLeft.collider != null || hitRight.collider != null;
+
+        // 如果检测到地面，确保不会陷入地面
+        if (isGrounded)
         {
-            UpdateBUG2Effects();
-            bug2WasActive = bug2Active;
+            // 找到最近的碰撞点
+            float minDistance = float.MaxValue;
+            if (hitCenter.collider != null && hitCenter.distance < minDistance) minDistance = hitCenter.distance;
+            if (hitLeft.collider != null && hitLeft.distance < minDistance) minDistance = hitLeft.distance;
+            if (hitRight.collider != null && hitRight.distance < minDistance) minDistance = hitRight.distance;
+
+            // 微调位置以确保正好在地面上
+            float adjustment = minDistance - (playerHeight / 2);
+            if (adjustment > 0.001f) // 只有需要调整时才进行
+            {
+                rb.position = new Vector2(rb.position.x, rb.position.y +
+                    adjustment * (bug2Active ? 1f : -1f));
+            }
         }
     }
 
     /// <summary>
     /// 激活BUG2效果
     /// </summary>
-    protected virtual void ActivateBUG2()
+    public virtual void ActivateBUG2()
     {
-        if (bug2Active) return;
+        // 翻转所有sprite子物体
+        FlipAllSprites();
 
-        bug2Active = true;
+        bug2Active = !bug2Active;
 
-        AlertPrinter.Instance.PrintLog("错误：加速度过快，翻转单位重力！", LogType.错误);
-    }
-
-    /// <summary>
-    /// 关闭BUG2效果
-    /// </summary>
-    protected virtual void DeactivateBUG2()
-    {
-        if (!bug2Active) return;
-
-        bug2Active = false;
-
-        AlertPrinter.Instance.PrintLog("错误：加速度过快，翻转单位重力！", LogType.错误);
-    }
-
-    /// <summary>
-    /// 更新BUG2效果（翻转摄像机、重力和sprite）
-    /// </summary>
-    protected virtual void UpdateBUG2Effects()
-    {
-        if (bug2Active)
-        {
-
-            // 翻转所有sprite子物体
-            FlipAllSprites();
-
-            // 翻转摄像机
-            FlipCamera();
-
-        }
-        else
-        {
-
-            // 恢复所有sprite子物体
-            FlipAllSprites();
-
-            // 恢复摄像机
-            FlipCamera();
-
-        }
+        AlertPrinter.Instance.PrintLog("错误：单位所处位置正负性错误，执行翻转！", LogType.错误);
     }
 
     /// <summary>
@@ -428,17 +598,6 @@ public class BaseMovement : CharacterBase
             {
                 spriteRenderer.flipY = !spriteRenderer.flipY;
             }
-        }
-    }
-
-    /// <summary>
-    /// 翻转摄像机
-    /// </summary>
-    public virtual void FlipCamera()
-    {
-        if (MainCamera.Instance != null)
-        {
-            MainCamera.Instance.FlipCamera();
         }
     }
 
@@ -551,7 +710,6 @@ public class BaseMovement : CharacterBase
 
         //如果不可探测，则取消暴露状态
         if (!isDetectable) SetExposed(false);
-
     }
 
     //设置角色是否处于暴露状态
@@ -568,6 +726,43 @@ public class BaseMovement : CharacterBase
             else
             {
                 GameManager.Instance.PlayerDisexposed();
+            }
+        }
+    }
+
+    protected override void OnDrawGizmosSelected()
+    {
+        base.OnDrawGizmosSelected();
+
+        // 绘制穿透BUG相关的调试信息
+        if (Application.isPlaying)
+        {
+            // 绘制总速度向量
+            Vector2 totalVelocity = new Vector2(horizontal * speed, verticalVelocity) + externalVelocity;
+            Gizmos.color = canPenetrate ? Color.magenta : Color.cyan;
+            Gizmos.DrawRay(transform.position, totalVelocity.normalized * 2f);
+
+            // 绘制穿透阈值圆
+            Gizmos.color = canPenetrate ? Color.red : Color.green;
+            Gizmos.DrawWireSphere(transform.position, penetrationSpeedThreshold * 0.1f);
+
+            // 显示穿透状态
+            GUIStyle style = new GUIStyle();
+            style.normal.textColor = isPenetrating ? Color.red : (canPenetrate ? Color.yellow : Color.white);
+#if UNITY_EDITOR
+            UnityEditor.Handles.Label(transform.position + Vector3.up * 1f,
+                isPenetrating ? "PENETRATING" : (canPenetrate ? "CAN PENETRATE" : "Normal"), style);
+#endif
+
+            // 绘制穿透状态下的接触检测区域
+            if (isPenetrating)
+            {
+                Gizmos.color = wasTouchingBlock ? Color.red : Color.green;
+                Gizmos.DrawWireCube(transform.position, new Vector3(playerWidth, playerHeight, 0));
+
+                // 绘制穿透方向
+                Gizmos.color = Color.yellow;
+                Gizmos.DrawRay(transform.position, penetrationDirection * 1f);
             }
         }
     }

@@ -20,8 +20,8 @@ TagManager:
   - 
   - 
   - 
-  - 
-  - 
+  - BackGround
+  - FrontTile
   - 
   - 
   - 
@@ -64,4 +64,28 @@ TagManager:
     locked: 0
   - name: Filter
     uniqueID: 1392220447
+    locked: 0
+  - name: 
+    uniqueID: 2955617943
+    locked: 0
+  - name: 
+    uniqueID: 3681112589
+    locked: 0
+  - name: 
+    uniqueID: 2528887877
+    locked: 0
+  - name: 
+    uniqueID: 309080793
+    locked: 0
+  - name: 
+    uniqueID: 16742927
+    locked: 0
+  - name: 
+    uniqueID: 457755521
+    locked: 0
+  - name: 
+    uniqueID: 4041979629
+    locked: 0
+  - name: 
+    uniqueID: 157875539
     locked: 0

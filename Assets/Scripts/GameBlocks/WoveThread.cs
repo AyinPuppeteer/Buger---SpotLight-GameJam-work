@@ -21,6 +21,7 @@ public class WoveThread : MonoBehaviour, I_PickItem
     private void Start()
     {
         SceneName = SceneManager.GetActiveScene().name;
+        Debug.Log(GameManager.Instance);
         if(GameSave.Instance.CheckWove(GameManager.Instance.LevelID, ID))
         {
             //ÉèÖÃÎªÍ¸Ã÷×´Ì¬

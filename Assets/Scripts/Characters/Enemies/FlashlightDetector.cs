@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 
 public class FlashlightDetector : MonoBehaviour
 {
@@ -21,6 +22,7 @@ public class FlashlightDetector : MonoBehaviour
     private Mesh visionMesh;
     private MeshRenderer meshRenderer;
     private MeshFilter meshFilter;
+    private bool isFacingRight = true;
 
     public bool PlayerDetected => playerDetected;
     public BaseMovement DetectedPlayer => player;
@@ -63,7 +65,19 @@ public class FlashlightDetector : MonoBehaviour
         if (parentGuard != null)
         {
             // 根据保安的朝向调整手电筒方向
-            bool facingRight = parentGuard.transform.localScale.x > 0;
+            bool facingRight = parentGuard.ToRight_;
+
+            // 如果朝向发生变化，重新生成视野网格
+            if (facingRight != isFacingRight)
+            {
+                isFacingRight = facingRight;
+                // 强制重新生成网格
+                if (visionMesh != null)
+                {
+                    UpdateVisionMesh();
+                }
+            }
+
             Vector3 localScale = transform.localScale;
             localScale.x = facingRight ? 1 : -1;
             transform.localScale = localScale;
@@ -73,7 +87,7 @@ public class FlashlightDetector : MonoBehaviour
         }
     }
 
-    private System.Collections.IEnumerator DetectionRoutine()
+    private IEnumerator DetectionRoutine()
     {
         while (true)
         {
@@ -123,7 +137,8 @@ public class FlashlightDetector : MonoBehaviour
             return;
         }
 
-        // 检查视线是否被遮挡
+        // 关键修改：检查从手电筒到玩家的路径上是否有障碍物
+        // 使用射线检测，从手电筒位置向玩家位置发射射线
         RaycastHit2D hit = Physics2D.Raycast(
             transform.position,
             directionToPlayer.normalized,
@@ -131,9 +146,8 @@ public class FlashlightDetector : MonoBehaviour
             obstacleLayerMask
         );
 
-        // 如果没有障碍物遮挡，或者障碍物后面就是玩家
-        if (hit.collider == null ||
-            (hit.collider != null && hit.collider.gameObject == player.gameObject))
+        // 如果没有障碍物遮挡
+        if (hit.collider == null)
         {
             playerDetected = true;
 
@@ -161,6 +175,9 @@ public class FlashlightDetector : MonoBehaviour
         meshFilter = gameObject.AddComponent<MeshFilter>();
         meshRenderer = gameObject.AddComponent<MeshRenderer>();
 
+        //渲染层级设置为Player
+        meshRenderer.sortingLayerName = "Player";
+
         // 创建材质
         if (visionMaterial == null)
         {
@@ -182,19 +199,67 @@ public class FlashlightDetector : MonoBehaviour
         Vector3[] vertices = new Vector3[segments + 2];
         int[] triangles = new int[segments * 3];
 
-        // 中心点
+        // 中心点（本地坐标）
         vertices[0] = Vector3.zero;
 
-        // 计算扇形顶点
+        // 计算扇形顶点，考虑障碍物遮挡
         float angleStep = detectionAngle / segments;
+
         for (int i = 0; i <= segments; i++)
         {
-            float angle = -detectionAngle / 2 + i * angleStep;
-            Vector3 dir = Quaternion.Euler(0, 0, angle) * Vector3.right;
-            vertices[i + 1] = dir * detectionRange;
+            // 计算角度（基于当前朝向）
+            float angle;
+            if (isFacingRight)
+            {
+                // 面向右：从 -angle/2 到 +angle/2
+                angle = -detectionAngle / 2 + i * angleStep;
+            }
+            else
+            {
+                // 面向左：从 +angle/2 到 -angle/2
+                angle = detectionAngle / 2 - i * angleStep;
+            }
+
+            // 使用世界坐标方向进行射线检测
+            Vector3 worldDir = Quaternion.Euler(0, 0, angle) * transform.right;
+
+            // 进行射线检测，检查是否有障碍物
+            RaycastHit2D hit = Physics2D.Raycast(
+                transform.position,
+                worldDir,
+                detectionRange,
+                obstacleLayerMask
+            );
+
+            // 计算顶点位置
+            Vector3 vertexPos;
+            if (hit.collider != null)
+            {
+                // 将世界坐标的碰撞点转换为本地坐标
+                vertexPos = transform.InverseTransformPoint(hit.point);
+
+                // 绘制调试射线
+                if (drawDebugRays)
+                {
+                    Debug.DrawRay(transform.position, worldDir * hit.distance, Color.yellow, detectionFrequency);
+                }
+            }
+            else
+            {
+                // 计算本地坐标中的最大距离点
+                vertexPos = (Quaternion.Euler(0, 0, isFacingRight ? angle : (180 + angle)) * transform.right) * detectionRange;
+
+                // 绘制调试射线
+                if (drawDebugRays)
+                {
+                    Debug.DrawRay(transform.position, worldDir * detectionRange, Color.blue, detectionFrequency);
+                }
+            }
+
+            vertices[i + 1] = vertexPos;
         }
 
-        // 创建三角形
+        // 创建三角形 - 确保三角形顺序正确
         for (int i = 0; i < segments; i++)
         {
             triangles[i * 3] = 0;
@@ -207,6 +272,7 @@ public class FlashlightDetector : MonoBehaviour
         visionMesh.vertices = vertices;
         visionMesh.triangles = triangles;
         visionMesh.RecalculateNormals();
+        visionMesh.RecalculateBounds();
 
         // 根据检测状态更新颜色
         meshRenderer.material.color = playerDetected ? detectedVisionColor : normalVisionColor;

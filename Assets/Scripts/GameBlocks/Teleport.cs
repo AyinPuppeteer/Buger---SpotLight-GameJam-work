@@ -22,6 +22,8 @@ public class Teleport : MonoBehaviour, I_Interacts
         else
         {
             BaseMovement.Instance.transform.position = Outport.transform.position;//´«ËÍ
+
+            GameManager.Instance.DoTrans();
         }
     }
 

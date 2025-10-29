@@ -1,6 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using System.Security.Cryptography;
+using System.Text;
 using UnityEngine;
 
 //管理游戏存档的脚本
@@ -8,6 +11,8 @@ public class GameSave : MonoBehaviour
 {
     private SaveData Data;//当前运行的存档
     public SaveData data { get => Data; }
+
+    private const string SaveFileName = "GameSave.save";
 
     public static GameSave Instance { get; private set; }
 
@@ -24,17 +29,42 @@ public class GameSave : MonoBehaviour
             return;
         }
 
-        Data = new();
+        Data = LoadData();
     }
 
     #region 存档加载和读取
-    private void LoadData()
-    {
-
-    }
     private void SaveData()
     {
+        // 序列化为JSON
+        string json = JsonUtility.ToJson(Data);
 
+        // 构建保存路径
+        string path = Path.Combine(Application.persistentDataPath, SaveFileName);
+
+        if (File.Exists(path))
+        {
+            // 写入文件
+            File.WriteAllText(path, json);
+            Debug.Log($"成功保存到 {path}");
+        }
+        else Debug.LogError("无法存档，请联系Ayin修复！");
+    }
+    private SaveData LoadData()
+    {
+        string path = Path.Combine(Application.persistentDataPath, SaveFileName);
+
+        if (File.Exists(path))
+        {
+            // 读取内容
+            string json = File.ReadAllText(path);
+            Debug.Log($"成功读取到 {path}");
+            return JsonUtility.FromJson<SaveData>(json);
+        }
+        else
+        {
+            Debug.LogWarning($"存档文件不存在: {path}");
+            return null;
+        }
     }
     #endregion
 
@@ -44,6 +74,7 @@ public class GameSave : MonoBehaviour
         if (Data.Woves_.ContainsKey(Level))
         {
             Data.Woves_[Level] &= (1 << ID);
+            SaveData();
         }
     }
     
@@ -68,14 +99,15 @@ public class GameSave : MonoBehaviour
     }
     #endregion
 
-    public bool LevelFinish(int id)
+    public void LevelFinish(int id)
     {
-        if (data.FinishLevel_.Contains(id.ToString()))
+        if (!data.FinishLevel_.Contains(id.ToString()))
         {
-            return true;
+            data.FinishLevel_.Add(id.ToString());
+            SaveData();
         }
-        else return false;
     }
+    public bool CheckLevel(int id) => data.FinishLevel_.Contains(id.ToString());
 }
 
 //存档文件

@@ -25,6 +25,7 @@ public class Guard : CharacterBase
     [Header("Stuck Detection")]
     [SerializeField] private float stuckCheckTime = 2.0f;
     [SerializeField] private float minMovementThreshold = 0.01f;
+    [SerializeField] private float reserveTime = .2f;
 
     // 手电筒引用
     private FlashlightDetector flashlight;
@@ -79,6 +80,7 @@ public class Guard : CharacterBase
     protected override void Update()
     {
         HandleEnemyBehavior();
+        CheckForEdge();
         base.Update();
     }
 
@@ -215,6 +217,9 @@ public class Guard : CharacterBase
         // AI控制移动
         if ((isChasing || playerInSight || playerInProximity) && playerMovement != null)
         {
+            //追逐的时候也不能掉下平台o(╥﹏╥)o
+            CheckForEdge();
+
             // 记录玩家最后位置
             Vector3 playerPosition = playerMovement.transform.position;
 
@@ -252,16 +257,16 @@ public class Guard : CharacterBase
             originSpeed = patrolSpeed;
         }
 
-        CheckJump();
+        //CheckJump();
         inputVector = new Vector2(horizontal, vertical);
 
-        if (shouldJump && isGrounded && Time.time - lastJumpTime > jumpCooldown)
-        {
-            jumpRequested = true;
-            shouldJump = false;
-            lastJumpTime = Time.time;
-            consecutiveJumps++;
-        }
+        //if (shouldJump && isGrounded && Time.time - lastJumpTime > jumpCooldown)
+        //{
+        //    jumpRequested = true;
+        //    shouldJump = false;
+        //    lastJumpTime = Time.time;
+        //    consecutiveJumps++;
+        //}
     }
 
     private void UpdateChaseState()
@@ -355,7 +360,7 @@ public class Guard : CharacterBase
             }
         }
 
-        CheckForEdge(rayDirection);
+        CheckForEdge();
     }
 
     private float GetObstacleHeight(RaycastHit2D hit)
@@ -375,14 +380,19 @@ public class Guard : CharacterBase
         return hit.point.y + playerHeight / 2;
     }
 
-    private void CheckForEdge(Vector2 rayDirection)
+    private void CheckForEdge()
     {
-        Vector2 edgeCheckPos = (Vector2)transform.position + rayDirection * 0.5f;
-        RaycastHit2D groundCheck = Physics2D.Raycast(edgeCheckPos, Vector2.down, playerHeight * 3, groundLayerMask);
+        Vector2 rayDirection = toRight ? Vector2.right : Vector2.left;
+        Vector2 edgeCheckPos = (Vector2)transform.position + rayDirection * 0.5f * playerWidth;
+        RaycastHit2D groundCheck = Physics2D.Raycast(edgeCheckPos, Vector2.down, playerHeight * .6f, groundLayerMask);
 
-        if (groundCheck.collider == null && isGrounded)
+        //if (groundCheck.collider == null && isGrounded)
+        //{
+        //    shouldJump = true;
+        //}
+        if (!groundCheck.collider)
         {
-            shouldJump = true;
+            ReverseDirection();
         }
     }
 
@@ -420,7 +430,7 @@ public class Guard : CharacterBase
     {
         if (isChasing)
         {
-            StartTemporaryReverse(.5f);
+            StartTemporaryReverse(reserveTime);
         }
         else
         {
