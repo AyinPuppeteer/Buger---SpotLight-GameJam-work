@@ -41,6 +41,7 @@ public class BaseMovement : CharacterBase
     // 交互系统：使用列表管理多个交互对象
     private List<I_Interacts> interactables = new List<I_Interacts>();
     private I_Interacts currentInteractable = null;
+    private int ladderCount = 0;
 
     // BUG相关变量
     private bool canPenetrate = false;
@@ -659,6 +660,7 @@ public class BaseMovement : CharacterBase
 
         if (ladder != null)
         {
+            ladderCount++;
             canClimb = true;
         }
         if (pickItem != null)
@@ -689,8 +691,13 @@ public class BaseMovement : CharacterBase
         Ladder ladder = other.GetComponent<Ladder>();
         if (ladder != null)
         {
-            canLeave = true;
-            firstBug = true;
+            ladderCount = Mathf.Max(0, ladderCount - 1);
+            canClimb = ladderCount > 0;
+            if (ladderCount == 0)
+            {
+                canLeave = true;
+                firstBug = true;
+            }
         }
     }
 
