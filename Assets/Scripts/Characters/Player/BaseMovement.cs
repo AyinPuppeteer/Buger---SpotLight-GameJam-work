@@ -64,6 +64,11 @@ public class BaseMovement : CharacterBase
         Instance = this;
         canJump = true; // 玩家可以跳跃
 
+        if (MainCamera.Instance.IsFlipped_)
+        {
+            ActivateBUG2();
+        }
+
         // 获取碰撞体组件
         collider2d = GetComponent<Collider2D>();
 
@@ -595,12 +600,9 @@ public class BaseMovement : CharacterBase
         // 翻转所有sprite子物体
         FlipAllSprites();
 
-        // 翻转摄像机
-        FlipCamera();
-
         bug2Active = !bug2Active;
 
-        AlertPrinter.Instance.PrintLog("错误：加速度过快，翻转单位重力！", LogType.错误);
+        AlertPrinter.Instance.PrintLog("错误：实体坐标正负性错误，已执行翻转！", LogType.错误);
     }
 
     /// <summary>
