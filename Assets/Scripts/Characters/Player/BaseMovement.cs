@@ -696,7 +696,6 @@ public class BaseMovement : CharacterBase
         if (ladder != null)
         {
             ladderCount = Mathf.Max(0, ladderCount - 1);
-            canClimb = ladderCount > 0;
             if (ladderCount == 0)
             {
                 canLeave = true;
