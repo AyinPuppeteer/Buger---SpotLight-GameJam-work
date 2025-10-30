@@ -108,6 +108,7 @@ public class GameManager : MonoBehaviour
     public void ForceRestart()
     {
         TransStatus = false;//取消传送状态
+        PlayerDisexposed();
 
         FadeEvent.Instance.FakeFade();
         DOTween.To(() => 0, x => { }, 0, 0.8f).OnComplete(() =>

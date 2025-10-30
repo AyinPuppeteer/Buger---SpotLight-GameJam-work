@@ -64,11 +64,6 @@ public class BaseMovement : CharacterBase
         Instance = this;
         canJump = true; // 玩家可以跳跃
 
-        if (MainCamera.Instance.IsFlipped_)
-        {
-            ActivateBUG2();
-        }
-
         // 获取碰撞体组件
         collider2d = GetComponent<Collider2D>();
 
@@ -89,6 +84,11 @@ public class BaseMovement : CharacterBase
         currentAlpha = isDetectable ? detectableAlpha : undetectableAlpha;
         targetAlpha = currentAlpha;
         UpdateSpriteAlpha();
+
+        if (MainCamera.Instance.IsFlipped_)
+        {
+            ActivateBUG2();
+        }
     }
 
     protected override void Update()
