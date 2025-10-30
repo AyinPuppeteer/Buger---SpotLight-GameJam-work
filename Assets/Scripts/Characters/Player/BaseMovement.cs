@@ -162,6 +162,8 @@ public class BaseMovement : CharacterBase
         else animator.SetBool(param[2], false);
         if (canClimb) animator.SetBool(param[3], true);
         else animator.SetBool(param[3], false);
+        if (!canClimb && isGrounded && vertical < -.5f) animator.SetBool(param[4], true);
+        else animator.SetBool(param[4], false);
     }
 
     /// <summary>
